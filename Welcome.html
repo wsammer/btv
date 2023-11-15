@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Better Text View Guide</title>
+		<style>
+			@font-face {
+				font-family: Lato;
+				src: url('assets/css/fonts/LatoLatin-Bold.woff2') format('woff2');
+				font-weight: bold;
+			}
+			@font-face {
+				font-family: Lato;
+				src: url('assets/css/fonts/LatoLatin-Regular.woff2') format('woff2');
+				font-weight: normal;
+			}
+			body{
+				font-family:'Lato', sans-serif;
+				font-size: 20px;
+				background-color: white;
+				color:black;
+				margin-left: 2.35em;
+				margin-right:2.35em;
+				margin-bottom:3em;
+				line-height:1.3em;
+			}
+			#grey{
+				color: rgb(160, 160, 160);
+				color: rgb(120, 124, 126);
+			}
+			img {
+				pointer-events:none;
+			}
+			#ico {
+				width: 24px;
+				height: 24px;
+			}
+			li{
+				margin-bottom: 0.7em;
+			}
+			h2{
+				margin-top:1.35em;
+				margin-bottom: 0;
+			}
+			h3{
+				margin-top:2.7em;
+				margin-bottom: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<h3>How to use Better Text View</h3>
+		<p>
+			<ul>
+				<li>The <img src="assets/icons/halo.png" alt="Better Text View" id = "ico"> button in the browser address bar manages the options for the current page. If it is not visible, you need to click on "Extensions" icon and "Pin" the Better Text View plugin to the toolbar.</li>
+			</ul>
+		</p>
+<p>
+<h3>NEW CHANGES</h3>
+<ul>
+<li>In Dark mode, if both "Underline links" and "Input border" are enabled, brightness and contrast apply to more elements and images (but distort colors of some images).</li>
+<li>Lightness value shown in popup settings.</li>
+<li>If strength is an ODD number, input textbox color is changed to black/white depending on its color.</li>
+<li>In Reverse colors the brightness and contrast sliders control brightness and contrast of text and background color.</li>
+<li>Color shades of text (and backgrounds somewhat) can be made similar to original website by enabling "Reverse colors hue correction".</li>
+<li>"Skip text height changes" avoids changing font heights of text and INPUT elements like text boxes and select boxes.</li>
+<li>New option to add custom CSS rules to the site</li>
+<li>If either of "Dark mode" or "Reverse Colors" is enabled in global options, all websites colors are changed to "dark theme" colors. If the theme calculates "Lightness" wrong, then enable both "Reverse colors" and "Dark mode" to override the wrongly computed theme.</li>
+<li>"Underline black links / Sans Font" & "Input border / Serif Font" change all fonts to Sans-Serif & Serif independantly.</li>
+<li>"Reverse Colors" & "Invert Image colors" correctly displays most emojis, but speed is slow.</li>
+<li>Starting 3 letters bold and ALL CAPITAL TEXT work with NON-ENGLISH languages also.</li>
+<li><b>IMPORTANT</b>: When the settings of "Font increase %" and "Font Threshold" are VERY HIGH, to make text appear MUCH BIGGER, the browser's "Text Size" Setting SHOULD ALSO BE CHANGED TO "LARGE/VERY LARGE" or "16 px to 24 px". Otherwise on some pages OVERLAPPING/CUTTING of text MAY occur.</li>
+<li><b>DO NOT ENABLE BOTH "Dark Mode" and "Force Reverse Colors".</b> This condition is not considered and there will be problems in results.</li>
+</ul>
+<ul>
+<li><b>VERY IMPORTANT WARNING</b>: If you are COPY+PASTE-ing from a page which has been changed by this plugin, DISABLE the plugin for that webpage and THEN copy + paste. Otherwise a lot of styling changes will also get pasted which is not on the original webpage.</li>
+<li>As warned below, if you are using HTML Editors in software like Wordpress or similar, disable the plugin for that website to prevent styling changes from being entered in the HTML editor.</li>
+<li>ALSO IF YOU TAKE A PRINTOUT OF WEBPAGE changed by this extension, IT MAY NOT PRINT CORRECTLY. SO KEEP THE "Disable for this site" option ENABLED when PRINTING.</li>
+<li><b>DISABLE PLUGIN</b> = Select "Disable Better Text View for this site" option on Options menu or DISABLE "Activate on all websites" in All Settings page, whichever is preferred.</li>
+</ul>
+<h3>ABOUT EXTENSION</h3>
+<b>TL;DR</b><br>
+<ul>
+<li>Font size within threshold is enlarged inversely with font size. That means small text made bigger than large text.</li>
+<li>"Strength" slider greater than 200 makes most text all black / white on light / black background, while large negative values keeps original colors.</li>
+<li>Font Weight slider changes thin/bold-ness of ALL text, and bold and normal letters weight when "Start 3 letters bold" is enabled.</li>
+<li>ALL CAPITAL TEXT & Starting 3 letters made bold options.</li>
+<li>Change Font style of ALL Fonts of page to Sans-serif or Serif, by enabling "Underline black links / Sans Font" or  "Input border / Serif font".</li>
+<li>Dark mode changes Contrast and Brightness of "black" themed sites. Pictures are kept normal but if "Underline links" and "Input border" are enabled, the brightness / contrast effect is greater and images get distorted colors.</li>
+<li>"Force Reverse Colors" is a color inverter, making white background black, and black bg. white, while images are normal (unless "Invert Image colors" is disabled, which will also reverse image colors).</li>
+<li>In Reverse colors the text brightness and contrast can be changed by their sliders.</li>
+<li>The popup options show the "Lightness" value of current site. If less than 0.5, then it is "Dark themed", if more than 0.5, it is "Light themed". Dark themed sites can be changed by "Dark mode" while "Light themed" sites can be changed by "Reverse Colors".</li>
+<li>Enable "Skip text height change" to skip changing text heights and input elements heights.</li>
+<li>Enable "Skip text height change" to skip changing text heights and input elements heights.</li>
+<li>Enabling "Apply custom CSS for site" will allow you to enter custom CSS rules for the site</li>
+</ul>
+<h3>DETAILS</h3>
+<ul>
+<li>The text size is increased inversely depending on its size. This means small sized text is made much bigger than larger text, which is slightly increased in size. All text within size of Threshold setting is increased in size with text closer to Font Threshold size increasing less than text much lower size than Threshold, depending of Font Increae % setting.</li>
+<li>If "Activate on all websites" option is disabled only "whitelisted" sites are changed, else ALL sites get processed.</li>
+<li>Frames inside of site are also processed, but their settings are of the origin site of the frame, which MAY NOT be the site displayed in address box.</li>
+<li>Brightness Slider controls the brightness of text/background with 0 to 300% range for "Dark mode" and -300 to 300 for "Reverse colors".</li>
+<li>The colors of text are changed for maximum contrast depending on value of "Strength" slider (unless "Avoid colorful text" is selected which skips "colorful" text,  and if "Skip white text" option is enabled, which skips WHITE text). If greater than 200, text colors change for maximum contrast.</li>
+<li>By increasing "Strength" setting to above 200, the text can be made black on light background or white on black background (if dark mode is enabled) depending on brightness of background color ("Avoid colorful text" and "Skip white text" is ignored).</li>
+<li>Decreasing "Strength" setting to negative values like -120 or -250 can restore the original text colors of website instead of high contrast black / white text.</li>
+<li>If Strength is ODD value, and there are INPUT text boxes on site, the input text will be made black / white depending on color.</li>
+<li>The "Font Weight" slider can be changed to lowest 100 (very thin) upto 900 (very thick/bold) text. This is useful for adjusting sites having very thin text or very bold and thick text. When "Start 3 letters bold" is enabled, (slider value + 400) is taken as weight of bold letters and noramal text has weight of (slider value) if slider is less than 500. For slider above 400, the slider value is taken as weight of 3 letters and all other text is normal.</li>
+<li>ALL CAPITAL TEXT option makes all webpage text in capitals. It ALSO works on NON-ENGLISH languages.</li>
+<li>Starting 3 letters bold option makes all words first 3 letters <b>bold</b> and also works for NON-ENGLISH languages. If there are problems with some links or menus not working, enable "Skip links in 3 letters bold" option to avoid making links bold.</li>
+<li>The "Dark Mode" option is for black themes and, when enabled, allows increasing of Brightness (by the "Brightness" slider, range 0 to 300) and Contrast (by the "Contrast" slider, range 0 to 300) of text and background colors.</li>
+<li>A "Force Reverse Colors" option allows site to "Reverse" colors, so that a light site becomes black. It is useful for changing colors of sites to "Dark Theme" or "Dark Reader" view while preserving (most of) images' colors. In case a webpage does not have its background color reversed, enabling "Force max opacity" will force a reversal of the background color.</li>
+<li>The "Invert Image Colors" option, which appears when "Force Reverse Colors" is enabled, causes images and videos colors to be inverted, so due to double inversion images and videos become normal. If it is disabled, the images and videos are not doubly inverted in color, causing them to look "reverse color".</li>
+<li>Reverse color hue correction changes colors to match original website in reverse colors..<li>
+<li>The text brightness and contrast can be changed by the sliders when "Reverse colors" is enabled. To revert to original brightness and contrast, set Strength to 0 and Contrast to 50.</li>
+<li>The popup options box show the "Lightness" value of current site. If less than 0.5, then it is considered "Dark themed", if more than 0.5, it is "Light themed". Dark themed site colors can be changed by "Dark mode" while "Light themed" site colors can be changed through "Reverse Colors". Some few sites may detect theme wrong, then enable BOTH Dark mode and Reverse colors to force site color changes.</li>
+<li>If "Underline black links / Sans Font" or "Input border / Serif Font" is enabled, ALL Fonts styles are changed to Sans-serif or Serif. If BOTH are enabled in Dark mode, then brightness and contrast are applied to more elements and images (which can distort colors of some images).</li>
+<li>The menu and large sections of webpage are increased in size according to the Font Increase % and Input elements increased by Font Threshold. If there are problems in display of menus / header imaages or large tables overlap, enable "Skip NAV & SECTION" checkbox. The "Skip NAV & SECTION" also skips applying Reverse Color to images inside NAV and HEADER elements, which are (usually) on top menu of webpage, when "Force Reverse colors" is enabled.</li>
+<li>"Skip text height changes" will not change heights of text, and INPUT elements like text and select boxes.</li>
+<li>Enabling "Apply custom CSS for site" will allow you to enter custom CSS rules for the site</li>
+<li>Additional features are input box borders, underlining of links, forcing maximum opacity of transparent elements and saving/loading of settings whitelists/blacklists,</li>
+<li>This extension is helpful for people who require reading glasses / spectacles due to far-sight / long-sight / hypermetropia / hyperopia condition of eyes.</li>
+<li><b>VERY IMPORTANT WARNING</b>: If you are COPY+PASTE-ing from a page which has been changed by this plugin, DISABLE the plugin for that webpage and THEN copy + paste. If you are editing or submitting HTML content online using a content management system like Wordpress or having an HTML Editor, DISABLE this extension for that particular site. Otherwise, the HTML will contain unwanted styling elements generated by the extension.</li>
+<li>WHEM PRINTING A WEBPAGE modified by this extension, KEEP "Disable for this site" enabled otherwise the PRINTING WON'T BE CORRECT.</li>
+</ul>
+<h3>SUGGESTIONS OR ISSUES</h3>
+<ul>
+<li>If you have any bugs other than known "can't fix", or suggestions, post them on <a href="https://codeberg.org/sameerw/btv/" target="_blank">https://codeberg.org/sameerw/btv/</a></li>
+<br>
+<li>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</li>
+</ul>
+</p>
+		<h3>Options guide</h3>
+
+		<p>Clicking on the options button will open this window:</p>
+		<img src="assets/icons/options.png">
+		<ul>
+		<li><strong>Disable on this website:</strong> Adds the website to the blacklist.<strong>The contents of this site will not be changed.</strong><br>Default value: disabled</li>
+		<li><strong>Strength:</strong> Adjusts the application of black/white color. This value can be adjusted to preserve website's original colors or to make it higher contrast. In Dark mode or Reverse colors, this deteermines "brightness" of text / background. If it is an ODD number, INPUT text boxes color is changed to black/white for maximum contrast.<br>Default value: 0</li>
+		<li><strong>Increase font (%) / Threshold (px):</strong> Enlarges fonts that are below the threshold (in pixels).<br>Default value: 14% / 18 px.</li>
+		<li><strong>Font Weight</strong> Changes bold setting of fonts from 100 (thinnest) to 900 (boldest) 400 is normal.<br>Default value: 400</li>
+		<li><strong>Contrast %</strong> Determines the contrast percentage of text in Dark mode and Reverse Colors.<br> e.g. 50 equals normal contrast in Dark mode and Reverse Colors.<br>Default value: 50</li>
+		<li><strong>Brightness %</strong> Determines the brightness percentage of text/background in Dark mode and Reverse Colors.<br> e.g. 0 equals normal brightness in Dark mode and Reverse Colors.<br>Default value: 0</li>
+		<li><strong>Whitelist:</strong> Adds the website to the whitelist. This site will have custom settings different from preset settings.<br>Default value: disabled</li>
+		<li><strong>Dark mode:</strong> Should be enabled on "Black theme" or black background/light text websites. The Brightness and Contrast % can then be adjusted with the Contrast slider and Strenth slider which works as Brightness setting.<br>Default value: disabled</li>
+		<br>
+
+		<li><strong>Avoid colorful text:</strong>  Attempts to avoid colorful text and links, if they are considered readable.<br>Default value: enabled</li>
+		<li><strong>Underline black links / Sans Font:</strong> Adds an underline to black colored links, to distinguish them from other text. Also changes all Fonts style to Sans-Serif.<br>Default value: disabled</li>
+
+		<br>
+		<li><strong>Force Reverse Color:</strong> Reverses colors of a site, so a light background site becomes black and black background site becomes bright, Text colors are also reversed. Images are unchanged as much as possible.<br>Default value: disabled</li>
+		<li><strong>Invert Image colors:</strong> Does not apply reverse colors to images, causing images to appear in reverse colors.<br>Default value: enabled</li>
+		<li><strong>Reverse colors hue correction:</strong> Changes text colors to match those of website.<br> It is enabled when Reverse colors gets enabled. Default value: enabled</li>
+		<li><strong>Input border / Serif Font:</strong> Attempts to add a black outline around text areas. Also changes all Font Styles to Serif font.<br>Default value: disabled</li>
+		<li><strong>Force max opacity:</strong> Forces full opacity on all fonts.<strong> Also changes background color if "Force Reverse Colors" is applied.</strong><br>Default value: disabled</li>
+		<br>
+		<li><strong>Skip headings:</strong> Avoids applying on head tags H1 to H4.<br>Default value: disabled</li>
+		<li><strong>Skip NAV & SECTION:</strong> Avoids changing size of NAV and SECTION elements (usually menus and large tables) and height change of INPUT elements.<br>Also skips applying reverse colors to title menu images of a page.<br>Default value: disabled</li>
+		<li><strong>Skip text height changes:</strong> Avoids changing size text whose height is less than font size and INPUT elements like text and select boxes<br>Default value: disabled.</li>
+		<li><strong>Skip white text:</strong> Avoids applying on white text.<br>Default value: enabled</li>
+		<li><strong>ALL CAPITALS TEXT:</strong> Makes all text in CAPITALS.<br>Default value: disabled</li>
+		<li><strong>Starting 3 letters bold:</strong> Starting 3 letters of words are made bold.<br>Default value: disabled</li>
+		<li><strong>Skip links in 3 letters bold:</strong> Avoids changing links when start 3 letters bold is enabled.<br>Default value: disabled</li>
+		<li><strong>Apply custom CSS for site</strong>Lets you enter custom CSS rules for the site.<br>Default value: disabled</li>
+			<br>
+		<li><strong>All Settings</strong> Opens a tab with all the options, including the ability to activate the add-on everywhere, the global options (with in-depth tooltips), the whitelist/blacklist, and a link to this page.</li>
+		</ul>
+	</body>
+</html>

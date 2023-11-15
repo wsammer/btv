@@ -1,0 +1,405 @@
+<!--Options.html -->
+<!DOCTYPE HTML>
+<html lang ="en">
+	<head>
+	<meta charset="utf-8">
+	<link href="assets/css/main.css" rel="stylesheet">
+	<link href="assets/css/options.css" rel="stylesheet">
+	<title>Better Text View Options</title>
+	</head>
+<body>
+	<div class ="wrapper">
+
+		<div class ="checkboxes">
+
+			<h3>General</h3>
+
+			<div class="settings">
+				<span>Activate on all websites</span>
+
+				<div class="help-tip" id="defaultEnTip">
+				<p>
+					Toggles the add-on automatically on every website possible.
+					<br>When this is disabled, the app will enable only on whitelisted websites.
+				</p>
+				</div>
+
+				<label class="container">
+				<input type="checkbox" id="defaultEn" checked="true">
+				<span class="checkmark"></span>
+				</label>
+			</div>
+
+			<h3>Global options</h3>
+
+			<div class ="settings">
+				<span>For Dark mode</span>
+				<div class="help-tip">
+					<p>
+					Increases text contrast in a dark theme or dark background.
+					<br>e.g. Light grey turns whiter. Colorful text can be made more / less colorful.
+					<br>The effect can be adjusted with the Contrast and Brightness sliders.
+					</p>
+				</div>
+				<label class="container">
+					<input type="checkbox" id="advDimming">
+					<span class="checkmark"></span>
+				</label>
+			</div>
+
+			<div class ="settings">
+				<span>Contrast (%)</span>
+
+				<div class="help-tip">
+					<p>
+					Determines the contrast percentage of text in Dark mode or Reverse colors.<br>
+					46% equals normal contrast in Dark mode.<br>
+					50 is 100% contrast in Reverse Colors.
+					</p>
+				</div>
+				<span class ="sliderLabel" id = "brt-label"></span>
+				<input type = "range" min = "0" max = "350" value = "50" class="slider" id = "brt-slider">
+			</div>
+
+			<div class ="settings">
+				<span>Brightness (%)</span>
+
+				<div class="help-tip">
+					<p>
+					Determines the brightness of text and some background in Dark mode or Reverse colors.<br>
+					0% equals normal brightness.<br>
+					</p>
+				</div>
+				<span class ="sliderLabel" id = "con-label"></span>
+				<input type = "range" min = "-300" max = "300" value = "0" class="slider" id = "con-slider">
+			</div>
+
+			<div class ="settings" id ="strOption">
+			<span>Strength</span>
+			<div class="help-tip">
+				<p>
+				Adjusts the contrast of text color.
+				<br>If the text becomes white against dark backgrounds, try lowering this value. Reverse for black on bright background.<br/>Also sets the Brightness % in Dark mode, with 0 being normal brightness.<br>
+				If strength is more than 200, most colors are made black on light background or white on dark background.<br>
+				If strength is ODD number, INPUT text boxes color is changed to maximum contrast white/black.<br>
+				In Dark mode or Reverse colors, this value (within -200 to 200 for reverse colors and -300 to 300 for Dark mode) determines "brightness" of text / backgrounds.<br>
+				</p>
+			</div>
+
+			<span class ="sliderLabel" id = "strLabel"></span>
+			<input type = "range" min = "-300" max = "300" class="slider" id = "strSlider">
+			</div>
+
+
+			<div class ="settings" id ="sizeOption">
+			<span>Increase font (%)</span>
+
+			<div class="help-tip">
+				<p>
+				Increases font size. Fonts above the size threshold won't be affected.
+				<br>Preset value is at 14% 
+				<br>
+				</p>
+			</div>
+
+			<span class ="sliderLabel" id = "sizeLabel"></span>
+			<input type = "range" min = "0" max = "100" class="slider" id = "sizeSlider">
+			</div>
+
+			<div class ="settings" id ="threshOption">
+				<span>Size threshold (px)</span>
+
+				<div class="help-tip">
+					<p>
+					Determines the maximum size a font has to be (in pixels) for it to change size.
+					<br>By default, set at 18px.
+					<br>If high value, 25/30/40, if font increase % > 0, text will be HUGE.
+					</p>
+				</div>
+				<span class ="sliderLabel" id = "threshLabel"></span>
+				<input type = "range" min = "0" max = "50" value = "0" class="slider" id = "threshSlider">
+			</div>
+
+			<div class ="settings" id ="weightOption">
+			<span>Font Weight</span>
+
+			<div class="help-tip">
+				<p>
+				Changes the font weight of all text to specifed slider value (400 is normal). 100 is thinnest and 900 is boldest text.
+				</p>
+			</div>
+
+			<span class ="sliderLabel" id = "weightLabel"></span>
+			<input type = "range" min = "100" max = "900" class="slider" step ="100" id = "weightSlider">
+			</div>
+
+			<div class ="settings">
+			<span>Avoid colorful text</span>
+
+			<div class="help-tip">
+				<p>
+				Attempts to avoid colorful text and links, if they are having low contrast and brightness.
+				<br>Can be adjusted with "Strength".
+				</p>
+			</div>
+
+			<label class="container">
+				<input type="checkbox" id="skipColoreds">
+				<span class="checkmark"></span>
+			</label>
+			</div>
+
+			<div class ="settings">
+			<span>Skip headings</span>
+
+			<div class="help-tip">
+				<p>
+				Skips applying setting to HTML headings. (&lth1&gt, &lth2&gt, &lth3&gt)
+				</p>
+			</div>
+
+			<label class="container">
+				<input type="checkbox" id="skipHeadings">
+				<span class="checkmark"></span>
+			</label>
+			</div>
+			<div class ="settings">
+				<span>Skip NAV & SECTION</span>
+
+				<div class="help-tip">
+				<p>
+					Skips widening of SECTION and increasing height of NAV elements.<br>
+					NAV elements are usually in menus and SECTION in a big part of webpage<br>
+					If "Force Reverse Colors" is enabled, images within NAV and HEADER parts of page are skipped.<br>
+					( This only applies if "Invert Image colors" is enabled ).<br>
+				</p>
+				</div>
+
+				<label class="container">
+				<input type="checkbox" id="skipNavSection">
+				<span class="checkmark"></span>
+				</label>
+			</div>
+			<div class ="settings">
+				<span>Skip text height changes</span>
+
+				<div class="help-tip">
+				<p>
+					Skips increasing height of text whose height is less than font size, and unset line height of changed text.<br>
+					Enable this if there is height between text lines is increased.
+				</p>
+				</div>
+
+				<label class="container">
+				<input type="checkbox" id="skipHeights">
+				<span class="checkmark"></span>
+				</label>
+			</div>
+			<div class ="settings">
+				<span>Skip white text</span>
+
+				<div class="help-tip">
+				<p>
+					Skips applying settings on white text.<br>
+					White text is usually behind images, where determining the background color is not always possible.<br>
+				</p>
+				</div>
+
+				<label class="container">
+				<input type="checkbox" id="skipWhites">
+				<span class="checkmark"></span>
+				</label>
+			</div>
+			<div class ="settings">
+				<span>ALL CAPITAL TEXT</span>
+
+				<div class="help-tip">
+				<p>
+					Makes all text in CAPITALS.<br>
+				</p>
+				</div>
+
+				<label class="container">
+				<input type="checkbox" id="makeCaps">
+				<span class="checkmark"></span>
+				</label>
+			</div>
+			<div class ="settings">
+				<span>Starting 3 letters bold</span>
+
+				<div class="help-tip">
+				<p>
+					Makes start 3 letters bold of all words on page.
+				</p>
+				</div>
+
+				<label class="container">
+				<input type="checkbox" id="start3">
+				<span class="checkmark"></span>
+				</label>
+			</div>
+			<div class ="settings">
+				<span>Skip links in 3 letters bold</span>
+
+				<div class="help-tip">
+				<p>
+					Avoid changing webpage links when start 3 letters bold is enabled.
+				</p>
+				</div>
+
+				<label class="container">
+				<input type="checkbox" id="skipLinks">
+				<span class="checkmark"></span>
+				</label>
+			</div>
+			<div class ="settings">
+				<span>Underline black links / Change Font</span>
+
+				<div class="help-tip">
+				<p>
+					Adds an underline to links that are black, to distinguish them from other black text.<br>
+					Also changes ALL fonts to Sans-serif style, or to Serif style if Input Border is enabled.<br>
+					If Input Border is also enabled in Dark mode, the brightness / contrast settings apply to more elements and images (but colors of some images get distorted).<br>
+				</p>
+				</div>
+
+				<label class="container">
+				<input type="checkbox" id="underlineLinks">
+				<span class="checkmark"></span>
+				</label>
+			</div>
+
+			<div class ="settings">
+			<span>Force Reverse Color</span>
+
+			<div class="help-tip" id="plhdlrTip">
+				<p>
+				Inverts the colors of a page, causing light webpages to become dark and dark pages to become light.<br>Can be used for making light background sites Dark background.
+				</p>
+			</div>
+
+			<label class="container">
+				<input type="checkbox" id="forcePlhdr">
+				<span class="checkmark"></span>
+			</label>
+			</div>
+
+			<div class ="settings">
+			<span>Invert Image Color</span>
+
+			<div class="help-tip" id="IInvTip">
+				<p>
+				Inverts the colors of images, which when Reverse Colors is set, makes images appear normal.
+				</p>
+			</div>
+
+			<label class="container">
+				<input type="checkbox" id="forceIInv">
+				<span class="checkmark"></span>
+			</label>
+			</div>
+
+			<div class ="settings">
+			<span>Reverse colors hue correction</span>
+
+			<div class="help-tip">
+				<p>
+				Changes colors of text and some backgrounds to match original website in reverse colors.<br>
+				</p>
+			</div>
+
+			<label class="container">
+				<input type="checkbox" id="normalInc">
+				<span class="checkmark"></span>
+			</label>
+			</div>
+
+			<div class ="settings">
+			<span>Force max opacity</span>
+
+			<div class="help-tip">
+				<p>
+				Some websites use dark fonts that still look grey because of low opacity. This option forces full opacity on all text.<br><br>Disable this on websites that use opacity to hide some elements (e.g. YouTube).<br>Also forces background color of page to reverse color when "Force Reverse Colors" is enabled and the background color is not "reversed".
+				</p>
+			</div>
+
+			<label class="container">
+				<input type="checkbox" id="forceOpacity">
+				<span class="checkmark"></span>
+			</label>
+			</div>
+
+			<div class ="settings">
+			<span>Input border</span>
+
+			<div class="help-tip">
+				<p>
+				Attempts to add a black outline around text areas.<br>
+				Also changes All Fonts Style to Serif if Underline links is enabled.<br>
+				If Input Border is also enabled in Dark mode, the brightness / contrast settings apply to more elements and images (but colors of some images get distorted)
+				</p>
+			</div>
+
+			<label class="container">
+				<input type="checkbox" id="input-border">
+				<span class="checkmark"></span>
+			</label>
+			</div>
+
+		</div>
+
+		<div>
+			<h3>Whitelist</h3>
+			<textarea id="urltext" placeholder="Enter URL (eg. 'wikihow.com')" cols=80 rows=1></textarea>
+			<button id="add">Add</button>
+			<button id="reset">Clear list</button>
+		</div>
+
+		<div class="message" id="msg"></div>
+
+		<div class="scrolltable">
+			<table id="whitelist">
+			<thead>
+				<tr id="header">
+				<th>URL</th>
+				<th>Strength</th>
+				</tr>
+			</thead>
+			<tbody id="WLtbody"></tbody>
+			</table>
+		</div>
+		<div class ="settings">
+		<br><br><button id="readw" >Import Whitelist Settings</button>  <input type="file" id="fileselectorw"><br><br>
+		<button id="writew" >Export Whitelist Settings</button>
+		</div>
+
+		<div>
+			<h3>Blacklist</h3>
+			<textarea id="BLurltext" placeholder="Enter URL (eg. 'meteoearth.com')" cols=80 rows=1></textarea>
+			<button id="BLadd">Add</button>
+			<button id="BLreset">Clear list</button>
+		</div>
+
+		<div class="message" id="BLmsg"></div>
+		<div class="scrolltable">
+			<table class="table" id="blacklist">
+			<thead>
+				<tr id="BLheader">
+					<th>URL</th>
+				</tr>
+			</thead>
+			<tbody id="BLtbody">
+			</tbody>
+			</table>
+		</div>
+		<div class ="settings">
+		<br><br><button id="readb">Import Blacklist Settings</button>  <input type="file" id="fileselectorb"><br><br>
+		<button id="writeb">Export Blacklist Settings</button>
+		</div>
+
+		<a href="Welcome.html" target="_blank"><img src="assets/icons/halo.png" style="width:64px;position:relative;margin-left:0px;margin-bottom:0px;">Help Guide</a>
+	</div> <!--wrapper-->
+
+	<script src="src/options.js"></script>
+</body>
+</html>
