@@ -43,8 +43,8 @@ body
 {
     width: 380px;
     border-radius: 5px;
-    height: 1em;
-    padding-bottom: 2px;
+    height: 1.1em;
+    padding-bottom: 14px;
 }
 
 .slider:focus {
@@ -53,7 +53,7 @@ body
 .slider::-moz-range-thumb 
 {
     width: 0.5em;
-    height: 0.9em;
+    height: 1.1em;
     border-radius: 8px;
     border: 2px solid black;
 }
@@ -62,7 +62,7 @@ body
 {
     width: 100%;
     border-radius: 1em;
-    padding-top: 5px;
+    padding-top: 8px;
 }
 #urlContainer 
 {
