@@ -710,6 +710,8 @@ function start(cfg, url)
 {
 	css_node.nodeValue = getCSS(cfg);
 
+	style_node.appendChild(css_node);
+
 	let nodes = [];
 
 	if (document.body)
@@ -952,6 +954,10 @@ function start(cfg, url)
 		}
 
 		let node = doc.body;
+		if (typeof node == 'undefined' || node == null)
+			node = document.getElementsByTagName('BODY')[0];
+
+		if (!(typeof node == 'undefined' || node == null)) {
 		let pnode = doc.getElementsByTagName('HTML')[0];
 		node_count = map.get(node);
 		let tag = node.nodeName.toUpperCase();
@@ -1069,6 +1075,8 @@ function start(cfg, url)
 			b_html = true;
 		}
 
+		}
+
 		if (cfg.advDimming) {
 			for (let img of images) {
 				let pn = img;
@@ -1139,7 +1147,7 @@ function start(cfg, url)
 
 			node_count = map.get(node);
 
-			if (cfg.input_border) {
+			if (cfg.input_border && !(cfg.advDimming && cfg.underlineLinks)) {
 				if(/(INPUT|TEXTAREA|SELECT)/i.test(tag) && !/submit/i.test(node.type))
 					node.setAttribute('b__', '');
 			}
@@ -1297,18 +1305,6 @@ function start(cfg, url)
 				let sfz = style.fontSize;
 				let nfz = parseInt(sfz);
 				if (nfz <= cfg.threshold) {
-					node.setAttribute('s__', nfz);
-					if (!f2_sizes.includes(sfz)) {
-						node.style.setProperty('font-size', f2_sizes[nfz],"important");
-						if (!cfg.skipHeights)
-							node.style.setProperty('line-height', h_sizes[nfz],"important");
-						if (cfg.advDimming) {
-							if (!nn_reg.test(nsty) || (cfg.input_border && cfg.underlineLinks))
-								node.style.setProperty('filter',str_style,'important');
-						}
-						if (cfg.forceOpacity)
-							node.style.setProperty('opacity',str_style2,'important');
-					}
 					if (/font-size[^;]*important/i.test(nsty)) {
 						let rsty = nsty.replace(/font-size[^\;]*important/ig,'');
 						node.setAttribute('style',rsty);
@@ -1318,6 +1314,23 @@ function start(cfg, url)
 					if (/line-height[^;]*important/i.test(nsty)) {
 						let rsty = nsty.replace(/line-height[^\;]*important/ig,'');
 						node.setAttribute('style',rsty);
+						nsty = node.getAttribute('style');
+						if (nsty == null) nsty = '';
+					}
+					node.setAttribute('s__', nfz);
+					if (style.fontSize == sfz) {
+						node.style.setProperty('font-size',f2_sizes[nfz],'important');
+					if (!cfg.skipHeights)
+						node.style.setProperty('line-height', h_sizes[nfz],"important");
+					if (cfg.advDimming) {
+						if (!nn_reg.test(nsty) || (cfg.input_border && cfg.underlineLinks))
+							node.style.setProperty('filter',str_style,'important');
+					}
+					if (cfg.forceOpacity)
+						node.style.setProperty('opacity',str_style2,'important');
+					} else if (nn_reg.test(nsty) && cfg.advDimming && cfg.input_border && cfg.underlineLinks) {
+						nsty += 'filter:'+str_style+'!important;';
+						node.setAttribute('style',nsty);
 						nsty = node.getAttribute('style');
 						if (nsty == null) nsty = '';
 					}
@@ -1331,22 +1344,41 @@ function start(cfg, url)
 				}
 			} else if (b_fnt[node_count] != true && cfg.threshold > 0 && (!b_iimg[node_count] || b_ctext[node_count] > 0)) {
 				b_fnt[node_count] = true;
+				let nsty = node.getAttribute('style');
+				if (nsty == null) nsty = '';
 				let sfz = style.fontSize;
 				let nfz = parseInt(sfz);
 				if (nfz <= cfg.threshold) {
+					if (/font-size[^;]*important/i.test(nsty)) {
+						let rsty = nsty.replace(/font-size[^\;]*important/ig,'');
+						node.setAttribute('style',rsty);
+						nsty = node.getAttribute('style');
+						if (nsty == null) nsty = '';
+					}
+					if (/line-height[^;]*important/i.test(nsty)) {
+						let rsty = nsty.replace(/line-height[^\;]*important/ig,'');
+						node.setAttribute('style',rsty);
+						nsty = node.getAttribute('style');
+						if (nsty == null) nsty = '';
+					}
 					node.setAttribute('s__', nfz);
-					if (!f2_sizes.includes(sfz)) {
-						node.style.setProperty('font-size', f2_sizes[nfz],"important");
-						if (!cfg.skipHeights)
-							node.style.setProperty('line-height', h_sizes[nfz],"important");
-						if (cfg.advDimming) {
-							let nsty = node.getAttribute('style');
-							if (nsty == null) nsty = '';
-							if (!nn_reg.test(nsty) || (cfg.input_border && cfg.underlineLinks))
-								node.style.setProperty('filter',str_style,'important');
+					if (style.fontSize == sfz) {
+						node.style.setProperty('font-size',f2_sizes[nfz],'important');
+					if (!cfg.skipHeights)
+						node.style.setProperty('line-height', h_sizes[nfz],"important");
+					if (cfg.advDimming) {
+						if (!nn_reg.test(nsty) || (cfg.input_border && cfg.underlineLinks))
+							node.style.setProperty('filter',str_style,'important');
+					}
+					if (cfg.forceOpacity)
+						node.style.setProperty('opacity',str_style2,'important');
+					} else if (cfg.advDimming) {
+						nsty = node.getAttribute('style');
+						if (nsty == null) nsty = '';
+						if (nn_reg.test(nsty) && cfg.input_border && cfg.underlineLinks) {
+							nsty += 'filter:'+str_style+'!important;';
+							node.setAttribute('style',nsty);
 						}
-						if (cfg.forceOpacity)
-							node.style.setProperty('opacity',str_style2,'important');
 					}
 				}
 			}
@@ -1403,14 +1435,14 @@ function start(cfg, url)
 					if (Math.abs(txt_brt-bg_brt) < 140)
 					if (!cfg.forcePlhdr)
 					if (txt_brt > 176)
-						txtcolor = '#fff';
+						txtcolor = 'white';
 					else
-						txtcolor = '#000';
+						txtcolor = 'black';
 					else if (cfg.forcePlhdr)
 					if (txt_brt > 176)
-						txtcolor = '#000';
+						txtcolor = 'black';
 					else
-						txtcolor = '#fff';
+						txtcolor = 'white';
 					let txtstyle = ';color:'+txtcolor+'!important;';
 					nsty = node.getAttribute('style');
 					if (nsty == null) nsty = '';
@@ -1478,7 +1510,7 @@ function start(cfg, url)
 					bstl = ';color:black!important;';
 				} else if (bg_brt == 256 && fg_brt > 176) {
 					bstl = ';color:white!important;';
-				} else if (bg_brt == 256) {
+				} else if (bg_brt == 256 && fg_brt <= 176) {
 					bstl = ';color:black!important;';
 				}
 				if (bstl.length > 0) {
@@ -1499,8 +1531,6 @@ function start(cfg, url)
 					bstl = ';color:white!important;';
 				} else if (bg_brt == 256 && fg_brt <= 176 && !nodes_behind_inv.includes(node)) {
 					bstl = ';color:black!important;';
-				} else if (bg_brt == 256) {
-					bstl = ';color:inherit;';
 				}
 				if (bstl.length > 0) {
 				let nstyl = node.getAttribute('style');
@@ -1516,7 +1546,7 @@ function start(cfg, url)
 					bstl = ';color:white!important;';
 				} else if (bg_brt == 256 && fg_brt > 176) {
 					bstl = ';color:white!important;';
-				} else {
+				} else if (bg_brt == 256 && fg_brt <= 176) {
 					bstl = ';color:black!important;';
 				}
 				if (bstl.length > 0) {
@@ -1527,7 +1557,7 @@ function start(cfg, url)
 				}
 			}
 
-			if (cfg.underlineLinks)
+			if (cfg.underlineLinks && !(cfg.advDimming && cfg.input_border))
 			if (is_link) {
 				node.setAttribute('u__', '');
 				let nstyl = node.getAttribute('style');
@@ -1598,8 +1628,6 @@ function start(cfg, url)
 		doc_obs = new MutationObserver(observer);
 		doc_obs.observe(document.body, { childList: true, subtree: true });
 	}
-
-	style_node.appendChild(css_node);
 }
 
 var timerid = setTimeout(isloaded, 1000);
