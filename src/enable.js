@@ -359,8 +359,8 @@ function isImage(ch, nc, imar) {
 	if (b_imgforce[nc] != true) b_imgforce[nc] = false;
 	if (/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) return false;
 	var wi,he;
-	let bgim = gcs.backgroundImage;
-	let chsrc = ch.src;
+	let bgim = gcs.backgroundImage ? gcs.backgroundImage : '';
+	let chsrc = ch.src ? ch.src : '';
 	if (/IMG/i.test(ch.nodeName)) {
 		wi = parseInt(ch.getBoundingClientRect().width);
 		he = parseInt(ch.getBoundingClientRect().height);
@@ -416,13 +416,11 @@ function isImage(ch, nc, imar) {
 
 function containsImage(node, imgs)
 {
-	let childn = Array.from(node.getElementsByTagName('*'));
 	var img;
 	for (img of imgs) {
-		if (childn.includes(img))
+		if (node.contains(img))
 			return true;
 	}
-	childn.length = 0;
 	return false;
 }
 
@@ -692,16 +690,20 @@ async function init()
 		if (style_node.hasChildNodes()) {
 			style_node.removeChild(cnode);
 		}
+		cnode.remove();
 		return;
 	}
 
 	let wl  = cfg.whitelist || [];
 	idx = wl.findIndex(x => x.url === url);
 
-	if (idx > -1)
+	if (idx > -1) {
 		cfg = wl[idx];
-	else if (!cfg.enableEverywhere)
+	} else if (!cfg.enableEverywhere) {
+		let cnode = document.getElementById("_btv_");
+		cnode.remove();
 		return;
+	}
 
 	start(cfg, url);
 }
@@ -759,7 +761,6 @@ function start(cfg, url)
 
 	let b_ctext = [];
 	let b_chimg = [];
-	let b_cimg = [];
 	let b_iimg = [];
 	let b_fimg = [];
 	let b_fnt = [];
@@ -833,7 +834,6 @@ function start(cfg, url)
 	{
 		b_body = false;
 		b_ctext = [];
-		b_cimg = [];
 		b_chimg = [];
 		b_iimg = [];
 		b_fimg = [];
@@ -872,6 +872,7 @@ function start(cfg, url)
 			b_ctext[nc] = containsText(n, mp);
 			b_iimg[nc] = isImage(n, nc, img_area);
 			let nsty = n.getAttribute('style');
+			if (nsty == null) nsty = '';
 			if (/(font-size|line-height)[^;]*important/i.test(nsty))
 				b_fnt[nc] = false;
 			if (b_iimg[nc]) images.push(n);
@@ -882,8 +883,8 @@ function start(cfg, url)
 			}
 			for (n of images) {
 			nc = map.get(n);
-			b_cimg[nc] = containsImage(n, images);
-			b_chimg[map.get(n.parentNode)] = true;
+			if (n.parentNode && b_iimg[map.get(n.parentNode)])
+				b_chimg[map.get(n.parentNode)] = true;
 			let img_children = Array.from(n.getElementsByTagName("*"));
 			img_children.forEach( function(item) { b_fimg[map.get(item)] = n; } );
 			if (img_area[nc] > 35000 && img_area[nc] < 5000000)
@@ -1012,28 +1013,12 @@ function start(cfg, url)
 			if (nodes_behind_inv.includes(img)) {
 				img.style.setProperty('filter','unset', 'important');
 				continue;
-				let nod = b_fimg[map.get(img)];
-				if (typeof nod != 'undefined' && nod != null && /filter\W*invert/i.test(nod.getAttribute('style'))) {
-				img.style.setProperty('filter','unset', 'important');
-				continue;
-				} 
-				let pnod = b_fimg[map.get(nod)];
-				if (typeof pnod != 'undefined' && pnod != null && /filter\W*invert/i.test(pnod.getAttribute('style'))) {
-				img.style.setProperty('filter','unset', 'important');
-				continue;
-				} else if (typeof pnod != 'undefined' && pnod != null) {
-				let ppnod = b_fimg[map.get(pnod)];
-				if (typeof ppnod != 'undefined' && ppnod != null && /filter\W*invert/i.test(ppnod.getAttribute('style'))) {
-				img.style.setProperty('filter','unset', 'important');
-				continue;
-				}
-				}
 			}
 			let isty = img.getAttribute('style');
 			var pisty = '';
 			if (img.parentNode) pisty = img.parentNode.getAttribute('style');
-			let bgim = cst.backgroundImage;
-			let imsrc = img.src;
+			let bgim = cst.backgroundImage ? cst.backgroundImage : '';
+			let imsrc = img.src ? img.src : '';
 			if (!b_imgforce[n_c] || b_ctext[n_c] > 95)
 			if (!/(IMG|SVG|VIDEO|EMBED|CANVAS)/i.test(img.nodeName) && !/(slide|banner|background.*page|page.*background)/ig.test(img.className) && ((typeof imsrc != 'undefined' && imsrc != null && imsrc != '' && !/(\/|http|url)/ig.test(imsrc) && /gradient/i.test(bgim)) || (typeof bgim != 'undefined' && bgim != '' && bgim != 'none' && !/(\/|http|url|gradient)/ig.test(bgim)) || (b_ctext[n_c] > 95 && !b_imgforce[n_c]) && !/gradient/i.test(bgim)) || (((b_ctext[n_c] <= 31 && b_ctext[n_c] > 1 && !/gradient/i.test(bgim) && !/\b(A|INPUT)/i.test(img.nodeName) && !/button/i.test(img.className)) || /nav/i.test(img.className)) && !b_imgforce[n_c] && img_area[n_c] < 35000 && img_area[n_c] >= 0)) {
 				img.style.setProperty('filter','unset', 'important');
@@ -1063,7 +1048,7 @@ function start(cfg, url)
 				img.setAttribute('style', isty + ';filter:unset!important;');
 				continue;
 			}
-			if (!nn_reg.test(isty) && !nn_reg.test(pisty) && !p_s && (!b_cimg[n_c] || b_imgforce[n_c] || ((!b_chimg[n_c] && hdr != null && hdr.contains(img)) || /image/i.test(img.type) || bgim.length > 0 || imsrc.length > 0 || b_chimg[n_c])))
+			if (!nn_reg.test(isty) && !nn_reg.test(pisty) && !p_s && (!containsImage(img, images) || b_imgforce[n_c] || ((!b_chimg[n_c] && hdr != null && hdr.contains(img)) || /image/i.test(img.type) || bgim.length > 0 || imsrc.length > 0 || b_chimg[n_c])))
 				if (!(/\b(UL|OL)/i.test(img.nodeName) && img.childNodes.length < 4)) {
 					img.setAttribute('style', isty + ';filter:invert(1)!important;');
 					let chldn = Array.from(img.getElementsByTagName('*'));
