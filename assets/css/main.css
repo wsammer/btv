@@ -50,4 +50,11 @@ table {
 tr:hover { 
 	color: black!important;
 }
+#url {
+	color: cyan!important;
+}
+#LightDark {
+	color: cyan!important;
+}
+
 }
