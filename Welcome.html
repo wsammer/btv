@@ -59,6 +59,7 @@
 <p>
 <h3>NEW CHANGES</h3>
 <ul>
+<li>Proportionate text increase re-introduced for 'normal' / proportional text size increase.</li>
 <li>In Dark mode, if both "Underline links" and "Input border" are enabled, brightness and contrast apply to more elements and images (but distort colors of some images).</li>
 <li>Lightness value shown in popup settings.</li>
 <li>If strength is an ODD number, input textbox color is changed to black/white depending on its color.</li>
@@ -83,6 +84,7 @@
 <b>TL;DR</b><br>
 <ul>
 <li>Font size within threshold is enlarged inversely with font size. That means small text made bigger than large text.</li>
+<li>If 'normal' zoom-style text size increase is wanted, enable 'Proportional text size'.</li>
 <li>"Strength" slider greater than 200 makes most text all black / white on light / black background, while large negative values keeps original colors.</li>
 <li>Font Weight slider changes thin/bold-ness of ALL text, and bold and normal letters weight when "Start 3 letters bold" is enabled.</li>
 <li>ALL CAPITAL TEXT & Starting 3 letters made bold options.</li>
@@ -98,6 +100,7 @@
 <h3>DETAILS</h3>
 <ul>
 <li>The text size is increased inversely depending on its size. This means small sized text is made much bigger than larger text, which is slightly increased in size. All text within size of Threshold setting is increased in size with text closer to Font Threshold size increasing less than text much lower size than Threshold, depending of Font Increae % setting.</li>
+<li>'Proportional text size' enabled increases font size in proportion to its size and Font Increase % and below Threshold. It does NOT apply inverse size increase of font which is default.</li>
 <li>If "Activate on all websites" option is disabled only "whitelisted" sites are changed, else ALL sites get processed.</li>
 <li>Frames inside of site are also processed, but their settings are of the origin site of the frame, which MAY NOT be the site displayed in address box.</li>
 <li>Brightness Slider controls the brightness of text/background with 0 to 300% range for "Dark mode" and -300 to 300 for "Reverse colors".</li>
@@ -158,7 +161,9 @@
 		<li><strong>Starting 3 letters bold:</strong> Starting 3 letters of words are made bold.<br>Default value: disabled</li>
 		<li><strong>Skip links in 3 letters bold:</strong> Avoids changing links when start 3 letters bold is enabled.<br>Default value: disabled</li>
 		<li><strong>Apply custom CSS for site</strong>Lets you enter custom CSS rules for the site.<br>Default value: disabled</li>
+		<li><strong>Proportional text size</strong>Increase font size 'normal' proportionally, like zooming.<br>Default value: disabled</li>
 		<li><strong>All Settings</strong> Opens a tab with all the options, including the ability to activate the add-on everywhere, the global options (with in-depth tooltips), the whitelist/blacklist, and a link to this page.</li>
+		<li><strong>The calculated website background colors are used to determine if site has "Light" theme (lightness greater than 0.5) or "Dark theme" (lightness less than 0.5).<br>On some sites this calculation may result in wrong theme choice (light website calculated as "dark" theme or reverse).<br>If this happens, override this value by setting both "Dark mode" and "Reverse Colors" to enabled.( This only applies if you want to keep a "Dark" mode or "Reverse colors" on the site)</strong></li>
 		</ul>
 	</body>
 </html>
