@@ -32,6 +32,7 @@ let makeCaps        = doc.querySelector('#makeCaps');
 let start3          = doc.querySelector('#start3');
 let skipLinks       = doc.querySelector('#skipLinks');
 let normalInc       = doc.querySelector('#normalInc');
+let normalInc2      = doc.querySelector('#normalInc2');
 let skipNavSection  = doc.querySelector('#skipNavSection');
 let skipHeights     = doc.querySelector('#skipHeights');
 let underlineLinks  = doc.querySelector('#underlineLinks');
@@ -170,6 +171,7 @@ function init()
 		"advDimming",
 		"forceOpacity",
 		"normalInc",
+		"normalInc2",
 		"forcePlhdr",
 		"forceIInv",
 		"skipWhites",
@@ -195,6 +197,7 @@ function init()
 		doc.getElementById("start3").checked         = i.start3;
 		doc.getElementById("skipLinks").checked      = i.skipLinks;
 		doc.getElementById("normalInc").checked      = i.normalInc;
+		doc.getElementById("normalInc2").checked     = i.normalInc2;
 		doc.getElementById("skipNavSection").checked = i.skipNavSection;
 		doc.getElementById("skipHeights").checked    = i.skipHeights;
 		doc.getElementById("underlineLinks").checked = i.underlineLinks;
@@ -284,6 +287,10 @@ function addListeners()
 
 	normalInc.onclick = () => {
 		storage.set({'normalInc': isChecked("normalInc")});
+	};
+
+	normalInc2.onclick = () => {
+		storage.set({'normalInc2': isChecked("normalInc2")});
 	};
 
 	skipNavSection.onclick = () => {

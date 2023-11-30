@@ -357,7 +357,6 @@ function isImage(ch, nc, imar) {
 	if (!(ch instanceof Element)) return false;
 	let gcs = getComputedStyle(ch);
 	if (b_imgforce[nc] != true) b_imgforce[nc] = false;
-	if (/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) return false;
 	var wi,he;
 	let bgim = gcs.backgroundImage ? gcs.backgroundImage : '';
 	let chsrc = ch.src ? ch.src : '';
@@ -366,23 +365,27 @@ function isImage(ch, nc, imar) {
 		he = parseInt(ch.getBoundingClientRect().height);
 		imar[nc] = wi*he;
 		if (wi > 499 && he > 139) b_imgforce[nc] = true;
+		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 35000) return false;
 		return true;
 	} else if (/SVG/i.test(ch.nodeName)) {
 		wi = parseInt(ch.getBoundingClientRect().width);
 		he = parseInt(ch.getBoundingClientRect().height);
 		imar[nc] = wi*he;
 		if (wi > 499 && he > 139) b_imgforce[nc] = true;
+		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 35000) return false;
 		return true;
 	} else if (/(VIDEO|EMBED|CANVAS)/i.test(ch.nodeName)) {
 		wi = parseInt(ch.getBoundingClientRect().width);
 		he = parseInt(ch.getBoundingClientRect().height);
 		imar[nc] = wi*he;
+		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 35000) return false;
 		return true;
 	} else if (typeof chsrc != 'undefined' && chsrc != null && chsrc != '' && ch.display != 'none' && ch.type != null && typeof ch.type != 'undefined' && /image/i.test(ch.type) && !/(php|htm[l]?|asp[x]?)[\"\'\)]/i.test(chsrc) && !/(php|htm[l]?|asp[x]?)[\"\'\)]/i.test(bgim)  && (/(\/|http|url)/ig.test(chsrc) || /gradient/i.test(bgim))) {
 		wi = parseInt(ch.getBoundingClientRect().width);
 		he = parseInt(ch.getBoundingClientRect().height);
 		imar[nc] = parseInt(ch.width) * parseInt(ch.height);
 		if (parseInt(ch.width) > 499 && parseInt(ch.height) > 139) b_imgforce[nc] = true;
+		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 35000) return false;
 		return true;
 	} else if ( gcs != null && bgim != '' && bgim != 'none' && gcs.getPropertyValue('display') != 'none' && !/(php|htm[l]?|asp[x]?)[\"\'\)]/i.test(bgim) && /(\/|http|url|gradient)/ig.test(bgim)) {
 		wi = parseInt(ch.getBoundingClientRect().width);
@@ -394,6 +397,7 @@ function isImage(ch, nc, imar) {
 		im.onload = function () {
 		};
 		imar[nc] = wi*he;
+		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 35000) return false;
 		if ((parseInt(im.width) > 1 && parseInt(im.height) > 1) || (parseInt(im.width) == 0 && parseInt(im.height) == 0)) {
 			if (wi > 499 && he > 139) b_imgforce[nc] = true;
 				return true;
@@ -418,7 +422,7 @@ function containsImage(node, imgs)
 {
 	var img;
 	for (img of imgs) {
-		if (node.contains(img))
+		if (node.contains(img) && node != img)
 			return true;
 	}
 	return false;
@@ -588,10 +592,16 @@ function getCSS(cfg) {
 	if (cfg.size > 0 && cfg.threshold > 0) {
 		while (c < cfg.threshold) {
 			++c;
-			cc = ((cfg.size*0.2) + parseInt(cfg.threshold*1.075) - (2*c/11)).toFixed(1);
-			pcent = Math.abs((2.5*cfg.size) - (c*20/cfg.threshold)).toFixed(1);
-			if (cc < c) { cc = c; }
-			if (cc > cfg.threshold) cc = cfg.threshold;
+			if (!cfg.normalInc2)
+				cc = ((cfg.size*0.2) + parseInt(cfg.threshold*1.075) - (2*c/11)).toFixed(1);
+			else
+				cc = (0.20*((cfg.size*0.2) + parseInt(cfg.threshold*1.075))).toFixed(1);
+			if (!cfg.normalInc2)
+				pcent = Math.abs((2.5*cfg.size) - (c*20/cfg.threshold)).toFixed(1);
+			else
+				pcent = Math.abs(0.20*((2.5*cfg.size))).toFixed(1);
+			if (parseFloat(cc) < c) { cc = c; }
+			if (parseFloat(cc) > cfg.threshold) cc = cfg.threshold;
 			let cc1 = parseInt(cc);
 			height_inc = ((cc1+(parseInt(cfg.size)+parseInt(cfg.threshold))*0.08)/cc1).toFixed(3);
 			let cc2 = (cc1*(1+parseFloat(pcent)/100)).toFixed(2);
@@ -661,6 +671,7 @@ async function init()
 		'contrast',
 		'forceOpacity',
 		'normalInc',
+		'normalInc2',
 		'forcePlhdr',
 		'forceIInv',
 		'skipWhites',

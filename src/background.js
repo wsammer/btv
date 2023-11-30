@@ -23,6 +23,7 @@ browser.runtime.onInstalled.addListener(details => {
 			'skipWhites': true,
 			'forceIInv': true,
 			'normalInc': true,
+			'normalInc2': false,
 			'enableEverywhere': true
 		};
 
