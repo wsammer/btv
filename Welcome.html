@@ -59,7 +59,7 @@
 <p>
 <h3>NEW CHANGES</h3>
 <ul>
-<li>Proportionate text increase re-introduced for 'normal' / proportional text size increase.</li>
+<li>Introduce "colorblind adjusted colors" which changes colors of text to suit colorblind condition.</li>
 <li>In Dark mode, if both "Underline links" and "Input border" are enabled, brightness and contrast apply to more elements and images (but distort colors of some images).</li>
 <li>Lightness value shown in popup settings.</li>
 <li>If strength is an ODD number, input textbox color is changed to black/white depending on its color.</li>
@@ -84,7 +84,6 @@
 <b>TL;DR</b><br>
 <ul>
 <li>Font size within threshold is enlarged inversely with font size. That means small text made bigger than large text.</li>
-<li>If 'normal' zoom-style text size increase is wanted, enable 'Proportional text size'.</li>
 <li>"Strength" slider greater than 200 makes most text all black / white on light / black background, while large negative values keeps original colors.</li>
 <li>Font Weight slider changes thin/bold-ness of ALL text, and bold and normal letters weight when "Start 3 letters bold" is enabled.</li>
 <li>ALL CAPITAL TEXT & Starting 3 letters made bold options.</li>
@@ -93,14 +92,13 @@
 <li>"Force Reverse Colors" is a color inverter, making white background black, and black bg. white, while images are normal (unless "Invert Image colors" is disabled, which will also reverse image colors).</li>
 <li>In Reverse colors the text brightness and contrast can be changed by their sliders.</li>
 <li>The popup options show the "Lightness" value of current site. If less than 0.5, then it is "Dark themed", if more than 0.5, it is "Light themed". Dark themed sites can be changed by "Dark mode" while "Light themed" sites can be changed by "Reverse Colors".</li>
-<li>Enable "Skip text height change" to skip changing text heights and input elements heights.</li>
+<li>Enable "Skip NAV & Section" if some column of text is overlapping another column or top level menus have display problem.</li>
 <li>Enable "Skip text height change" to skip changing text heights and input elements heights.</li>
 <li>Enabling "Apply custom CSS for site" will allow you to enter custom CSS rules for the site</li>
 </ul>
 <h3>DETAILS</h3>
 <ul>
 <li>The text size is increased inversely depending on its size. This means small sized text is made much bigger than larger text, which is slightly increased in size. All text within size of Threshold setting is increased in size with text closer to Font Threshold size increasing less than text much lower size than Threshold, depending of Font Increae % setting.</li>
-<li>'Proportional text size' enabled increases font size in proportion to its size and Font Increase % and below Threshold. It does NOT apply inverse size increase of font which is default.</li>
 <li>If "Activate on all websites" option is disabled only "whitelisted" sites are changed, else ALL sites get processed.</li>
 <li>Frames inside of site are also processed, but their settings are of the origin site of the frame, which MAY NOT be the site displayed in address box.</li>
 <li>Brightness Slider controls the brightness of text/background with 0 to 300% range for "Dark mode" and -300 to 300 for "Reverse colors".</li>
@@ -120,6 +118,7 @@
 <li>If "Underline black links / Sans Font" or "Input border / Serif Font" is enabled, ALL Fonts styles are changed to Sans-serif or Serif. If BOTH are enabled in Dark mode, then brightness and contrast are applied to more elements and images (which can distort colors of some images).</li>
 <li>The menu and large sections of webpage are increased in size according to the Font Increase % and Input elements increased by Font Threshold. If there are problems in display of menus / header imaages or large tables overlap, enable "Skip NAV & SECTION" checkbox. The "Skip NAV & SECTION" also skips applying Reverse Color to images inside NAV and HEADER elements, which are (usually) on top menu of webpage, when "Force Reverse colors" is enabled.</li>
 <li>"Skip text height changes" will not change heights of text, and INPUT elements like text and select boxes.</li>
+<li>'Colorblind adjust colors' when enabled changes text colors and background to suit colorblind condition.</li>
 <li>Enabling "Apply custom CSS for site" will allow you to enter custom CSS rules for the site</li>
 <li>Additional features are input box borders, underlining of links, forcing maximum opacity of transparent elements and saving/loading of settings whitelists/blacklists,</li>
 <li>This extension is helpful for people who require reading glasses / spectacles due to far-sight / long-sight / hypermetropia / hyperopia condition of eyes.</li>
@@ -161,7 +160,7 @@
 		<li><strong>Starting 3 letters bold:</strong> Starting 3 letters of words are made bold.<br>Default value: disabled</li>
 		<li><strong>Skip links in 3 letters bold:</strong> Avoids changing links when start 3 letters bold is enabled.<br>Default value: disabled</li>
 		<li><strong>Apply custom CSS for site</strong>Lets you enter custom CSS rules for the site.<br>Default value: disabled</li>
-		<li><strong>Proportional text size</strong>Increase font size 'normal' proportionally, like zooming.<br>Default value: disabled</li>
+		<li><strong>Colorblind adjust colors</strong>Changes text color and background to more readable color for colorblind condition.</li>
 		<li><strong>All Settings</strong> Opens a tab with all the options, including the ability to activate the add-on everywhere, the global options (with in-depth tooltips), the whitelist/blacklist, and a link to this page.</li>
 		<li><strong>The calculated website background colors are used to determine if site has "Light" theme (lightness greater than 0.5) or "Dark theme" (lightness less than 0.5).<br>On some sites this calculation may result in wrong theme choice (light website calculated as "dark" theme or reverse).<br>If this happens, override this value by setting both "Dark mode" and "Reverse Colors" to enabled.( This only applies if you want to keep a "Dark" mode or "Reverse colors" on the site)</strong></li>
 		</ul>
