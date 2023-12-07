@@ -43,7 +43,6 @@ let WLtable         = doc.querySelector('#whitelist');
 let WLaddButton     = doc.querySelector('#add');
 let WLresetButton   = doc.querySelector('#reset');
 let WLtextarea      = doc.querySelector('#urltext');
-let WLheader        = doc.getElementById("header");
 let WLtbody         = doc.querySelector("#WLtbody");
 
 // Blacklist
@@ -51,7 +50,6 @@ let BLtable         = doc.querySelector('#blacklist');
 let BLaddButton     = doc.querySelector('#BLadd');
 let BLresetButton   = doc.querySelector('#BLreset');
 let BLtextarea      = doc.querySelector('#BLurltext');
-let BLheader        = doc.getElementById("BLheader");
 let BLtbody         = doc.querySelector("#BLtbody");
 
 let wl = [];
@@ -65,12 +63,10 @@ function addRow(item, is_wl)
 	if (is_wl) {
 		list = wl;
 		list_name = 'whitelist';
-		header = WLheader;
 		table = WLtbody;
 	} else {
 		list = bl;
 		list_name = 'blacklist';
-		header = BLheader;
 		table = BLtbody;
 	}
 
@@ -435,12 +431,10 @@ function saveURL(is_wl)
 	if (is_wl) {
 		list = wl;
 		list_name = 'whitelist';
-		header = WLheader;
 		textarea = WLtextarea;
 	} else {
 		list = bl;
 		list_name = 'blacklist';
-		header = BLheader;
 		textarea = BLtextarea;
 	}
 

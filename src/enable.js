@@ -89,10 +89,10 @@ var style_node;
 var css_node;
 var doc_obs;
 let b_html = false;
-let b_imgforce = [];
-let f_sizes = [];
-let f2_sizes = [];
-let h_sizes = [];
+let b_imgforce = {};
+let f_sizes = {};
+let f2_sizes = {};
+let h_sizes = {};
 let b_body = false;
 let eng = false;
 var str_style;
@@ -420,11 +420,13 @@ function isImage(ch, nc, imar) {
 
 function containsImage(node, imgs)
 {
+	let childn = Array.from(node.getElementsByTagName('*'));
 	var img;
 	for (img of imgs) {
-		if (node.contains(img) && node != img)
+		if (childn.includes(img))
 			return true;
 	}
+	childn.length = 0;
 	return false;
 }
 
@@ -599,11 +601,9 @@ function getCSS(cfg) {
 			let cc1 = parseInt(cc);
 			height_inc = ((cc1+(parseInt(cfg.size)+parseInt(cfg.threshold))*0.08)/cc1).toFixed(3);
 			let cc2 = (cc1*(1+parseFloat(pcent)/100)).toFixed(2);
-//			size_inc += `[s__='${c}']{font-size: calc(${cc}px + ${pcent}%)!important;${sCaps}`;
 			size_inc += `[s__='${c}']{font-size: ${cc2}px!important;}`;
 			if (!cfg.skipHeights)
 				size_inc += `[s__='${c}']{line-height: ${height_inc}em!important;${sCaps}${dim}${opacity}}\n`;
-//				size_inc += `line-height: ${height_inc}em!important;${dim}${opacity}}\n`;
 			else
 				size_inc += `[s__='${c}']{${sCaps}${dim}${opacity}}\n`;
 			size_inc += `[h__='${c}']{line-height:normal!important;min-height: ${height_inc}em!important}`;
@@ -764,20 +764,20 @@ function start(cfg, url)
 
 	let b_frame = false;
 
-	let b_ctext = [];
-	let b_chimg = [];
-	let b_iimg = [];
-	let b_fimg = [];
-	let b_fnt = [];
-	let b_dim = [];
+	let b_ctext = {};
+	let b_chimg = {};
+	let b_iimg = {};
+	let b_fimg = {};
+	let b_fnt = {};
+	let b_dim = {};
 	let m_fcol = new Map();
 	let m_bcol = new Map();
 	let m_bocol = new Map();
-	let m_sty = [];
-	let b_emo = [];
+	let m_sty = {};
+	let b_emo = {};
 	let b_noemo = false;
-	let b_idone = [];
-	let b_cdone = [];
+	let b_idone = {};
+	let b_cdone = {};
 	let images = [];
 	let img_area = [];
 	let map = new Map();
@@ -838,15 +838,15 @@ function start(cfg, url)
 	const process = (nodes, mutation = false) =>
 	{
 		b_body = false;
-		b_ctext = [];
-		b_chimg = [];
-		b_iimg = [];
-		b_fimg = [];
-		b_fnt = [];
-		b_dim = [];
-		b_emo = [];
+		b_ctext = {};
+		b_chimg = {};
+		b_iimg = {};
+		b_fimg = {};
+		b_fnt = {};
+		b_dim = {};
+		b_emo = {};
 		b_noemo = false;
-		b_idone = [];
+		b_idone = {};
 		images = [];
 		img_area = [];
 
@@ -867,7 +867,7 @@ function start(cfg, url)
 		let node_count = 0;
 		if (mutation) node_count = Math.floor(1000*Date.now());
 
-		if (b_ctext.length < 1 || mutation) {
+		if (Object.entries(b_ctext).length < 1 || mutation) {
 			let nc = node_count;
 			var n;
 			for (n of nodes) {
@@ -938,7 +938,8 @@ function start(cfg, url)
 				break;
 			}
 		}
-		if (cfg.forcePlhdr && cfg.forceIInv) {
+
+		if (cfg.forcePlhdr && cfg.normalInc) {
 		let rn = 0;
 		if (notInsertedRule && style_node.sheet != null) {
 			style_node.sheet.insertRule("IMG,SVG,CANVAS,OBJECT,VIDEO,EMBED,INPUT[type='image'],[style^='background-image:'] { filter:invert(1)!important; }", rn++);
@@ -960,6 +961,7 @@ function start(cfg, url)
 		}
 
 		let node = doc.body;
+		if (cfg.forcePlhdr && b_idone[node_count] != true) {
 		if (typeof node == 'undefined' || node == null)
 			node = document.getElementsByTagName('BODY')[0];
 
@@ -968,7 +970,6 @@ function start(cfg, url)
 		node_count = map.get(node);
 		let tag = node.nodeName.toUpperCase();
 
-		if (cfg.forcePlhdr && b_idone[node_count] != true) {
 			b_idone[node_count] = true;
 			var htm;
 			htm = pnode;
@@ -1176,7 +1177,7 @@ function start(cfg, url)
 					if (fgbrt >= 0) {
 						m_fcol.set(node, [fgr[0],fgr[1],fgr[2],fgarr[3]]);
 						node.style.setProperty('color','rgba('+fgr[0]+','+fgr[1]+','+fgr[2]+','+fgarr[3]+')','important');
-						if (typeof m_sty[fgarr] == 'undefined') m_sty[fgarr] = fgr;
+						m_sty[fgarr] = fgr;
 					}
 					}
 				}
@@ -1212,7 +1213,7 @@ function start(cfg, url)
 					if (bgbrt > 0) {
 						m_bcol.set(node, [fgr[0],fgr[1],fgr[2],fgarr[3]]);
 						node.style.setProperty('background-color','rgba('+fgr[0]+','+fgr[1]+','+fgr[2]+','+fgarr[3]+')','important');
-						if (typeof m_sty[fgarr] == 'undefined') m_sty[fgarr] = fgr;
+						m_sty[fgarr] = fgr;
 					}
 					}
 				}
@@ -1292,9 +1293,9 @@ function start(cfg, url)
 				b_fnt[node_count] = true;
 				let nsty = node.getAttribute('style');
 				if (nsty == null) nsty = '';
-				let sfz = style.fontSize;
-				let nfz = parseInt(sfz);
-				if (nfz <= cfg.threshold) {
+				let sfz = (parseFloat(style.fontSize)).toFixed(2);
+				let nfz = parseInt(style.fontSize);
+				if (sfz <= cfg.threshold) {
 					if (/font-size[^;]*important/i.test(nsty)) {
 						let rsty = nsty.replace(/font-size[^\;]*important/ig,'');
 						node.setAttribute('style',rsty);
@@ -1334,9 +1335,9 @@ function start(cfg, url)
 				}
 			} else if (b_fnt[node_count] != true && cfg.threshold > 0 && (!b_iimg[node_count] || b_ctext[node_count] > 0)) {
 				b_fnt[node_count] = true;
-				let sfz = style.fontSize;
-				let nfz = parseInt(sfz);
-				if (nfz <= cfg.threshold) {
+				let sfz = (parseFloat(style.fontSize)).toFixed(2);
+				let nfz = parseInt(style.fontSize);
+				if (sfz <= cfg.threshold) {
 					node.setAttribute('s__', nfz);
 					if (style.fontSize == sfz) {
 						node.style.setProperty('font-size',f2_sizes[nfz],'important');
@@ -1557,7 +1558,7 @@ function start(cfg, url)
 					bstl = ';color:black!important;';
 				} else if (bg_brt == 256 && fg_brt > 176) {
 					bstl = ';color:white!important;';
-				} else if (bg_brt == 256 && fg_brt <= 176) {
+				} else if (bg_brt == 256) {
 					bstl = ';color:black!important;';
 				}
 				if (bstl.length > 0) {
@@ -1593,7 +1594,7 @@ function start(cfg, url)
 					bstl = ';color:white!important;';
 				} else if (bg_brt == 256 && fg_brt > 176) {
 					bstl = ';color:white!important;';
-				} else if (bg_brt == 256 && fg_brt <= 176) {
+				} else if (bg_brt == 256) {
 					bstl = ';color:black!important;';
 				}
 				if (bstl.length > 0) {
