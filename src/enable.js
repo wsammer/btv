@@ -680,7 +680,7 @@ async function init()
 		'customCssText'
 	];
 
-	let cfg = await new Promise(res => browser.storage.local.get(stored, res));
+	let cfg = await new Promise(res => chrome.storage.local.get(stored, res));
 
 	cfg.strength  = cfg.globalStr;
 	cfg.threshold = cfg.sizeThreshold;
@@ -801,7 +801,7 @@ function start(cfg, url)
 	let finalLightness  = Math.abs((1 - bodycolor[3]) * rootLightness + bodycolor[3] * calcBrightness(bodycolor)/255);
 	finalLightness = Math.sqrt(finalLightness);
         if (window.self == window.top)
-		browser.storage.local.set({lightness: finalLightness});
+		chrome.storage.local.set({lightness: finalLightness});
 	console.log('Dark / Light = '+finalLightness.toFixed(2));
 	if (cfg.forcePlhdr || cfg.advDimming)
 	if (finalLightness < 0.5)  {
@@ -942,7 +942,7 @@ function start(cfg, url)
 		if (cfg.forcePlhdr && cfg.normalInc) {
 		let rn = 0;
 		if (notInsertedRule && style_node.sheet != null) {
-			style_node.sheet.insertRule("IMG,SVG,CANVAS,OBJECT,VIDEO,EMBED,INPUT[type='image'],[style^='background-image:'] { filter:invert(1)!important; }", rn++);
+			style_node.sheet.insertRule("IMG,SVG,CANVAS,OBJECT,VIDEO,EMBED,INPUT[type='image'] { filter:invert(1)!important; }", rn++);
 			style_node.sheet.insertRule("frame,iframe { filter:invert(1)!important; }", rn++);
 			b_html = false;
 			notInsertedRule = false;
@@ -1293,9 +1293,9 @@ function start(cfg, url)
 				b_fnt[node_count] = true;
 				let nsty = node.getAttribute('style');
 				if (nsty == null) nsty = '';
-				let sfz = (parseFloat(style.fontSize)).toFixed(2);
-				let nfz = parseInt(style.fontSize);
-				if (sfz <= cfg.threshold) {
+				let sfz = style.fontSize;
+				let nfz = parseInt(sfz);
+				if (parseFloat(sfz) <= cfg.threshold) {
 					if (/font-size[^;]*important/i.test(nsty)) {
 						let rsty = nsty.replace(/font-size[^\;]*important/ig,'');
 						node.setAttribute('style',rsty);
@@ -1335,9 +1335,9 @@ function start(cfg, url)
 				}
 			} else if (b_fnt[node_count] != true && cfg.threshold > 0 && (!b_iimg[node_count] || b_ctext[node_count] > 0)) {
 				b_fnt[node_count] = true;
-				let sfz = (parseFloat(style.fontSize)).toFixed(2);
-				let nfz = parseInt(style.fontSize);
-				if (sfz <= cfg.threshold) {
+				let sfz = style.fontSize;
+				let nfz = parseInt(sfz);
+				if (parseFloat(sfz) <= cfg.threshold) {
 					node.setAttribute('s__', nfz);
 					if (style.fontSize == sfz) {
 						node.style.setProperty('font-size',f2_sizes[nfz],'important');
@@ -1370,16 +1370,28 @@ function start(cfg, url)
 					let cful = calcColorfulness(col);
 					let pcol = col;
 					if (col.length > 0 && cful >= 24) {
-						if (cfg.forcePlhdr && !nodes_behind_inv.includes(node) && !/invert/.test(style.filter)  && Math.min(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[2])) {
-						if ((255-parseInt(col[0])) > (255-parseInt(col[1]))) {
-							let blu = col[2];
-							col[2] = col[1];
-							col[1] = blu;
+						if (cfg.forcePlhdr && !nodes_behind_inv.includes(node) && !/invert/.test(style.filter)  && Math.min(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[1])) {
+						if (parseInt(col[0]) >= parseInt(col[2])) {
+							let blu = col[1];
+							col[1] = col[2];
+							col[2] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
-						} else if ((255-parseInt(col[1])) > (255-parseInt(col[0]))) {
+						} else if (parseInt(col[2]) > parseInt(col[0])) {
+							let blu = col[1];
+							col[1] = col[0];
+							col[0] = blu;
+							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+						}
+						} else if (cfg.forcePlhdr && (nodes_behind_inv.includes(node) || /invert/.test(style.filter)) && Math.max(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[2])) {
+						if (parseInt(col[0]) > parseInt(col[1])) {
 							let blu = col[2];
 							col[2] = col[0];
 							col[0] = blu;
+							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+						} else if (parseInt(col[1]) > parseInt(col[0])) {
+							let blu = col[2];
+							col[2] = col[1];
+							col[1] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
 						}
 						} else if (!cfg.forcePlhdr && Math.max(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[2])) {
@@ -1403,16 +1415,28 @@ function start(cfg, url)
 					cful = calcColorfulness(col);
 					pcol = col;
 					if (col.length > 0 && cful >= 24) {
-						if (cfg.forcePlhdr && !nodes_behind_inv.includes(node) && !/invert/.test(style.filter) && Math.min(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[2])) {
-						if ((255-parseInt(col[0])) > (255-parseInt(col[1]))) {
-							let blu = col[2];
+						if (cfg.forcePlhdr && !nodes_behind_inv.includes(node) && !/invert/.test(style.filter)  && Math.min(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[1])) {
+						if (parseInt(col[0]) >= parseInt(col[2])) {
+							let blu = col[1];
 							col[2] = col[1];
 							col[1] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
-						} else if ((255-parseInt(col[1])) > (255-parseInt(col[0]))) {
+						} else if (parseInt(col[2]) > parseInt(col[0])) {
+							let blu = col[1];
+							col[1] = col[0];
+							col[0] = blu;
+							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+						}
+						} else if (cfg.forcePlhdr && (nodes_behind_inv.includes(node) || /invert/.test(style.filter)) && Math.max(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[2])) {
+						if (parseInt(col[0]) > parseInt(col[1])) {
 							let blu = col[2];
 							col[2] = col[0];
 							col[0] = blu;
+							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+						} else if (parseInt(col[1]) > parseInt(col[0])) {
+							let blu = col[2];
+							col[2] = col[1];
+							col[1] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
 						}
 						} else if (!cfg.forcePlhdr && Math.max(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[2])) {
@@ -1678,18 +1702,17 @@ function start(cfg, url)
 	}
 }
 
-var timerid = setTimeout(isloaded, 1000);
-
-window.addEventListener("load", function load(event){
-	window.removeEventListener("load", load, false);
-	init();
-},false);
+var timerid = setTimeout(isloaded, 5000);
 
 function isloaded() {
-	if (document.readyState == "complete") {
+	if (document.getElementById('_btv_')) {
+		clearTimeout(timerid);
+	} else {
 		clearTimeout(timerid);
 		init();
 	}
 }
+
+window.onload = init();
 
 chrome.runtime.sendMessage({ from: 'toggle', enabled: true });
