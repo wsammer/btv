@@ -680,7 +680,7 @@ async function init()
 		'customCssText'
 	];
 
-	let cfg = await new Promise(res => chrome.storage.local.get(stored, res));
+	let cfg = await new Promise(res => browser.storage.local.get(stored, res));
 
 	cfg.strength  = cfg.globalStr;
 	cfg.threshold = cfg.sizeThreshold;
@@ -801,7 +801,7 @@ function start(cfg, url)
 	let finalLightness  = Math.abs((1 - bodycolor[3]) * rootLightness + bodycolor[3] * calcBrightness(bodycolor)/255);
 	finalLightness = Math.sqrt(finalLightness);
         if (window.self == window.top)
-		chrome.storage.local.set({lightness: finalLightness});
+		browser.storage.local.set({lightness: finalLightness});
 	console.log('Dark / Light = '+finalLightness.toFixed(2));
 	if (cfg.forcePlhdr || cfg.advDimming)
 	if (finalLightness < 0.5)  {
@@ -942,7 +942,7 @@ function start(cfg, url)
 		if (cfg.forcePlhdr && cfg.normalInc) {
 		let rn = 0;
 		if (notInsertedRule && style_node.sheet != null) {
-			style_node.sheet.insertRule("IMG,SVG,CANVAS,OBJECT,VIDEO,EMBED,INPUT[type='image'] { filter:invert(1)!important; }", rn++);
+			style_node.sheet.insertRule("IMG,SVG,CANVAS,OBJECT,VIDEO,EMBED,INPUT[type='image'],[style^='background-image:'] { filter:invert(1)!important; }", rn++);
 			style_node.sheet.insertRule("frame,iframe { filter:invert(1)!important; }", rn++);
 			b_html = false;
 			notInsertedRule = false;
@@ -1702,17 +1702,18 @@ function start(cfg, url)
 	}
 }
 
-var timerid = setTimeout(isloaded, 5000);
+var timerid = setTimeout(isloaded, 1000);
+
+window.addEventListener("load", function load(event){
+	window.removeEventListener("load", load, false);
+	init();
+},false);
 
 function isloaded() {
-	if (document.getElementById('_btv_')) {
-		clearTimeout(timerid);
-	} else {
+	if (document.readyState == "complete") {
 		clearTimeout(timerid);
 		init();
 	}
 }
-
-window.onload = init();
 
 chrome.runtime.sendMessage({ from: 'toggle', enabled: true });

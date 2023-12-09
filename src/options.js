@@ -1,6 +1,7 @@
 "use strict";
 
-let doc = document;
+const storage = chrome.storage.local;
+const doc = document;
 var fileListb = [];
 var fileListw = [];
 
@@ -11,12 +12,12 @@ let sizeSlider      = doc.querySelector("#sizeSlider");
 let sizeLabel       = doc.querySelector("#sizeLabel");
 let threshSlider    = doc.querySelector("#threshSlider");
 let threshLabel     = doc.querySelector("#threshLabel");
-let weightSlider    = doc.querySelector("#weightSlider");
-let weightLabel     = doc.querySelector("#weightLabel");
-let brt_slider      = doc.querySelector("#brt-slider");
-let brt_label       = doc.querySelector("#brt-label");
-let con_slider      = doc.querySelector("#con-slider");
-let con_label       = doc.querySelector("#con-label");
+let weightSlider    = doc.querySelector('#weightSlider');
+let weightLabel     = doc.querySelector('#weightLabel');
+const brt_slider    = doc.querySelector('#brt-slider');
+const brt_label     = doc.querySelector('#brt-label');
+const con_slider    = doc.querySelector('#con-slider');
+const con_label     = doc.querySelector('#con-label');
 
 // Options
 let skipHeadings    = doc.querySelector('#skipHeadings');
@@ -35,7 +36,7 @@ let normalInc2      = doc.querySelector('#normalInc2');
 let skipNavSection  = doc.querySelector('#skipNavSection');
 let skipHeights     = doc.querySelector('#skipHeights');
 let underlineLinks  = doc.querySelector('#underlineLinks');
-let input_border    = doc.querySelector('#input-border');
+const input_border  = doc.querySelector('#input-border');
 
 // Whitelist
 let WLtable         = doc.querySelector('#whitelist');
@@ -56,8 +57,8 @@ let bl = [];
 
 function addRow(item, is_wl)
 {
-	var table;
-	var list, list_name;
+	let table;
+	let list, list_name;
 
 	if (is_wl) {
 		list = wl;
@@ -69,22 +70,20 @@ function addRow(item, is_wl)
 		table = BLtbody;
 	}
 
-	var row;
-	if (table != null) {
-	row  = table.insertRow(-1);
+	const row = table.insertRow(-1);
 
-	let url_cell = row.insertCell(0);
+	const url_cell = row.insertCell(0);
 
 	url_cell.innerText = item.url;
 	url_cell.setAttribute("contenteditable", "true");
 
 	url_cell.onkeyup = () => {
 		item.url = url_cell.innerText;
-		chrome.storage.local.set({ [list_name]: list });
+		storage.set({ [list_name]: list });
 	};
 
 	if (is_wl) {
-		let strCell = row.insertCell(1);
+		const strCell = row.insertCell(1);
 		strCell.innerText = item.strength;
 		strCell.setAttribute("contenteditable", "true");
 
@@ -100,7 +99,7 @@ function addRow(item, is_wl)
 
 			list[list.findIndex(o => o.url === url_cell.innerText)] = item;
 
-			chrome.storage.local.set({'whitelist': list});
+			storage.set({'whitelist': list});
 		};
 
 		strCell.onkeydown = (e) => {
@@ -115,15 +114,15 @@ function addRow(item, is_wl)
 			 * We need both keyup and keydown if we want to save the settings immmediately
 			 * Because keydown lags behind one character, but keyup's preventDefault() doesn't work
 			 */
-			let allowed_keys = [8, 37, 39, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 173];
-			let is_allowed = allowed_keys.includes(e.keyCode) || allowed_keys.includes(e.which);
+			const allowed_keys = [8, 37, 39, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 173];
+			const is_allowed = allowed_keys.includes(e.keyCode) || allowed_keys.includes(e.which);
 
 			if (!is_allowed)
 				e.preventDefault();
 		};
 	}
 
-	let rem_btn = doc.createElement("button");
+	const rem_btn = doc.createElement("button");
 
 	rem_btn.innerText = "Remove";
 	rem_btn.setAttribute("class", "remove");
@@ -131,7 +130,7 @@ function addRow(item, is_wl)
 	rem_btn.onclick = () => {
 		table.deleteRow(row.rowIndex - 1);
 		list.splice(list.findIndex(o => o.url === url_cell.innerText), 1);
-		chrome.storage.local.set({[list_name]: list});
+		storage.set({[list_name]: list});
 	};
 
 	let cell_pos = 2;
@@ -140,48 +139,35 @@ function addRow(item, is_wl)
 		--cell_pos;
 
 	row.insertCell(cell_pos).appendChild(rem_btn);
-	}
 }
 
 function init()
 {
 	addListeners();
 
-	chrome.storage.local.get(['globalStr', 'size', 'weight', 'sizeThreshold','brightness', 'contrast'], items => {
-		if (typeof strSlider != 'undefined' && strSlider != null && typeof strSlider.value != 'undefined')
-			strSlider.value       = items.globalStr;
-		if (typeof strLabel != 'undefined' && strLabel != null && typeof strLabel.innerText != 'undefined')
-			strLabel.innerText    = items.globalStr;
-		if (typeof sizeSlider != 'undefined' && sizeSlider != null && typeof sizeSlider.value != 'undefined')
-			sizeSlider.value      = items.size;
-		if (typeof sizeLabel != 'undefined' && sizeLabel != null && typeof sizeLabel.innerText != 'undefined')
-			sizeLabel.innerText   = items.size;
-		if (typeof threshSlider != 'undefined' && threshSlider != null && typeof threshSlider.value != 'undefined')
-			threshSlider.value    = items.sizeThreshold;
-		if (typeof threshLabel != 'undefined' && threshLabel != null && typeof threshLabel.innerText != 'undefined')
-			threshLabel.innerText = items.sizeThreshold;
-		if (typeof weightSlider != 'undefined' && weightSlider != null && typeof weightSlider.value != 'undefined')
-			weightSlider.value    = items.weight;
-		if (typeof weightLabel != 'undefined' && weightLabel != null && typeof weightLabel.innerText != 'undefined')
-			weightLabel.innerText = items.weight;
-		if (typeof brt_slider != 'undefined' && brt_slider != null && typeof brt_slider.value != 'undefined')
-			brt_slider.value      = items.brightness;
-		if (typeof brt_label != 'undefined' && brt_label != null && typeof brt_label.innerText != 'undefined')
-			brt_label.innerText   = items.brightness;
-		if (typeof con_slider != 'undefined' && con_slider != null && typeof con_slider.value != 'undefined')
-			con_slider.value      = items.contrast;
-		if (typeof con_label != 'undefined' && con_label != null && typeof con_label.innerText != 'undefined')
-			con_label.innerText   = items.contrast;
+	storage.get(['globalStr', 'size', 'sizeThreshold', 'weight', 'brightness', 'contrast'], items => {
+		strSlider.value       = items.globalStr;
+		strLabel.innerText    = items.globalStr;
+		sizeSlider.value      = items.size;
+		sizeLabel.innerText   = items.size;
+		threshSlider.value    = items.sizeThreshold;
+		threshLabel.innerText = items.sizeThreshold;
+		weightSlider.value    = items.weight;
+		weightLabel.innerText = items.weight;
+		brt_slider.value      = items.brightness;
+		brt_label.innerText   = items.brightness;
+		con_slider.value      = items.contrast;
+		con_label.innerText   = items.contrast;
 	});
 
-	let checks = [
+	const checks = [
 		"enableEverywhere",
 		"skipColoreds",
 		"skipHeadings",
 		"advDimming",
 		"forceOpacity",
-		'normalInc',
-		'normalInc2',
+		"normalInc",
+		"normalInc2",
 		"forcePlhdr",
 		"forceIInv",
 		"skipWhites",
@@ -194,74 +180,52 @@ function init()
 		"input_border"
 	];
 
-	chrome.storage.local.get(checks, i => {
-		if (doc.getElementById("defaultEn") != null)
-			doc.getElementById("defaultEn").checked      = i.enableEverywhere;
-		if (doc.getElementById("skipColoreds") != null)
-			doc.getElementById("skipColoreds").checked   = i.skipColoreds;
-		if (doc.getElementById("skipHeadings") != null)
-			doc.getElementById("skipHeadings").checked   = i.skipHeadings;
-		if (doc.getElementById("advDimming") != null)
-			doc.getElementById("advDimming").checked     = i.advDimming;
-		if (doc.getElementById("forceOpacity") != null)
-			doc.getElementById("forceOpacity").checked   = i.forceOpacity;
-		if (doc.getElementById("forcePlhdr") != null)
-			doc.getElementById("forcePlhdr").checked     = i.forcePlhdr;
-		if (doc.getElementById("forceIInv") != null)
-			doc.getElementById("forceIInv").checked      = i.forceIInv;
-		if (doc.getElementById("skipWhites") != null)
-			doc.getElementById("skipWhites").checked     = i.skipWhites;
-		if (doc.getElementById("normalInc") != null)
-			doc.getElementById("normalInc").checked      = i.normalInc;
-		if (doc.getElementById("normalInc2") != null)
-			doc.getElementById("normalInc2").checked      = i.normalInc2;
-		if (doc.getElementById("makeCaps") != null)
-			doc.getElementById("makeCaps").checked       = i.makeCaps;
-		if (doc.getElementById("start3") != null)
-			doc.getElementById("start3").checked         = i.start3;
-		if (doc.getElementById("skipLinks") != null)
-			doc.getElementById("skipLinks").checked      = i.skipLinks;
-		if (doc.getElementById("skipNavSection") != null)
-			doc.getElementById("skipNavSection").checked = i.skipNavSection;
-		if (doc.getElementById("skipHeights") != null)
-			doc.getElementById("skipHeights").checked    = i.skipHeights;
-		if (doc.getElementById("underlineLinks") != null)
-			doc.getElementById("underlineLinks").checked = i.underlineLinks;
-		if (input_border != null)
-			input_border.checked = i.input_border;
+	storage.get(checks, i => {
+		doc.getElementById("defaultEn").checked      = i.enableEverywhere;
+		doc.getElementById("skipColoreds").checked   = i.skipColoreds;
+		doc.getElementById("skipHeadings").checked   = i.skipHeadings;
+		doc.getElementById("advDimming").checked     = i.advDimming;
+		doc.getElementById("forceOpacity").checked   = i.forceOpacity;
+		doc.getElementById("forcePlhdr").checked     = i.forcePlhdr;
+		doc.getElementById("forceIInv").checked      = i.forceIInv;
+		doc.getElementById("skipWhites").checked     = i.skipWhites;
+		doc.getElementById("makeCaps").checked       = i.makeCaps;
+		doc.getElementById("start3").checked         = i.start3;
+		doc.getElementById("skipLinks").checked      = i.skipLinks;
+		doc.getElementById("normalInc").checked      = i.normalInc;
+		doc.getElementById("normalInc2").checked     = i.normalInc2;
+		doc.getElementById("skipNavSection").checked = i.skipNavSection;
+		doc.getElementById("skipHeights").checked    = i.skipHeights;
+		doc.getElementById("underlineLinks").checked = i.underlineLinks;
+		input_border.checked = i.input_border;
 	});
 
-	chrome.storage.local.get('whitelist', item => {
+	storage.get('whitelist', item => {
 		if (!item.whitelist)
 			return;
 
 		wl = item.whitelist;
 
-		let list = Array.from(item.whitelist);
-		var item;
+		const list = Array.from(item.whitelist);
 
-		for(item of list)
+		for(const item of list)
 			addRow(item, true);
 	});
 
-	chrome.storage.local.get('blacklist', item => {
+	storage.get('blacklist', item => {
 		if (!item.blacklist)
 			return;
 
 		bl = item.blacklist;
 
-		let list = Array.from(item.blacklist);
-		var item;
+		const list = Array.from(item.blacklist);
 
-		for(item of list)
+		for(const item of list)
 			addRow(item, false);
 	});
 	
-	if (doc.getElementById("readb") !== null)
-		doc.getElementById("readb").click();
-	if (doc.getElementById("readw") !== null)
-		doc.getElementById("readw").click();
-
+	doc.getElementById("readw").click();
+	doc.getElementById("readb").click();
 }
 
 init();
@@ -273,119 +237,80 @@ function isChecked(check)
 
 function addListeners()
 {
-	if (globalEnabled !== null) {
 	globalEnabled.onclick = () => {
-		chrome.storage.local.set({'enableEverywhere': isChecked("defaultEn")});
+		storage.set({'enableEverywhere': isChecked("defaultEn")});
 	};
-	}
 
-	if (skipHeadings !== null) {
 	skipHeadings.onclick = () => {
-		chrome.storage.local.set({'skipHeadings': isChecked("skipHeadings")});
+		storage.set({'skipHeadings': isChecked("skipHeadings")});
 	};
-	}
 
-	if (skipColoreds !== null) {
 	skipColoreds.onclick = () => {
-		chrome.storage.local.set({'skipColoreds': isChecked("skipColoreds")});
+		storage.set({'skipColoreds': isChecked("skipColoreds")});
 	};
-	}
 
-	if (advDimming !== null) {
 	advDimming.onclick = () => {
-		chrome.storage.local.set({'advDimming': isChecked("advDimming")});
+		storage.set({'advDimming': isChecked("advDimming")});
 	};
-	}
 
-	if (forcePlhdr !== null) {
 	forcePlhdr.onclick = () => {
-		chrome.storage.local.set({'forcePlhdr': isChecked("forcePlhdr")});
+		storage.set({'forcePlhdr': isChecked("forcePlhdr")});
 	};
-	}
 
-	if (forceIInv !== null) {
 	forceIInv.onclick = () => {
-		chrome.storage.local.set({'forceIInv': isChecked("forceIInv")});
+		storage.set({'forceIInv': isChecked("forceIInv")});
 	};
-	}
 
-	if (forceOpacity !== null) {
 	forceOpacity.onclick = () => {
-		chrome.storage.local.set({'forceOpacity': isChecked("forceOpacity")});
+		storage.set({'forceOpacity': isChecked("forceOpacity")});
 	};
-	}
 
-	if (skipWhites !== null) {
 	skipWhites.onclick = () => {
-		chrome.storage.local.set({'skipWhites': isChecked("skipWhites")});
+		storage.set({'skipWhites': isChecked("skipWhites")});
 	};
-	}
 
-	if (makeCaps !== null) {
 	makeCaps.onclick = () => {
-		chrome.storage.local.set({'makeCaps': isChecked("makeCaps")});
+		storage.set({'makeCaps': isChecked("makeCaps")});
 	};
-	}
 
-	if (start3 !== null) {
 	start3.onclick = () => {
-		chrome.storage.local.set({'start3': isChecked("start3")});
+		storage.set({'start3': isChecked("start3")});
 	};
-	}
 
-	if (skipLinks !== null) {
 	skipLinks.onclick = () => {
-		chrome.storage.local.set({'skipLinks': isChecked("skipLinks")});
+		storage.set({'skipLinks': isChecked("skipLinks")});
 	};
-	}
 
-	if (normalInc !== null) {
 	normalInc.onclick = () => {
-		chrome.storage.local.set({'normalInc': isChecked("normalInc")});
+		storage.set({'normalInc': isChecked("normalInc")});
 	};
-	}
 
-	if (normalInc2 !== null) {
 	normalInc2.onclick = () => {
-		chrome.storage.local.set({'normalInc2': isChecked("normalInc2")});
+		storage.set({'normalInc2': isChecked("normalInc2")});
 	};
-	}
 
-	if (skipNavSection !== null) {
 	skipNavSection.onclick = () => {
-		chrome.storage.local.set({'skipNavSection': isChecked("skipNavSection")});
+		storage.set({'skipNavSection': isChecked("skipNavSection")});
 	};
-	}
 
-	if (skipHeights !== null) {
 	skipHeights.onclick = () => {
-		chrome.storage.local.set({'skipHeights': isChecked("skipHeights")});
+		storage.set({'skipHeights': isChecked("skipHeights")});
 	};
-	}
 
-	if (underlineLinks !== null) {
 	underlineLinks.onclick = () => {
-		chrome.storage.local.set({'underlineLinks': isChecked("underlineLinks")});
+		storage.set({'underlineLinks': isChecked("underlineLinks")});
 	};
-	}
 
-	if (input_border !== null) {
 	input_border.onclick = () => {
-		chrome.storage.local.set({'input_border': isChecked("input-border")});
+		storage.set({'input_border': isChecked("input-border")});
 	};
-	}
 
-	if (WLaddButton !== null && WLresetButton !== null) {
 	WLaddButton.addEventListener('click', saveURL.bind(this, true));
 	WLresetButton.addEventListener('click', reset.bind(this, true));
-	}
 
-	if (BLaddButton  !== null && BLresetButton !== null) {
 	BLaddButton.addEventListener('click', saveURL.bind(this, false));
 	BLresetButton.addEventListener('click', reset.bind(this, false));
-	}
 
-	if (doc.getElementById("writew") !== null) {
 	doc.getElementById("writew").onclick = () => {
 		let link = doc.createElement("a");
 		let file = new Blob([JSON.stringify(wl)], { type: 'text/plain' });
@@ -395,9 +320,7 @@ function addListeners()
 		URL.revokeObjectURL(link.href);
 		link.remove();
 	};
-	}
 
-	if (doc.getElementById("readw") !== null) {
 	doc.getElementById("readw").onclick = () => {
 		let fileSelector = doc.getElementById('fileselectorw');
 		fileSelector.addEventListener('change', (event) => { fileListw = event.target.files; });
@@ -408,8 +331,8 @@ function addListeners()
 		let JsonObj = JSON.parse(e.target.result);
 		var items
 		var item;
-		chrome.storage.local.set({'whitelist': JsonObj});
-		chrome.storage.local.get('whitelist', items);
+		storage.set({'whitelist': JsonObj});
+		storage.get('whitelist', items);
 		let list = Array.from(items.whitelist);
 		for(const item of list)
 			addRow(item, true);
@@ -418,9 +341,7 @@ function addListeners()
 		reader.readAsText(f);
 		location.reload();
 	};
-	}
   
-  	if (doc.getElementById("writeb") !== null) {
 	doc.getElementById("writeb").onclick = () => {
 		let link = doc.createElement("a");
 		let file = new Blob([JSON.stringify(bl)], { type: 'text/plain' });
@@ -430,9 +351,7 @@ function addListeners()
 		URL.revokeObjectURL(link.href);
 		link.remove();
 	};
-	}
 
-	if (doc.getElementById("readb") !== null) {
 	doc.getElementById("readb").onclick = () => {
 		let fileSelector = doc.getElementById('fileselectorb');
 		fileSelector.addEventListener('change', (event) => { fileListb = event.target.files; });
@@ -443,8 +362,8 @@ function addListeners()
 		let JsonObj = JSON.parse(e.target.result);
 		var items;
 		var item;
-		chrome.storage.local.set({'blacklist': JsonObj});
-		chrome.storage.local.get('blacklist', items);
+		storage.set({'blacklist': JsonObj});
+		storage.get('blacklist', items);
 		let list = Array.from(items.blacklist);
 		for(const item of list)
 			addRow(item, false);
@@ -453,78 +372,53 @@ function addListeners()
 		reader.readAsText(f);
 		location.reload();
 	};
-	}
   
-	if (strSlider !== null) {
 	strSlider.oninput = () => {
 		strLabel.innerText = strSlider.value;
 	};
-	}
 
-	if (sizeSlider !== null) {
 	sizeSlider.oninput = () => {
 		sizeLabel.innerText = sizeSlider.value;
 	};
-	}
 
-	if (threshSlider !== null) {
 	threshSlider.oninput = () => {
 		threshLabel.innerText = threshSlider.value;
 	};
-	}
 
-	if (weightSlider !== null) {
 	weightSlider.oninput = () => {
 		weightLabel.innerText = weightSlider.value;
 	};
-	}
 
-	if (brt_slider !== null) {
 	brt_slider.oninput = () => {
 		brt_label.innerText = brt_slider.value;
 	};
-	}
 
-	if (brt_slider !== null) {
 	brt_slider.onchange = () => {
-		chrome.storage.local.set({"brightness": brt_slider.value});
+		storage.set({"brightness": brt_slider.value});
 	};
-	}
 
-	if (con_slider !== null) {
 	con_slider.oninput = () => {
 		con_label.innerText = con_slider.value;
 	};
-	}
 
-	if (con_slider !== null) {
 	con_slider.onchange = () => {
-		chrome.storage.local.set({"contrast": con_slider.value});
+		storage.set({"contrast": con_slider.value});
 	};
-	}
 
-	if (strSlider !== null) {
 	strSlider.onchange = () => {
-		chrome.storage.local.set({"globalStr": strSlider.value});
-	};
+		storage.set({"globalStr": strSlider.value});
 	}
 
-	if (sizeSlider !== null) {
 	sizeSlider.onchange = () => {
-		chrome.storage.local.set({"size": sizeSlider.value});
+		storage.set({"size": sizeSlider.value});
 	};
-	}
 
-	if (weightSlider !== null) {
 	weightSlider.onchange = () => {
-		chrome.storage.local.set({"weight": weightSlider.value});
+		storage.set({"weight": weightSlider.value});
 	};
-	}
 
-	if (threshSlider !== null) {
 	threshSlider.onchange = () => {
-		chrome.storage.local.set({"sizeThreshold": threshSlider.value});
-	};
+		storage.set({"sizeThreshold": threshSlider.value});
 	}
 }
 
@@ -547,10 +441,8 @@ function saveURL(is_wl)
 	let url = textarea.value;
 	url = url.trim();
 
-	if (!isInputValid(url, list, is_wl)) {
-	console.log('invalid');
+	if (!isInputValid(url, list, is_wl))
 		return;
-		}
 
 	let new_item;
 
@@ -569,7 +461,7 @@ function saveURL(is_wl)
 
 	list.push(new_item);
 
-	chrome.storage.local.set({[list_name]: list});
+	storage.set({[list_name]: list});
 
 	addRow(new_item, is_wl);
 }
@@ -608,12 +500,12 @@ function isInputValid(url, list, is_wl)
 function reset(is_wl)
 {
 	if (is_wl) {
-		chrome.storage.local.remove('whitelist');
+		storage.remove('whitelist');
 		wl = [];
 		WLtbody.innerHTML = "";
 	}
 	else {
-		chrome.storage.local.remove('blacklist');
+		storage.remove('blacklist');
 		bl = [];
 		BLtbody.innerHTML = "";
 	}
