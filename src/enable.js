@@ -1370,13 +1370,25 @@ function start(cfg, url)
 					let cful = calcColorfulness(col);
 					let pcol = col;
 					if (col.length > 0 && cful >= 24) {
-						if (cfg.forcePlhdr && !nodes_behind_inv.includes(node) && !/invert/.test(style.filter)  && Math.min(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[1])) {
+						if (cfg.forcePlhdr && !nodes_behind_inv.includes(node) && !/invert/.test(style.filter) && Math.min(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[1])) {
 						if (parseInt(col[0]) >= parseInt(col[2])) {
 							let blu = col[1];
 							col[1] = col[2];
 							col[2] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
 						} else if (parseInt(col[2]) > parseInt(col[0])) {
+							let blu = col[1];
+							col[1] = col[0];
+							col[0] = blu;
+							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+						}
+						} else if (!cfg.forcePlhdr && cfg.advDimming && Math.min(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[1])) {
+						if (parseInt(col[2]) >= parseInt(col[0])) {
+							let blu = col[1];
+							col[1] = col[2];
+							col[2] = blu;
+							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+						} else if (parseInt(col[0]) > parseInt(col[2])) {
 							let blu = col[1];
 							col[1] = col[0];
 							col[0] = blu;
@@ -1415,16 +1427,28 @@ function start(cfg, url)
 					cful = calcColorfulness(col);
 					pcol = col;
 					if (col.length > 0 && cful >= 24) {
-						if (cfg.forcePlhdr && !nodes_behind_inv.includes(node) && !/invert/.test(style.filter)  && Math.min(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[1])) {
-						if (parseInt(col[0]) >= parseInt(col[2])) {
-							let blu = col[1];
+						if (cfg.forcePlhdr && !nodes_behind_inv.includes(node) && !/invert/.test(style.filter) && Math.min(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[2])) {
+						if (parseInt(col[1]) >= parseInt(col[0])) {
+							let blu = col[2];
+							col[2] = col[0];
+							col[0] = blu;
+							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+						} else if (parseInt(col[0]) > parseInt(col[1])) {
+							let blu = col[2];
 							col[2] = col[1];
 							col[1] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
-						} else if (parseInt(col[2]) > parseInt(col[0])) {
-							let blu = col[1];
-							col[1] = col[0];
+						}
+						} else if (!cfg.forcePlhdr && cfg.advDimming && Math.max(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[2])) {
+						if (parseInt(col[0]) >= parseInt(col[1])) {
+							let blu = col[2];
+							col[2] = col[0];
 							col[0] = blu;
+							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+						} else if (parseInt(col[1]) > parseInt(col[0])) {
+							let blu = col[2];
+							col[2] = col[1];
+							col[1] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
 						}
 						} else if (cfg.forcePlhdr && (nodes_behind_inv.includes(node) || /invert/.test(style.filter)) && Math.max(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[2])) {
