@@ -1,7 +1,7 @@
 {
   "name": "Better Text View",
   "description": "Makes website text better for reading.",
-  "version": "9.7.0",
+  "version": "9.7.6",
   "author": "Sammer",
   "permissions": [
     "http://*/*",
