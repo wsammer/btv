@@ -786,6 +786,7 @@ function start(cfg, url)
 	let nodes_behind_img = [];
 	let nodes_behind_inv = [];
 	let b_csp = true;
+	let b_forced = false;
 	var lang = document.documentElement.lang;
 	eng = false;
 	if (lang == null || lang.length == 0)
@@ -819,6 +820,7 @@ function start(cfg, url)
 				cfg.forcePlhdr = false;
 				cfg.forceIInv = false;
 				cfg.advDimming = true;
+				b_forced = true;
 			}
 		}
 	} else {
@@ -826,6 +828,7 @@ function start(cfg, url)
 			cfg.forcePlhdr = false;
 			cfg.forceIInv = false;
 		} else {
+			if (cfg.advDimming) b_forced = true;
 			cfg.forcePlhdr = true;
 			cfg.advDimming = false;
 			var cs = css_node.nodeValue;
@@ -852,6 +855,7 @@ function start(cfg, url)
 
 		var nn_style, nn_reg;
 		var notInsertedRule = true;
+		var n_inv = 0;
 
 		if (!cfg.forcePlhdr && cfg.advDimming){
 			nn_style = ';filter:revert!important;';
@@ -1027,8 +1031,10 @@ function start(cfg, url)
 			let imsrc = img.src ? img.src : '';
 			if (!b_imgforce[n_c] || b_ctext[n_c] > 95)
 			if (!/(IMG|SVG|VIDEO|OBJECT|EMBED|CANVAS)/i.test(img.nodeName) && !/(slide|banner|background.*page|page.*background)/ig.test(img.className) && ((typeof imsrc != 'undefined' && imsrc != null && imsrc != '' && !/(\/|http|url)/ig.test(imsrc) && /gradient/i.test(bgim)) || (typeof bgim != 'undefined' && bgim != '' && bgim != 'none' && !/(\/|http|url|gradient)/ig.test(bgim)) || (b_ctext[n_c] > 95 && !b_imgforce[n_c]) && !/gradient/i.test(bgim)) || (((b_ctext[n_c] <= 31 && b_ctext[n_c] > 1 && !/gradient/i.test(bgim) && !/\b(A|INPUT)/i.test(img.nodeName) && !/button/i.test(img.className)) || /nav/i.test(img.className)) && !b_imgforce[n_c] && img_area[n_c] < 35000 && img_area[n_c] >= 0)) {
+				if (!(hdr && hdr.contains(img))) {
 				img.style.setProperty('filter','unset', 'important');
 				continue;
+				}
 			} else if (b_ctext[n_c] > 95) {
 				img.style.setProperty('filter','unset', 'important');
 				continue;
@@ -1059,6 +1065,7 @@ function start(cfg, url)
 					img.setAttribute('style', isty + ';filter:invert(1)!important;');
 					let chldn = Array.from(img.getElementsByTagName('*'));
 					nodes_behind_inv.push(...chldn);
+					n_inv++;
 				}
 			}
 			hdrs,length = 0;
@@ -1067,6 +1074,7 @@ function start(cfg, url)
 		}
 
 		}
+		b_idone = {};
 
 		if (cfg.advDimming) {
 			for (let img of images) {
@@ -1369,8 +1377,8 @@ function start(cfg, url)
 					if (typeof col[3] == 'undefined') col[3] = 1;
 					let cful = calcColorfulness(col);
 					let pcol = col;
-					if (col.length > 0 && cful >= 24) {
-						if (cfg.forcePlhdr && !nodes_behind_inv.includes(node) && !/invert/.test(style.filter) && Math.min(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[1])) {
+					if (typeof b_idone[style.color] == 'undefined' && col.length > 0 && cful >= 24) {
+						if (cfg.forcePlhdr && n_inv > 2 && !nodes_behind_inv.includes(node) && !/invert/.test(style.filter) && Math.min(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[1])) {
 						if (parseInt(col[0]) >= parseInt(col[2])) {
 							let blu = col[1];
 							col[1] = col[2];
@@ -1382,7 +1390,7 @@ function start(cfg, url)
 							col[0] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
 						}
-						} else if (!cfg.forcePlhdr && cfg.advDimming && Math.min(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[1])) {
+						} else if (cfg.forcePlhdr && n_inv > 2 && (nodes_behind_inv.includes(node) || /invert/.test(style.filter)) && Math.max(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[1])) {
 						if (parseInt(col[2]) >= parseInt(col[0])) {
 							let blu = col[1];
 							col[1] = col[2];
@@ -1394,7 +1402,7 @@ function start(cfg, url)
 							col[0] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
 						}
-						} else if (cfg.forcePlhdr && (nodes_behind_inv.includes(node) || /invert/.test(style.filter)) && Math.max(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[2])) {
+						} else if (cfg.forcePlhdr && n_inv <= 2  && Math.max(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[2])) {
 						if (parseInt(col[0]) > parseInt(col[1])) {
 							let blu = col[2];
 							col[2] = col[0];
@@ -1404,6 +1412,18 @@ function start(cfg, url)
 							let blu = col[2];
 							col[2] = col[1];
 							col[1] = blu;
+							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+						}
+						} else if (!b_forced && !cfg.forcePlhdr && cfg.advDimming && Math.min(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[1])) {
+						if (parseInt(col[2]) >= parseInt(col[0])) {
+							let blu = col[1];
+							col[1] = col[2];
+							col[2] = blu;
+							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+						} else if (parseInt(col[0]) > parseInt(col[2])) {
+							let blu = col[1];
+							col[1] = col[0];
+							col[0] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
 						}
 						} else if (!cfg.forcePlhdr && Math.max(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[2])) {
@@ -1419,14 +1439,18 @@ function start(cfg, url)
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
 						}
 						}
+					} else if (typeof b_idone[style.color] != 'undefined') {
+						pcol = b_idone[style.color];
 					}
-					if (/^rgba/.test(pcol) && !colors_to_skip.includes(col))
-						node.style.setProperty('color', pcol,'important'); 
+					if (/^rgba/.test(pcol)) {
+						node.style.setProperty('color', pcol,'important');
+						b_idone[style.color] = pcol;
+					}
 					col = getRGBarr(style.backgroundColor);
 					if (typeof col[3] == 'undefined') col[3] = 1;
 					cful = calcColorfulness(col);
 					pcol = col;
-					if (col.length > 0 && cful >= 24) {
+					if (typeof b_idone[style.backgroundColor] == 'undefined' && col.length > 0 && cful >= 24) {
 						if (cfg.forcePlhdr && !nodes_behind_inv.includes(node) && !/invert/.test(style.filter) && Math.min(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[2])) {
 						if (parseInt(col[1]) >= parseInt(col[0])) {
 							let blu = col[2];
@@ -1439,7 +1463,7 @@ function start(cfg, url)
 							col[1] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
 						}
-						} else if (!cfg.forcePlhdr && cfg.advDimming && Math.max(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[2])) {
+						} else if (!b_forced && !cfg.forcePlhdr && cfg.advDimming && Math.max(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[2])) {
 						if (parseInt(col[0]) >= parseInt(col[1])) {
 							let blu = col[2];
 							col[2] = col[0];
@@ -1478,9 +1502,13 @@ function start(cfg, url)
 							}
 						}
 						}
+					} else if (typeof b_idone[style.backgroundColor] != 'undefined') {
+						pcol = b_idone[style.backgroundColor];
 					}
-					if (/^rgba/.test(pcol) && !colors_to_skip.includes(col))
-						node.style.setProperty('background-color', pcol,'important'); 
+					if (/^rgba/.test(pcol)) { 
+						node.style.setProperty('background-color', pcol,'important');
+						b_idone[style.backgroundColor] = pcol;
+					}
 				}
 				if (b_ctext[node_count] > 2 && !cfg.skipHeights && !/(checkbox|color|date|hidden|image|month|radio|range)/i.test(node.type) && (node.getElementsByTagName('*').length < 4 || (cfg.start3 && node.hasAttribute(focalAnchors.attrNameContainer) && node.getElementsByTagName('*').length < 50))) node.setAttribute('h__', 2);
 				if (cfg.makeCaps) {
