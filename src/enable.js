@@ -778,6 +778,7 @@ function start(cfg, url)
 	let b_noemo = false;
 	let b_idone = {};
 	let b_cdone = {};
+	let b_rules = [];
 	let images = [];
 	let img_area = [];
 	let map = new Map();
@@ -856,6 +857,7 @@ function start(cfg, url)
 		var nn_style, nn_reg;
 		var notInsertedRule = true;
 		var n_inv = 0;
+		var b_sec = false;
 
 		if (!cfg.forcePlhdr && cfg.advDimming){
 			nn_style = ';filter:revert!important;';
@@ -942,9 +944,63 @@ function start(cfg, url)
 				break;
 			}
 		}
-
-		if (cfg.forcePlhdr && cfg.normalInc) {
 		let rn = 0;
+		let css = {};
+		for (var si = 0; si < document.styleSheets.length; si++) {
+			try {
+			var sheet = document.styleSheets[si];
+			var rules = sheet.cssRules;
+			//var txtrul = '';
+			for (var ri = 0; ri < rules.length; ri++) {
+				var rule= rules[ri];
+				if (rule.selectorText && rule.style) {  // (rule.type == 1) {
+				css[rule.selectorText] = rule.style.cssText;
+				let key = rule.selectorText;
+				let value = rule.style.cssText;
+			if (cfg.forcePlhdr && cfg.normalInc && /color:\s*rgb\(/i.test(value)) {
+				let rt = value.replace(/.*color[^\(]*(rgb[a]?\([^\)]*\)).*/i,'$1');
+				if (typeof rt != 'undefined' && rt.length > 0) {
+				let fgarr = getRGBarr(rt);
+				if (typeof fgarr[3] == 'undefined') fgarr[3] = 1.0;
+				if (/rgb/i.test(rt) && typeof m_sty[fgarr] == 'undefined') {
+					let fgr = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
+					m_sty[fgarr] = [fgr[0],fgr[1],fgr[2],fgarr[3]];
+					rt = value.replace(/color[^\(]*rgb[a]?\([^\)]+\)/ig,'color:rgba('+fgr[0]+','+fgr[1]+','+fgr[2]+','+fgarr[3]+')');
+					//style_node.sheet.insertRule(key+'{'+rt+'}', rn++);
+					if (!b_sec)
+						sheet.insertRule(key+'{'+rt+'}', rules.length);
+					else
+						style_node.sheet.insertRule(key+"{"+rt+"}", rn++);
+					//txtrul += key + " { " + rt + " }\n";
+				}
+				}
+			}
+			if (/\b(body|html|\[s__)/i.test(key) || key.replaceAll(/\w+/img,'').length == 0) continue;
+			if (typeof m_ss.get(key) == 'undefined' && cfg.threshold > 0 && /font-size[^\;]*px/i.test(value)) {
+				let rt = value.replace(/.*font-size.*?([0-9\.\%]+px).*/i,'$1');
+				if (typeof rt != 'undefined' && rt.length > 0) {
+				let nfz = parseInt(rt);
+				if (nfz <= cfg.threshold && nfz > 1) {
+				rt = value.replace(/font-size.*?[0-9\.\%]+px/ig,"font-size:"+f2_sizes[nfz]);
+				if (!b_sec)
+					sheet.insertRule(key+'{'+rt+'}', rules.length);
+				else
+					style_node.sheet.insertRule(key+"{"+rt+"}", rn++);
+				m_ss.set(key, f2_sizes[nfz]);
+				b_rules.push(key);
+				//txtrul += key + " { "+ rt + " }\n";
+				}
+				}
+			}
+			}
+			}
+			} catch (error) {
+				console.log('cssrules security   !');
+				b_sec = true;
+			}
+		}
+
+		if (cfg.forcePlhdr && cfg.forceIInv) {
 		if (notInsertedRule && style_node.sheet != null) {
 			style_node.sheet.insertRule("IMG,SVG,CANVAS,OBJECT,VIDEO,EMBED,INPUT[type='image'],[style^='background-image:'] { filter:invert(1)!important; }", rn++);
 			style_node.sheet.insertRule("frame,iframe { filter:invert(1)!important; }", rn++);
@@ -1299,6 +1355,11 @@ function start(cfg, url)
 
 			if (b_fnt[node_count] == false && cfg.threshold > 0 && (!b_iimg[node_count] || b_ctext[node_count] > 0)) {
 				b_fnt[node_count] = true;
+				let sk = false;
+				if (node.id || node.className)
+					if (b_rules.includes("#"+node.id) || b_rules.includes(node.className))
+						sk = true;
+				if (!sk) {
 				let nsty = node.getAttribute('style');
 				if (nsty == null) nsty = '';
 				let sfz = style.fontSize;
@@ -1341,8 +1402,14 @@ function start(cfg, url)
 					nsty = node.getAttribute('style');
 					if (nsty == null) nsty = '';
 				}
+				}
 			} else if (b_fnt[node_count] != true && cfg.threshold > 0 && (!b_iimg[node_count] || b_ctext[node_count] > 0)) {
 				b_fnt[node_count] = true;
+				let sk = false;
+				if (node.id || node.className)
+					if (b_rules.includes("#"+node.id) || b_rules.includes(node.className))
+						sk = true;
+				if (!sk) {
 				let sfz = style.fontSize;
 				let nfz = parseInt(sfz);
 				if (parseFloat(sfz) <= cfg.threshold) {
@@ -1368,6 +1435,7 @@ function start(cfg, url)
 						}
 					}
 				}
+				}
 			}
 			if (cfg.threshold > 0 && (!b_iimg[node_count] || b_ctext[node_count] > 0)) {
 				let nsty = node.getAttribute('style');
@@ -1375,64 +1443,65 @@ function start(cfg, url)
 				if (cfg.normalInc2) {
 					let col = getRGBarr(style.color);
 					if (typeof col[3] == 'undefined') col[3] = 1;
+					col = [parseInt(col[0]), parseInt(col[1]), parseInt(col[2]), parseInt(col[3])];
 					let cful = calcColorfulness(col);
 					let pcol = col;
 					if (typeof b_idone[style.color] == 'undefined' && col.length > 0 && cful >= 24) {
-						if (cfg.forcePlhdr && n_inv > 2 && !nodes_behind_inv.includes(node) && !/invert/.test(style.filter) && Math.min(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[1])) {
-						if (parseInt(col[0]) >= parseInt(col[2])) {
+						if (cfg.forcePlhdr && n_inv > 2 && !nodes_behind_inv.includes(node) && !/invert/.test(style.filter) && Math.min(col[0],col[1],col[2]) != col[1]) {
+						if (col[0] >= col[2]) {
 							let blu = col[1];
 							col[1] = col[2];
 							col[2] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
-						} else if (parseInt(col[2]) > parseInt(col[0])) {
+						} else if (col[2] > col[0]) {
 							let blu = col[1];
 							col[1] = col[0];
 							col[0] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
 						}
-						} else if (cfg.forcePlhdr && n_inv > 2 && (nodes_behind_inv.includes(node) || /invert/.test(style.filter)) && Math.max(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[1])) {
-						if (parseInt(col[2]) >= parseInt(col[0])) {
+						} else if (cfg.forcePlhdr && n_inv > 2 && (nodes_behind_inv.includes(node) || /invert/.test(style.filter)) && Math.max(col[0],col[1],col[2]) != col[1]) {
+						if (col[2] >= col[0]) {
 							let blu = col[1];
 							col[1] = col[2];
 							col[2] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
-						} else if (parseInt(col[0]) > parseInt(col[2])) {
+						} else if (col[0] > col[2]) {
 							let blu = col[1];
 							col[1] = col[0];
 							col[0] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
 						}
-						} else if (cfg.forcePlhdr && n_inv <= 2  && Math.max(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[2])) {
-						if (parseInt(col[0]) > parseInt(col[1])) {
+						} else if (cfg.forcePlhdr && n_inv <= 2  && Math.max(col[0],col[1],col[2]) != col[2]) {
+						if (col[0] > col[1]) {
 							let blu = col[2];
 							col[2] = col[0];
 							col[0] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
-						} else if (parseInt(col[1]) > parseInt(col[0])) {
+						} else if (col[1] > col[0]) {
 							let blu = col[2];
 							col[2] = col[1];
 							col[1] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
 						}
-						} else if (!b_forced && !cfg.forcePlhdr && cfg.advDimming && Math.min(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[1])) {
-						if (parseInt(col[2]) >= parseInt(col[0])) {
+						} else if (!b_forced && !cfg.forcePlhdr && cfg.advDimming && Math.min(col[0],col[1],col[2]) != col[1]) {
+						if (col[2] >= col[0]) {
 							let blu = col[1];
 							col[1] = col[2];
 							col[2] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
-						} else if (parseInt(col[0]) > parseInt(col[2])) {
+						} else if (col[0] > col[2]) {
 							let blu = col[1];
 							col[1] = col[0];
 							col[0] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
 						}
-						} else if (!cfg.forcePlhdr && Math.max(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[2])) {
-						if (parseInt(col[0]) > parseInt(col[1])) {
+						} else if (!cfg.forcePlhdr && Math.max(col[0],col[1],col[2]) != col[2]) {
+						if (col[0] > col[1]) {
 							let blu = col[2];
 							col[2] = col[0];
 							col[0] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
-						} else if (parseInt(col[1]) > parseInt(col[0])) {
+						} else if (col[1] > col[0]) {
 							let blu = col[2];
 							col[2] = col[1];
 							col[1] = blu;
@@ -1448,53 +1517,54 @@ function start(cfg, url)
 					}
 					col = getRGBarr(style.backgroundColor);
 					if (typeof col[3] == 'undefined') col[3] = 1;
+					col = [parseInt(col[0]), parseInt(col[1]), parseInt(col[2]), parseInt(col[3])];
 					cful = calcColorfulness(col);
 					pcol = col;
 					if (typeof b_idone[style.backgroundColor] == 'undefined' && col.length > 0 && cful >= 24) {
-						if (cfg.forcePlhdr && !nodes_behind_inv.includes(node) && !/invert/.test(style.filter) && Math.min(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[2])) {
-						if (parseInt(col[1]) >= parseInt(col[0])) {
+						if (cfg.forcePlhdr && !nodes_behind_inv.includes(node) && !/invert/.test(style.filter) && Math.min(col[0],col[1],col[2]) != col[2]) {
+						if (col[1] >= col[0]) {
 							let blu = col[2];
 							col[2] = col[0];
 							col[0] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
-						} else if (parseInt(col[0]) > parseInt(col[1])) {
+						} else if (col[0] > col[1]) {
 							let blu = col[2];
 							col[2] = col[1];
 							col[1] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
 						}
-						} else if (!b_forced && !cfg.forcePlhdr && cfg.advDimming && Math.max(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[2])) {
-						if (parseInt(col[0]) >= parseInt(col[1])) {
+						} else if (!b_forced && !cfg.forcePlhdr && cfg.advDimming && Math.max(col[0],col[1],col[2]) != col[2]) {
+						if (col[0] >= col[1]) {
 							let blu = col[2];
 							col[2] = col[0];
 							col[0] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
-						} else if (parseInt(col[1]) > parseInt(col[0])) {
+						} else if (col[1] > col[0]) {
 							let blu = col[2];
 							col[2] = col[1];
 							col[1] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
 						}
-						} else if (cfg.forcePlhdr && (nodes_behind_inv.includes(node) || /invert/.test(style.filter)) && Math.max(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[2])) {
-						if (parseInt(col[0]) > parseInt(col[1])) {
+						} else if (cfg.forcePlhdr && (nodes_behind_inv.includes(node) || /invert/.test(style.filter)) && Math.max(col[0],col[1],col[2]) != col[2]) {
+						if (col[0] > col[1]) {
 							let blu = col[2];
 							col[2] = col[0];
 							col[0] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
-						} else if (parseInt(col[1]) > parseInt(col[0])) {
+						} else if (col[1] > col[0]) {
 							let blu = col[2];
 							col[2] = col[1];
 							col[1] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
 						}
-						} else if (!cfg.forcePlhdr && Math.max(parseInt(col[0]),parseInt(col[1]),parseInt(col[2])) != parseInt(col[2])) {
-						if (parseInt(col[0]) > parseInt(col[1])) {
-							if (parseInt(col[0]) > parseInt(col[1])) {
+						} else if (!cfg.forcePlhdr && Math.max(col[0],col[1],col[2]) != col[2]) {
+						if (col[0] > col[1]) {
+							if (col[0] > col[1]) {
 							let blu = col[2];
 							col[2] = col[0];
 							col[0] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
-						} else if (parseInt(col[1]) > parseInt(col[0])) {
+						} else if (col[1] > col[0]) {
 							let blu = col[2];
 							col[2] = col[1];
 							col[1] = blu;
