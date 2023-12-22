@@ -363,14 +363,32 @@ function isImage(ch, nc, imar) {
 	let bgim = gcs.backgroundImage ? gcs.backgroundImage : '';
 	let chsrc = ch.src ? ch.src : '';
 	let itag = ch.nodeName.toUpperCase();
-	if (itag == 'IMG') {
+	switch (itag) {
+	case 'IMG':
 		wi = parseInt(ch.getBoundingClientRect().width);
 		he = parseInt(ch.getBoundingClientRect().height);
 		imar[nc] = wi*he;
 		if (wi > 499 && he > 139) b_imgforce[nc] = true;
 		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 35000) return false;
 		return true;
-	} else if ( gcs != null && bgim != '' && bgim != 'none' && gcs.getPropertyValue('display') != 'none' && !/(php|htm[l]?|asp[x]?)[\"\'\)]/i.test(bgim) && /(\/|http|url|gradient)/ig.test(bgim)) {
+	case'SVG':
+		wi = parseInt(ch.getBoundingClientRect().width);
+		he = parseInt(ch.getBoundingClientRect().height);
+		imar[nc] = wi*he;
+		if (wi > 499 && he > 139) b_imgforce[nc] = true;
+		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 35000) return false;
+		return true;
+	case 'VIDEO':
+	case 'EMBED':
+	case 'OBJECT':
+	case 'CANVAS':
+		wi = parseInt(ch.getBoundingClientRect().width);
+		he = parseInt(ch.getBoundingClientRect().height);
+		imar[nc] = wi*he;
+		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 35000) return false;
+		return true;
+	default:
+	if ( gcs != null && bgim != '' && bgim != 'none' && gcs.getPropertyValue('display') != 'none' && !/(php|htm[l]?|asp[x]?)[\"\'\)]/i.test(bgim) && /(\/|http|url|gradient)/ig.test(bgim)) {
 		wi = parseInt(ch.getBoundingClientRect().width);
 		he = parseInt(ch.getBoundingClientRect().height);
 		if (!/gradient/i.test(bgim)) {
@@ -396,20 +414,7 @@ function isImage(ch, nc, imar) {
 				return false;
 			}		
 		}
-	} else if (itag == 'SVG') {
-		wi = parseInt(ch.getBoundingClientRect().width);
-		he = parseInt(ch.getBoundingClientRect().height);
-		imar[nc] = wi*he;
-		if (wi > 499 && he > 139) b_imgforce[nc] = true;
-		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 35000) return false;
-		return true;
-	} else if (/(VIDEO|EMBED|OBJECT|CANVAS)/.test(itag)) {
-		wi = parseInt(ch.getBoundingClientRect().width);
-		he = parseInt(ch.getBoundingClientRect().height);
-		imar[nc] = wi*he;
-		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 35000) return false;
-		return true;
-	} else if (typeof chsrc != 'undefined' && chsrc != null && chsrc != '' && ch.display != 'none' && ch.type != null && typeof ch.type != 'undefined' && /image/i.test(ch.type) && !/(php|htm[l]?|asp[x]?)[\"\'\)]/i.test(chsrc) && !/(php|htm[l]?|asp[x]?)[\"\'\)]/i.test(bgim)  && (/(\/|http|url)/ig.test(chsrc) || /gradient/i.test(bgim))) {
+	} else if (typeof chsrc != 'undefined' && chsrc != null && chsrc != '' && ch.display != 'none' && ch.type != null && typeof ch.type != 'undefined' && ch.type.toLowerCase() == 'image' && !/(php|htm[l]?|asp[x]?)[\"\'\)]/i.test(chsrc) && !/(php|htm[l]?|asp[x]?)[\"\'\)]/i.test(bgim)  && (/(\/|http|url)/ig.test(chsrc) || /gradient/i.test(bgim))) {
 		wi = parseInt(ch.getBoundingClientRect().width);
 		he = parseInt(ch.getBoundingClientRect().height);
 		imar[nc] = parseInt(ch.width) * parseInt(ch.height);
@@ -418,6 +423,7 @@ function isImage(ch, nc, imar) {
 		return true;
 	} else {
 		return false;
+	}
 	}
 }
 
@@ -570,8 +576,8 @@ function getCSS(cfg) {
 	if (cfg.size > 0 && cfg.threshold > 0) {
 		while (c < cfg.threshold) {
 			++c;
-			cc = ((cfg.size*0.2) + parseFloat(cfg.threshold*1.075) - (2*c/11)).toFixed(1);
-			pcent = Math.abs((2.5*cfg.size) - (c*20/cfg.threshold)).toFixed(2);
+			cc = (cfg.size*0.2) + parseFloat(cfg.threshold*1.075) - (2*c/11);
+			pcent = Math.abs((2.5*cfg.size) - (c*20/cfg.threshold));
 			if (parseFloat(cc) < c) { cc = c; }
 			if (parseFloat(cc) > cfg.threshold) cc = cfg.threshold;
 			let cc1 = parseInt(cc);
@@ -763,6 +769,7 @@ function start(cfg, url)
 	let m_ss = new Map();
 	let nodes_behind_img = [];
 	let nodes_behind_inv = [];
+	let n_imgcount = 0;
 	let b_csp = true;
 	let b_forced = false;
 	var lang = document.documentElement.lang;
@@ -831,6 +838,7 @@ function start(cfg, url)
 		b_idone = {};
 		images = [];
 		img_area = [];
+		n_imgcount = 0;
 
 		var nn_style, nn_reg;
 		var notInsertedRule = true;
@@ -844,7 +852,7 @@ function start(cfg, url)
 			nn_reg = /invert/;
 		} else {
 			nn_style = '';
-			nn_reg = /vert/;
+			nn_reg = /\<\&\%/;
 		}
 
 		let node_count = 0;
@@ -869,24 +877,24 @@ function start(cfg, url)
 			n = images[x];
 			nc = map.get(n);
 			let img_children = Array.from(n.getElementsByTagName("*"));
-			if (img_area[nc] > 35000 && img_area[nc] < 5000000)
+			if (img_area[nc] > 35000 && img_area[nc] < 5000000) {
 				nodes_behind_img.push(...img_children);
+				n_imgcount++;
+			}
 			if (n.parentNode && b_iimg[map.get(n.parentNode)])
 				b_chimg[map.get(n.parentNode)] = true;
 			}
 		}
 		var doc = document;
+		if (!cfg.ssrules) {
 		let sheets = doc.styleSheets;
 		for (let j =0; j < sheets.length; j++ ) {
 			try {
 				const ruleList = sheets[j].cssRules;
 				let rl = ruleList.length;
-				for (let i = 0; i < rl; i++) {
-					if (m_ss.get(ruleList[i].style.cssText) != true)
-						m_ss.set(ruleList[i].style.cssText, true);
-					else
-						continue;
-					if (ruleList[i].style) {
+				for (let i = 0; i < ruleList.length; i++) {
+					if (ruleList[i].href) { ruleList = ruleList[i].styleSheet.cssRules; i = 0; continue; }
+					if (ruleList[i].style && /\d+.*?px/i.test(ruleList[i].style.fontSize)) {
 					let fsz = parseInt(ruleList[i].style.fontSize);
 					if (/font(-size)?/i.test(ruleList[i].style.cssText))
 					if (fsz > 1 && fsz <= cfg.threshold ) {
@@ -907,11 +915,16 @@ function start(cfg, url)
 				break;
 			}
 		}
+		}
 		let rn = 0;
 		if (cfg.ssrules) {
 		let m_sec = {};
 		let m_count = {};
 		let b_sec = false;
+		let body_nfz = 16;
+		let bcs = getComputedStyle(document.body);
+		if (bcs.fontSize && /\d.*?px/i.test(bcs.fontSize))
+			body_nfz = parseFloat(bcs.fontSize);
 		for (var si = 0; si < document.styleSheets.length; si++) {
 			try {
 			var sheet = document.styleSheets[si];
@@ -924,38 +937,72 @@ function start(cfg, url)
 				if (rule.selectorText && rule.style) {
 				let key = rule.selectorText;
 				let value = rule.style.cssText;
-			if (cfg.forcePlhdr && cfg.normalInc && /color:\s*rgba?\(/i.test(value)) {
+			if (cfg.forcePlhdr && cfg.normalInc && (rule.style.color || rule.style.backgroundColor || rule.style.borderColor)) {
 				m_count[sheet] = true;
-				let rt = value.replace(/.*color[^\(]+(rgba?\([^\)]+\)).*/i,'$1');
-				if (typeof rt != 'undefined' && rt.length > 0) {
-				let fgarr = getRGBarr(rt);
+				if (rule.style.color && rule.style.color.substring(0,3) == 'rgb') {
+				let fgarr = getRGBarr(rule.style.color);
 				if (typeof fgarr[3] == 'undefined') fgarr[3] = 1.0;
 				if (typeof m_sty[fgarr] == 'undefined') {
 					let fgr = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
 					m_sty[fgarr] = [fgr[0],fgr[1],fgr[2],fgarr[3]];
-				/**	rt = value.replace(/color[^\(]*rgba?\([^\)]+\).*?(important)?/img,'color:rgba('+fgr[0]+','+fgr[1]+','+fgr[2]+','+fgarr[3]+')!important');
-					style_node.sheet.insertRule(key+'{'+rt+'}', 0);
-					sheet.insertRule(key+'{'+rt+'}', rules.length);
-					style_node.sheet.insertRule(key+"{"+rt+"}", rn++);*/
+				}
+				}
+				if (rule.style.backgroundColor && rule.style.backgroundColor.substring(0,3) == 'rgb') {
+				let fgarr = getRGBarr(rule.style.backgroundColor);
+				if (typeof fgarr[3] == 'undefined') fgarr[3] = 1.0;
+				if (typeof m_sty[fgarr] == 'undefined') {
+					let fgr = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
+					m_sty[fgarr] = [fgr[0],fgr[1],fgr[2],fgarr[3]];
+				}
+				}
+				if (rule.style.borderColor && rule.style.borderColor.substring(0,3) == 'rgb') {
+				let fgarr = getRGBarr(rule.style.borderColor);
+				if (typeof fgarr[3] == 'undefined') fgarr[3] = 1.0;
+				if (typeof m_sty[fgarr] == 'undefined') {
+					let fgr = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
+					m_sty[fgarr] = [fgr[0],fgr[1],fgr[2],fgarr[3]];
 				}
 				}
 			}
 			if (/(\bbody|\bhtml|\[s__)/i.test(key)) continue;
-			if (typeof m_ss.get(key) == 'undefined' && cfg.threshold > 0 && /font-size[^\;]*px/i.test(value)) {
+			if (typeof m_ss.get(key) == 'undefined' && cfg.threshold > 0 && cfg.size > 0 && rule.style.fontSize) {
 				m_count[sheet] = true;
-				let rt = value.replace(/.*font-size.*?([0-9\.\%]+px).*/i,'$1');
-				if (typeof rt != 'undefined' && rt.length > 0) {
+				let b_set = false;
+				if (/[\d\.]+.*?px/i.test(rule.style.fontSize)) {
+				let rt = rule.style.fontSize.replace(/px/ig, '');
 				let nfz = parseInt(rt);
 				if (nfz <= cfg.threshold && nfz > 1) {
-				//rt = value.replace(/font-size.*?[0-9\.\%]+px/img,"font-size:"+f2_sizes[nfz]);
-				txtrul = key+' {font-size: '+f2_sizes[nfz]+' !important;';
-				if (!cfg.skipHeights)
-					txtrul += 'line-height: '+h_sizes[nfz]+' !important;';
-				txtrul += ' }\n';
-				m_ss.set(key, f2_sizes[nfz]);
-				b_rules += '||' + key.trim() + '||';
+				txtrul = key+' { '+f_sizes[nfz]+' }';
+				m_ss.set(key, f_sizes[nfz]);
+				b_set = true;
 				n_rulecount++;
 				}
+				} else if (/[\d\.]+.*?pt/i.test(rule.style.fontSize)) {
+				let rt = rule.style.fontSize.replace(/pt/ig, '');
+				let nfz = parseInt(parseFloat(rt)*1.333334);
+				if (nfz <= cfg.threshold && nfz > 1) {
+				txtrul = key+' { '+f_sizes[nfz]+' }';
+				m_ss.set(key, f_sizes[nfz]);
+				b_set = true;
+				n_rulecount++;
+				}
+				} else if (/[\d\.]+.*?r?em/i.test(rule.style.fontSize)) {
+				let rt = rule.style.fontSize.replace(/r?em/ig, '');
+				let nfz = parseInt(parseFloat(rt)*body_nfz);
+				if (nfz <= cfg.threshold && nfz > 1) {
+				txtrul = key+' { '+f_sizes[nfz]+' }';
+				m_ss.set(key, f_sizes[nfz]);
+				b_set = true;
+				n_rulecount++;
+				}
+				}
+				if (b_set) {
+					if (key.indexOf(',') < 0) {
+						b_rules += '||'+key.trim()+'||';
+					} else {
+						let arr_sels = key.trim().split(',');
+						for (let sel of arr_sels) { b_rules += '||'+sel.trim()+'||'; }
+					}
 				}
 			}
 			}
@@ -963,7 +1010,7 @@ function start(cfg, url)
 				sheet.insertRule(txtrul,0);
 				b_sec = false;
 			}
-			
+
 			}
 			} catch (error) {
 				console.log('cssrules security   !');
@@ -971,7 +1018,7 @@ function start(cfg, url)
 				b_sec = true;
 			}
 		}
-		if (Object.entries(m_sec).length >= Object.entries(m_count).length || n_rulecount < 3) { console.log('Rules cleared'); b_rules = ''; n }
+		if (n_rulecount < 3) { console.log('Rules cleared'); b_rules = ''; n_rulecount = 0; }
 		}
 
 		if (cfg.forcePlhdr && cfg.forceIInv) {
@@ -1055,7 +1102,7 @@ function start(cfg, url)
 			let bgim = cst.backgroundImage ? cst.backgroundImage : '';
 			let imsrc = img.src ? img.src : '';
 			if (!b_imgforce[n_c] || b_ctext[n_c] > 95)
-			if (!/(IMG|SVG|VIDEO|OBJECT|EMBED|CANVAS)/i.test(img.nodeName) && !/(slide|banner|background.*page|page.*background)/ig.test(img.className) && ((typeof imsrc != 'undefined' && imsrc != null && imsrc != '' && !/(\/|http|url)/ig.test(imsrc) && /gradient/i.test(bgim)) || (typeof bgim != 'undefined' && bgim != '' && bgim != 'none' && !/(\/|http|url|gradient)/ig.test(bgim)) || (b_ctext[n_c] > 95 && !b_imgforce[n_c]) && !/gradient/i.test(bgim)) || (((b_ctext[n_c] <= 31 && b_ctext[n_c] > 1 && !/gradient/i.test(bgim) && !/\b(A|INPUT)/i.test(img.nodeName) && !/button/i.test(img.className)) || /nav/i.test(img.className)) && !b_imgforce[n_c] && img_area[n_c] < 35000 && img_area[n_c] >= 0)) {
+			if (!/(IMG|SVG|VIDEO|OBJECT|EMBED|CANVAS)/i.test(img.nodeName) && !/(slide|banner|background.*page|page.*background)/ig.test(img.className) && ((typeof imsrc != 'undefined' && imsrc != null && imsrc != '' && !/(\/|http|url)/ig.test(imsrc) && /gradient/i.test(bgim)) || (typeof bgim != 'undefined' && bgim != '' && bgim != 'none' && !/(\/|http|url|gradient)/ig.test(bgim)) || (b_ctext[n_c] > 95 && !b_imgforce[n_c]) && !/gradient/i.test(bgim)) || (((img.textContent.indexOf(' ') > 0 && b_ctext[n_c] > 0 && !/gradient/i.test(bgim) && !/\b(A|INPUT)/i.test(img.nodeName) && !/button/i.test(img.className)) || /nav/i.test(img.className)) && !b_imgforce[n_c] && img_area[n_c] < 35000 && img_area[n_c] >= 0)) {
 				if (!(hdr && hdr.contains(img))) {
 				img.style.setProperty('filter','unset', 'important');
 				continue;
@@ -1085,7 +1132,7 @@ function start(cfg, url)
 				img.style.setProperty('filter','unset','important');
 				continue;
 			}
-			if (!nn_reg.test(isty) && !nn_reg.test(pisty) && !p_s && (!containsImage(img, images) || b_imgforce[n_c] || ((!b_chimg[n_c] && hdr != null && hdr.contains(img)) || img.type == 'image' || bgim.length > 0 || imsrc.length > 0 || b_chimg[n_c])))
+			if (!nn_reg.test(isty) && !nn_reg.test(pisty) && !p_s && (!containsImage(img, images) || b_imgforce[n_c] || ((!b_chimg[n_c] && hdr != null && hdr.contains(img)) || /image/i.test(img.type) || bgim.length > 0 || imsrc.length > 0 || b_chimg[n_c])))
 				if (!(/\b(UL|OL)/i.test(img.nodeName) && img.childNodes.length < 4)) {
 					img.style.setProperty('filter','invert(1)','important');
 					let chldn = Array.from(img.getElementsByTagName('*'));
@@ -1101,7 +1148,8 @@ function start(cfg, url)
 		}
 		b_idone = {};
 
-		if (cfg.advDimming) {
+		if (cfg.advDimming)
+			if (!(cfg.input_border && cfg.underlineLinks) || n_imgcount > 2) {
 			for (let x=0; x < images.length; x++) {
 				let img = images[x];
 				let pn = img;
@@ -1136,12 +1184,16 @@ function start(cfg, url)
 
 			if (cfg.ssrules && n_rulecount > 0) {
 			let cnames = node.className.length > 0 ? node.className.split(/\s+/) : [];
-			if (node.id.length > 0 && b_rules.indexOf(node.id) > 0)
+			let style = getComputedStyle(node);
+			if (style.fontSize && !f2_sizes.includes(style.fontSize)) {
+				sk = false;
+			} else if (node.id.length > 0 && b_rules.indexOf(node.id+'||') > 0) {
 				sk = true;
-			else if (node.className.length > 0 && (b_rules.indexOf(cnames[0]) > 0 || b_rules.indexOf(cnames[1]) > 0 || b_rules.indexOf(cnames[2]) > 0 || b_rules.indexOf(cnames[3]) > 0 || b_rules.indexOf(cnames[4]) > 0 || b_rules.indexOf(cnames[5]) > 0))
+			} else if (node.className.length > 0 && (b_rules.indexOf(cnames[0]+'||') > 0 || b_rules.indexOf(cnames[1]+'||') > 0 || b_rules.indexOf(cnames[2]+'||') > 0 || b_rules.indexOf(cnames[3]+'||') > 0 || b_rules.indexOf(cnames[4]+'||') > 0 || b_rules.indexOf(cnames[5]+'||') > 0)) {
 				sk = true;
-			else if (b_rules.search('||'+tag.toLowerCase()+'\\b') > 0 || b_rules.search('||'+tag+'\\b') > 0)
+			} else if (b_rules.search('\\b'+tag.toLowerCase()+'||') > 0 || b_rules.search('\\b'+tag+'||') > 0) {
 				sk = true;
+			}
 			}
 
 			if (/I?FRAME\b/i.test(tag)) {
@@ -1317,7 +1369,10 @@ function start(cfg, url)
 					doc_obs.observe(document.body, { childList: true, subtree: true });
 			}
 
-			if (!sk || /\b(INPUT|TEXTAREA|SELECT)/i.test(tag)) {
+			let is_xinput = node.type && /(checkbox|color|date|hidden|submit|image|month|radio|range)/i.test(node.type);
+			let is_oinput = node.type && /(text|number|email|password|date|time|week|url|tel|search|month)/i.test(node.type);
+
+			if (!sk || is_oinput) {
 			if (b_fnt[node_count] == false && cfg.threshold > 0 && (!b_iimg[node_count] || b_ctext[node_count] > 0)) {
 				b_fnt[node_count] = true;
 				let nsty = node.getAttribute('style');
@@ -1537,7 +1592,7 @@ function start(cfg, url)
 						node.style.setProperty('background-color', pcol,'important');
 					}
 				}
-				if (!cfg.skipHeights && tag != 'INPUT' && b_ctext[node_count] > 2 && (node.getElementsByTagName('*').length < 4 || (cfg.start3 && node.hasAttribute(focalAnchors.attrNameContainer) && node.getElementsByTagName('*').length < 50)))
+				if (!cfg.skipHeights && !is_xinput && b_ctext[node_count] > 2 && (node.getElementsByTagName('*').length < 4 || (cfg.start3 && node.hasAttribute(focalAnchors.attrNameContainer) && node.getElementsByTagName('*').length < 50)))
 					node.setAttribute('h__', 2);
 				if (cfg.makeCaps) {
 					if (eng)
@@ -1566,7 +1621,7 @@ function start(cfg, url)
 				}
 				}
 				if (/\b(INPUT|TEXTAREA|SELECT|BUTTON)/i.test(tag)) {
-					if (!/(checkbox|color|date|hidden|image|month|radio|range)/i.test(node.type)) {
+					if (!is_xinput) {
 					if (node.textContent != null && node.textContent != '' && style.getPropertyValue('width') != null && style.getPropertyValue('width') != '') {
 					let nwidth = ';width: calc( ' + style.getPropertyValue('width') + ' + ' + (cfg.size/2).toFixed(1) + '% )!important;';
 					if (style.height && parseInt(style.height) <= parseInt(cfg.threshold)*2.25)
@@ -1577,7 +1632,7 @@ function start(cfg, url)
 					if (nsty.length > 0 && !cfg.skipHeights)
 						node.setAttribute('style', nsty);
 					}
-					if (!node.disabled && cfg.strength % 2 == 1 && (/(TEXTAREA|TEXT)/i.test(tag) || /(text|number|email|password|date|time|week|url|tel|search|month)/i.test(node.type))) {
+					if (!node.disabled && cfg.strength % 2 == 1 && (/(TEXTAREA|TEXT)/i.test(tag) || is_oinput)) {
 					let txtcolor = style.color;
 					let bgcolor = style.backgroundColor;
 					if (txtcolor == null || txtcolor.length < 1) txtcolor = 'rgb(0,0,0)';
@@ -1611,28 +1666,28 @@ function start(cfg, url)
 			}
 */
 			if (cfg.input_border && !(cfg.advDimming && cfg.underlineLinks)) {
-				if(/(INPUT|TEXTAREA|SELECT)/i.test(tag) && node.type != 'submit')
+				if(/(INPUT|TEXTAREA|SELECT)/i.test(tag) && is_oinput)
 					node.setAttribute('b__', '');
-			}
-
-			if (cfg.underlineLinks && !(cfg.advDimming && cfg.input_border))
-			if (is_link) {
-				node.setAttribute('u__', '');
-				let nstyl = node.getAttribute('style');
-				if (nstyl == null) { nstyl = ''; }
-				let txtcolor = style.color;
-				if (txtcolor == null || txtcolor.length < 1) txtcolor = 'rgb(0,0,0)';
-				let txt_brt = calcBrightness(getRGBarr(txtcolor));
-				if (txt_brt <= 176) 
-					txtcolor = 'rgb(0,0,0)';
-				else
-					txtcolor = 'rgb(255,255,255)';
-				let txtstyle = 'color:'+txtcolor+'!important;';
-				node.setAttribute('style',nstyl + ';text-decoration:underline;'+txtstyle);
 			}
 
 			if (b_ctext[node_count] < 1)
 				return;
+
+			let is_link  = tag === 'A';
+
+			if (cfg.underlineLinks && !(cfg.advDimming && cfg.input_border))
+			if (is_link) {
+				node.setAttribute('u__', '');
+				let txtcolor = style.color;
+				if (txtcolor == null || txtcolor.length < 1) txtcolor = 'rgb(0,0,0)';
+				let txt_brt = calcBrightness(getRGBarr(txtcolor));
+				if (txt_brt <= 160) 
+					txtcolor = 'rgb(0,0,0)';
+				else
+					txtcolor = 'rgb(255,255,255)';
+				node.style.setProperty('color',txtcolor,'important');
+				node.style.setProperty('text-decoration','underline');
+			}
 
 			let color = style.getPropertyValue('color');
 
@@ -1644,21 +1699,25 @@ function start(cfg, url)
 			if (!rgba_arr)
 				return;
 
-			let bg_color = getBgColor(pnode, style.backgroundColor);
+			if (cfg.forceOpacity && rgba_arr[3] > 0 && rgba_arr[3] < 1) {
+				rgba_arr[3] = 1;
+				color = 'rgba('+rgba_arr[0]+','+rgba_arr[1]+','+rgba_arr[2]+','+rgba_arr[3]+')';
+				node.style.setProperty('color',color,'important');
+			}
+
+			let bg_color        = getBgColor(pnode, style.backgroundColor);
 
 			let fg_brt          = calcBrightness(rgba_arr);
 
-			let fg_colorfulness = calcColorfulness(rgba_arr);
 			let bg_brt          = getBgBrightness(pnode, bg_color);
 
-			let bg_threshold = 190 - cfg.strength + img_offset;
-
-			let contrast = Math.abs(bg_brt - fg_brt);
-			let is_link  = tag === 'A';
+			let bg_threshold    = 190 - cfg.strength + img_offset;
 
 			if (cfg.skipColoreds) {
+				let contrast          = Math.abs(bg_brt - fg_brt);
+				let fg_colorfulness   = calcColorfulness(rgba_arr);
 				let min_contrast      = 40 + (cfg.strength / 2);
-				let min_link_contrast = 40 + (cfg.strength / 2);
+				let min_link_contrast = 80 + (cfg.strength / 2);
 				let min_colorfulness  = 64;
 
 				if (is_link)
