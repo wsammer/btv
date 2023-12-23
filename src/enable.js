@@ -702,6 +702,12 @@ function start(cfg, url)
 {
 	css_node.nodeValue = getCSS(cfg);
 
+	if (cfg.ssrules) {
+	for (let s of document.getElementsByTagName('STYLE')) {
+		css_node.nodeValue += s.innerHTML;
+	}
+	}
+
 	style_node.appendChild(css_node);
 
 	let nodes = [];
@@ -1007,7 +1013,7 @@ function start(cfg, url)
 			}
 			}
 			if (!b_sec && txtrul.length > 0) {
-				sheet.insertRule(txtrul,0);
+				sheet.insertRule(txtrul, rules.length);
 				b_sec = false;
 			}
 
@@ -1018,7 +1024,7 @@ function start(cfg, url)
 				b_sec = true;
 			}
 		}
-		if (n_rulecount < 3) { console.log('Rules cleared'); b_rules = ''; n_rulecount = 0; }
+		if (n_rulecount < 2) { console.log('Rules cleared'); b_rules = ''; n_rulecount = 0; }
 		}
 
 		if (cfg.forcePlhdr && cfg.forceIInv) {
@@ -1470,12 +1476,12 @@ function start(cfg, url)
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
 						}
 						} else if (cfg.forcePlhdr && n_inv > 2 && (nodes_behind_inv.includes(node) || /invert/.test(style.filter)) && cmax != col[1]) {
-						if (col[2] >= col[0]) {
+						if (col[0] >= col[2]) {
 							let blu = col[1];
 							col[1] = col[2];
 							col[2] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
-						} else if (col[0] > col[2]) {
+						} else if (col[2] > col[0]) {
 							let blu = col[1];
 							col[1] = col[0];
 							col[0] = blu;
