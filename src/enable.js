@@ -445,7 +445,7 @@ function parentStyle(node,reg) {
 	let b_found = false;
 	while (pch && !/\b(BODY|HTML)/i.test(pch.nodeName)) {
 		if (pch && pch.getAttribute)
-		if (!reg.test(pch.getAttribute('style'))) {
+		if (!reg.test(pch.getAttribute('style')) && !reg.test(pch.style.filter)) {
 			pch = pch.parentNode;
 			continue;
 		} else {
@@ -722,14 +722,13 @@ function start(cfg, url)
 		'STYLE',
 		'VIDEO',
 		'AUDIO',
-		'IMG',
 		'SVG',
 		'EMBED',
 		'OBJECT',
 		'SOURCE',
 		'CANVAS',
 		'NOSCRIPT',
-		'undefined'
+		'UNDEFINED'
 	];
 
 	let colors_to_skip  = [
@@ -738,8 +737,6 @@ function start(cfg, url)
 	];
 
 	let hdr_tags = ['H1', 'H2', 'H3', 'H4'];
-	if (cfg.skipHeadings)
-		tags_to_skip.push(...hdr_tags);
 
 	if (cfg.skipWhites) {
 		let white = [
@@ -763,7 +760,7 @@ function start(cfg, url)
 	let m_bocol = new Map();
 	let m_sty = {};
 	let b_emo = {};
-	let b_noemo = false;
+	let b_noemo = true;
 	let b_idone = {};
 	let b_cdone = {};
 	let b_rules = '';
@@ -840,7 +837,7 @@ function start(cfg, url)
 		b_emo = {};
 		b_rules = '';
 		n_rulecount = 0;
-		b_noemo = false;
+		b_noemo = true;
 		b_idone = {};
 		images = [];
 		img_area = [];
@@ -869,14 +866,22 @@ function start(cfg, url)
 			var n;
 			for (let x=0; x < nodes.length; x++) {
 			n = nodes[x];
+			let t = n.nodeName.toUpperCase();
+			if (tags_to_skip.includes(t)) {
+				let chln = n.getElementsByTagName('*');
+				for (let ch of chln) {
+					if (!tags_to_skip.includes(ch.nodeName.toUpperCase()))
+						tags_to_skip.push(ch.nodeName.toUpperCase());
+				}
+			}
 			nc++;
 			map.set(n, nc);
 			b_ctext[nc] = containsText(n, mp);
 			b_iimg[nc] = isImage(n, nc, img_area);
 			if (b_iimg[nc]) images.push(n);
 			if (cfg.forcePlhdr && cfg.normalInc && mutation) {
-				let ps = parentStyle(n,/filter\W*invert/);
-				if (ps) nodes_behind_inv.push(n);
+				let ps = parentStyle(n,/invert/i);
+				if (ps) nodes_behind_inv.push(Array.from(n.getElementsByTagName('*')));
 			}
 			}
 			for (let x=0; x < images.length; x++) {
@@ -1011,6 +1016,11 @@ function start(cfg, url)
 					}
 				}
 			}
+			if (cfg.forcePlhdr && cfg.forceIInv)
+			if (rule.style.content) {
+				if (/url\(/i.test(rule.style.content)) 
+					txtrul = key + ' { filter: invert(1)!important; } ';
+			}
 			}
 			if (!b_sec && txtrul.length > 0) {
 				sheet.insertRule(txtrul, rules.length);
@@ -1036,6 +1046,7 @@ function start(cfg, url)
 		}
 		let ms = null;
 		let cmap = [];
+		b_noemo = false;
 		if (doc.body != null && doc.body.innerText != null)
 			ms = doc.body.innerText.match(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/mgu);
 		if (ms != null && ms.length > 0) {
@@ -1096,7 +1107,7 @@ function start(cfg, url)
 			let img = images[x];
 //				if (/INPUT/i.test(img.nodeName) && (img.type == null || !/image/i.test(img.type))) continue;
 			n_c = map.get(img);
-			let p_s = parentStyle(img,/filter\W*invert/i);
+			let p_s = parentStyle(img,/invert/i);
 			let cst = getComputedStyle(img);
 			if (nodes_behind_inv.includes(img)) {
 				img.style.setProperty('filter','unset', 'important');
@@ -1231,7 +1242,7 @@ function start(cfg, url)
 				pnode.style.setProperty('background-color',fsty);
 			}
 
-			if (tags_to_skip.includes(tag)) return;
+			if (tags_to_skip.includes(tag) || (cfg.skipHeadings && hdr_tags.includes(tag))) return;
 
 			node_count = map.get(node);
 
@@ -1476,27 +1487,27 @@ function start(cfg, url)
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
 						}
 						} else if (cfg.forcePlhdr && n_inv > 2 && (nodes_behind_inv.includes(node) || /invert/.test(style.filter)) && cmax != col[1]) {
-						if (col[0] >= col[2]) {
+						if (col[2] >= col[0]) {
 							let blu = col[1];
 							col[1] = col[2];
 							col[2] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
-						} else if (col[2] > col[0]) {
+						} else if (col[0] > col[2]) {
 							let blu = col[1];
 							col[1] = col[0];
 							col[0] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
 						}
-						} else if (cfg.forcePlhdr && n_inv <= 2  && cmax != col[2]) {
-						if (col[0] > col[1]) {
-							let blu = col[2];
-							col[2] = col[0];
+						} else if (cfg.forcePlhdr && cmin != col[1]) {
+						if (col[2] > col[0]) {
+							let blu = col[1];
+							col[1] = col[0];
 							col[0] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
-						} else if (col[1] > col[0]) {
-							let blu = col[2];
-							col[2] = col[1];
-							col[1] = blu;
+						} else if (col[0] > col[2]) {
+							let blu = col[1];
+							col[1] = col[2];
+							col[2] = blu;
 							pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
 						}
 						} else if (!b_forced && !cfg.forcePlhdr && cfg.advDimming && cmin != col[1]) {
@@ -1723,8 +1734,8 @@ function start(cfg, url)
 				let contrast          = Math.abs(bg_brt - fg_brt);
 				let fg_colorfulness   = calcColorfulness(rgba_arr);
 				let min_contrast      = 40 + (cfg.strength / 2);
-				let min_link_contrast = 80 + (cfg.strength / 2);
-				let min_colorfulness  = 64;
+				let min_link_contrast = 40 + (cfg.strength / 2);
+				let min_colorfulness  = 33;
 
 				if (is_link)
 					min_contrast = min_link_contrast;
