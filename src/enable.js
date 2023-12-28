@@ -484,6 +484,9 @@ function containsText(node, mp)
 			} else if (typeof ch.value != 'undefined' && ch.value != null && ch.value.length > 0) {
 				r = ch.value.replace(/[^\S]+/g,'');
 				len = len + parseInt(r.length);
+			} else if (typeof ch.textContent != 'undefined' && ch.textContent != null && ch.textContent.length > 0) {
+				r = ch.textContent.replace(/[^\S]+/g,'');
+				len = len + parseInt(r.length);
 			}
 		}
 		if (ch.nodeType  == Node.TEXT_NODE && /\S/.test(ch.nodeValue)) {
@@ -1880,7 +1883,7 @@ function start(cfg, url)
 					node.setAttribute('b__', '');
 			}
 
-			if (b_ctext[node_count] < 1)
+			if (b_ctext[node_count] < 1 && node.children.length == 0)
 				return;
 
 			let is_link  = tag === 'A';
@@ -1928,7 +1931,7 @@ function start(cfg, url)
 				let fg_colorfulness   = calcColorfulness(rgba_arr);
 				let min_contrast      = 40 + (cfg.strength / 2);
 				let min_link_contrast = 40 + (cfg.strength / 2);
-				let min_colorfulness  = 33;
+				let min_colorfulness  = 63;
 
 				if (is_link)
 					min_contrast = min_link_contrast;
