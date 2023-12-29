@@ -500,9 +500,19 @@ function containsText(node, mp)
 	return len;
 }
 
+function waitForImage(im) {
+return new Promise((res, rej) => {
+if (im.complete) {
+return res();
+}
+im.onload = () => res();
+im.onerror = () => res();
+});
+}
+
 function isImage(ch, nc, imar) {
 	if (!(ch instanceof Element)) return false;
-	let gcs = getComputedStyle(ch);
+	let gcs = ch.style; //getComputedStyle(ch);
 	if (b_imgforce[nc] != true) b_imgforce[nc] = false;
 	var wi,he;
 	let bgim = gcs.backgroundImage ? gcs.backgroundImage : '';
@@ -514,14 +524,14 @@ function isImage(ch, nc, imar) {
 		he = parseInt(ch.getBoundingClientRect().height);
 		imar[nc] = wi*he;
 		if (wi > 499 && he > 99) b_imgforce[nc] = true;
-		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 35000) return false;
+		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 400) return false;
 		return true;
 	case'SVG':
 		wi = parseInt(ch.getBoundingClientRect().width);
 		he = parseInt(ch.getBoundingClientRect().height);
 		imar[nc] = wi*he;
 		if (wi > 499 && he > 99) b_imgforce[nc] = true;
-		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 35000) return false;
+		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 400) return false;
 		return true;
 	case 'VIDEO':
 	case 'EMBED':
@@ -530,32 +540,30 @@ function isImage(ch, nc, imar) {
 		wi = parseInt(ch.getBoundingClientRect().width);
 		he = parseInt(ch.getBoundingClientRect().height);
 		imar[nc] = wi*he;
-		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 35000) return false;
+		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 400) return false;
 		return true;
 	default:
 	if ( gcs != null && bgim != '' && bgim != 'none' && gcs.getPropertyValue('display') != 'none' && !/(php|htm[l]?|asp[x]?)[\"\'\)]/i.test(bgim) && /(\/|http|url|gradient)/ig.test(bgim)) {
-function waitForImage(im) {
-return new Promise((res, rej) => {
-if (im.complete) {
-return res();
-}
-im.onload = () => res();
-});
-}
-		wi = parseInt(ch.getBoundingClientRect().width);
-		he = parseInt(ch.getBoundingClientRect().height);
 		if (!/gradient/i.test(bgim)) {
 		var im, src;
-		try {
                 im = new Image();
                 src = gcs.backgroundImage.replace(/url\((['"])?(.*?)\1\)/gi, '$2');
-                im.src = src;
-		waitForImage(im);
-		} catch (e) { }
+		im.src = src;
+		/** im.decode().then(() => {
 		wi = parseInt(im.width);
 		he = parseInt(im.height);
 		imar[nc] = wi*he;
-		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 35000) return false;
+		});*/
+		waitForImage(im).then((res) => {
+		});;
+		wi = parseInt(im.naturalWidth);
+		he = parseInt(im.naturalHeight);
+		if (wi == 0 && he == 0) {
+		wi = parseInt(ch.getBoundingClientRect().width);
+		he = parseInt(ch.getBoundingClientRect().height);
+		}
+		imar[nc] = wi*he;
+		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 400) return false;
 		if ((wi > 0 && he > 0) || (wi == 0 && he == 0)) {
 			if (wi > 499 && he > 99) b_imgforce[nc] = true;
 				return true;
@@ -563,6 +571,8 @@ im.onload = () => res();
 				return false;
 		}
 		} else {
+		wi = parseInt(ch.getBoundingClientRect().width);
+		he = parseInt(ch.getBoundingClientRect().height);
 		imar[nc] = wi*he;
 		if ((wi> 1 && he > 1) || (wi == 0 && he == 0)) {
 			if (wi > 499 && he > 99) b_imgforce[nc] = true;
@@ -572,11 +582,25 @@ im.onload = () => res();
 			}		
 		}
 	} else if (typeof chsrc != 'undefined' && chsrc != null && chsrc != '' && ch.display != 'none' && ch.type != null && typeof ch.type != 'undefined' && ch.type.toLowerCase() == 'image' && !/(php|htm[l]?|asp[x]?)[\"\'\)]/i.test(chsrc) && !/(php|htm[l]?|asp[x]?)[\"\'\)]/i.test(bgim)  && (/(\/|http|url)/ig.test(chsrc) || /gradient/i.test(bgim))) {
+                im = new Image();
+                src = chsrc.replace(/url\((['"])?(.*?)\1\)/gi, '$2');
+		im.src = src;
+		/*im.decode().then(() => {
+		wi = parseInt(im.width);
+		he = parseInt(im.height);
+		imar[nc] = wi*he;
+		});*/
+		waitForImage(im).then((res) => {
+		});;
+		wi = parseInt(im.naturalWidth);
+		he = parseInt(im.naturalHeight);
+		if (wi == 0 && he == 0) {
 		wi = parseInt(ch.getBoundingClientRect().width);
 		he = parseInt(ch.getBoundingClientRect().height);
-		imar[nc] = parseInt(ch.width) * parseInt(ch.height);
-		if (parseInt(ch.width) > 499 && parseInt(ch.height) > 99) b_imgforce[nc] = true;
-		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 35000) return false;
+		}
+		imar[nc] = wi*he;
+		if (wi > 499 && he > 99) b_imgforce[nc] = true;
+		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 400) return false;
 		return true;
 	} else {
 		return false;
@@ -758,7 +782,7 @@ function getCSS(cfg) {
 		}
 	}
 	str_style = `brightness(${brght}%) contrast(${ctrst}%)`;
-	str_style2 = `1`;
+	str_style2 = '1';
 
 	return `${bold}${size_inc}${form_border}${underline}${cust}`;
 }
@@ -1033,10 +1057,14 @@ function start(cfg, url)
 						tags_to_skip.push(ch.nodeName.toUpperCase());
 				}
 			}
+			if (tags_to_skip.includes(t) || (cfg.skipHeadings && hdr_tags.includes(t))) continue;
 			nc++;
 			map.set(n, nc);
 			b_ctext[nc] = containsText(n, mp);
-			b_iimg[nc] = isImage(n, nc, img_area);
+			if (/(VIDEO|EMBED|OBJECT|CANVAS|SVG|IMG)/.test(t) || n.style.backgroundImage || n.style.src)
+				b_iimg[nc] = isImage(n, nc, img_area);
+			else
+				b_iimg[nc] = false;
 			if (b_iimg[nc]) images.push(n);
 			if (cfg.forcePlhdr && cfg.normalInc && mutation) {
 				let ps = parentStyle(n,/invert/i);
@@ -1047,7 +1075,7 @@ function start(cfg, url)
 			n = images[x];
 			nc = map.get(n);
 			let img_children = Array.from(n.getElementsByTagName("*"));
-			if (img_area[nc] > 35000 && img_area[nc] < 5000000) {
+			if (img_area[nc] > 400 && img_area[nc] < 90000000) {
 				nodes_behind_img.push(...img_children);
 				n_imgcount++;
 			}
@@ -1412,7 +1440,7 @@ function start(cfg, url)
 			if (!imsrc || imsrc == 'none')
 				imsrc = '';
 			if (!b_imgforce[n_c] || b_ctext[n_c] > 95)
-			if (!/(IMG|SVG|VIDEO|OBJECT|EMBED|CANVAS)/i.test(img.nodeName) && !/(slide|banner|background.*page|page.*background)/ig.test(img.className) && ((typeof imsrc != 'undefined' && imsrc != null && imsrc != '' && !/(\/|http|url)/ig.test(imsrc) && /gradient/i.test(bgim)) || (typeof bgim != 'undefined' && bgim != '' && bgim != 'none' && !/(\/|http|url|gradient)/ig.test(bgim)) || (b_ctext[n_c] > 95 && !b_imgforce[n_c]) && !/gradient/i.test(bgim)) || (((img_area[n_c] > 0 && img_area[n_c] < 250 && !/gradient/i.test(bgim) && !/button/i.test(img.className)) || /nav/i.test(img.className)) && !b_imgforce[n_c] && img_area[n_c] < 35000 && img_area[n_c] >= 0)) {
+			if (!/(IMG|SVG|VIDEO|OBJECT|EMBED|CANVAS)/i.test(img.nodeName) && !/(slide|banner|background.*page|page.*background)/ig.test(img.className) && ((typeof imsrc != 'undefined' && imsrc != null && imsrc != '' && !/(\/|http|url)/ig.test(imsrc) && /gradient/i.test(bgim)) || (typeof bgim != 'undefined' && bgim != '' && bgim != 'none' && !/(\/|http|url|gradient)/ig.test(bgim)) || (b_ctext[n_c] > 95 && !b_imgforce[n_c]) && !/gradient/i.test(bgim)) || (((img_area[n_c] > 0 && img_area[n_c] < 250 && !/gradient/i.test(bgim) && !/button/i.test(img.className)) || /nav/i.test(img.className)) && !b_imgforce[n_c] && img_area[n_c] < 250 && img_area[n_c] > 0)) {
 				if (!(hdr && hdr.contains(img))) {
 				img.style.setProperty('filter','unset', 'important');
 				continue;
@@ -1491,7 +1519,9 @@ function start(cfg, url)
 			let tag = String(node.nodeName.toUpperCase());
 			let pnode = node.parentNode;
 			let sk = false;
-			var style;
+			var style, is_oinput, is_xinput;
+
+			if (tags_to_skip.includes(tag) || (cfg.skipHeadings && hdr_tags.includes(tag))) return;
 
 			if (/I?FRAME\b/i.test(tag)) {
 				let fsty = node.style.getPropertyValue('filter');
@@ -1522,8 +1552,6 @@ function start(cfg, url)
 				pnode.style.setProperty('background-color',fsty);
 			}
 
-			if (tags_to_skip.includes(tag) || (cfg.skipHeadings && hdr_tags.includes(tag))) return;
-
 			if (cfg.ssrules && n_rulecount > 0) {
 			let cnames = node.className.length > 0 ? node.className.split(/\s+/) : [];
 			style = getComputedStyle(node);
@@ -1542,6 +1570,16 @@ function start(cfg, url)
 				style = getComputedStyle(node);
 
 			node_count = map.get(node);
+
+			if (/(INPUT|TEXTAREA|SELECT)/.test(tag)) {
+				is_xinput = node.type && /(checkbox|color|date|hidden|submit|image|month|radio|range)/i.test(node.type);
+				is_oinput = node.type && /(text|number|email|password|date|time|week|url|tel|search|select|month)/i.test(node.type);
+			}
+
+			if (cfg.input_border && !(cfg.advDimming && cfg.underlineLinks)) {
+				if (/(INPUT|TEXTAREA|SELECT)/.test(tag) && is_oinput)
+					node.setAttribute('b__', '');
+			}
 
 			if (cfg.normalInc && cfg.forcePlhdr && !b_iimg[node_count] && !nodes_behind_inv.includes(node) && typeof m_fcol.get(node) == 'undefined' && typeof m_bcol.get(node) == 'undefined' && typeof m_bocol.get(node) == 'undefined') {
 				var cs,pcs;
@@ -1680,9 +1718,6 @@ function start(cfg, url)
 				if (typeof doc_obs != 'undefined' && doc_obs != null)
 					doc_obs.observe(document.body, { childList: true, subtree: true });
 			}
-
-			let is_xinput = node.type && /(checkbox|color|date|hidden|submit|image|month|radio|range)/i.test(node.type);
-			let is_oinput = node.type && /(text|number|email|password|date|time|week|url|tel|search|month)/i.test(node.type);
 
 			if (!sk || is_oinput) {
 			if (b_fnt[node_count] == false && cfg.threshold > 0 && (!b_iimg[node_count] || b_ctext[node_count] > 0)) {
@@ -1847,23 +1882,15 @@ function start(cfg, url)
 					}
 					if (!node.disabled && cfg.strength % 2 == 1 && (/(TEXTAREA|TEXT)/i.test(tag) || is_oinput)) {
 					let txtcolor = style.color;
-					let bgcolor = style.backgroundColor;
 					if (txtcolor == null || txtcolor.length < 1) txtcolor = 'rgb(0,0,0)';
-					if (bgcolor == null || bgcolor.length < 1) bgcolor = 'rgb(255,255,255)';
 					let txt_brt = calcBrightness(getRGBarr(txtcolor));
-					let bg_brt = calcBrightness(getRGBarr(bgcolor));
-					let brtdiff = Math.abs(txt_brt - bg_brt);
-					if (brtdiff > 60 && (txt_brt || bg_brt))
-					if (brtdiff > 60 && bg_brt < txt_brt)
+					if (txt_brt > 176)
 						txtcolor = 'white';
-					else if (brtdiff > 60 && bg_brt > txt_brt)
+					else
 						txtcolor = 'black';
-					let txtstyle = ';color:'+txtcolor+'!important;';
-					nsty = node.getAttribute('style');
-					if (nsty == null) nsty = '';
-					if (cfg.forcePlhdr && cfg.forceIInv && !nn_reg.test(nsty)) nsty = ';filter:unset!important;'+nsty;
-					nsty += txtstyle;
-					node.setAttribute('style', nsty);
+					node.style.setProperty('color',txtcolor,'important');
+					if (cfg.forcePlhdr && cfg.forceIInv && /invert/.test(style.filter))
+						node.style.setProperty('filter','unset','important');
 					}
 					nsty = node.getAttribute('style');
 					if (nsty == null) nsty = '';
@@ -1878,11 +1905,6 @@ function start(cfg, url)
 				node.nextSibling.textContent = upperTxt;
 			}
 */
-			if (cfg.input_border && !(cfg.advDimming && cfg.underlineLinks)) {
-				if(/(INPUT|TEXTAREA|SELECT)/i.test(tag) && is_oinput)
-					node.setAttribute('b__', '');
-			}
-
 			if (b_ctext[node_count] < 1 && node.children.length == 0)
 				return;
 
