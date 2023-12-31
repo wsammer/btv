@@ -1,62 +1,63 @@
 "use strict";
 
-function colorblindBg(col, cfg, nbinv, bfilter, n_inv, b_forced) {
+function colorblindBg(col, cfg, nbinv, bfilter, n_inv) {
 	let cmin = Math.min(col[0],col[1],col[2]);
 	let cmax = Math.max(col[0],col[1],col[2]);
 	let pcol = '';
+	let ppcol = col;
 	if (cfg.forcePlhdr && !nbinv && !bfilter && cmin != col[2]) {
 		if (col[1] >= col[0]) {
 			let blu = col[2];
 			col[2] = col[0];
 			col[0] = blu;
-			pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+			pcol = 'rgba('+col[0]+', '+col[1]+', '+col[2]+', '+col[3]+')';
 		} else if (col[0] > col[1]) {
 			let blu = col[2];
 			col[2] = col[1];
 			col[1] = blu;
-			pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+			pcol = 'rgba('+col[0]+', '+col[1]+', '+col[2]+', '+col[3]+')';
 		}
-	} else if (!b_forced && !cfg.forcePlhdr && cfg.advDimming && cmax != col[2]) {
+	} else if (!cfg.forcePlhdr && cfg.advDimming && cmax != col[2]) {
 		if (col[0] >= col[1]) {
 			let blu = col[2];
 			col[2] = col[0];
 			col[0] = blu;
-			pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+			pcol = 'rgba('+col[0]+', '+col[1]+', '+col[2]+', '+col[3]+')';
 		} else if (col[1] > col[0]) {
 			let blu = col[2];
 			col[2] = col[1];
 			col[1] = blu;
-			pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+			pcol = 'rgba('+col[0]+', '+col[1]+', '+col[2]+', '+col[3]+')';
 		}
 	} else if (cfg.forcePlhdr && (nbinv|| bfilter) && cmax != col[2]) {
 		if (col[0] > col[1]) {
 			let blu = col[2];
 			col[2] = col[0];
 			col[0] = blu;
-			pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+			pcol = 'rgba('+col[0]+', '+col[1]+', '+col[2]+', '+col[3]+')';
 		} else if (col[1] > col[0]) {
 			let blu = col[2];
 			col[2] = col[1];
 			col[1] = blu;
-			pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+			pcol = 'rgba('+col[0]+', '+col[1]+', '+col[2]+', '+col[3]+')';
 		}
 	} else if (!cfg.forcePlhdr && cmax != col[2]) {
 		if (col[0] > col[1]) {
 			let blu = col[2];
 			col[2] = col[0];
 			col[0] = blu;
-			pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+			pcol = 'rgba('+col[0]+', '+col[1]+', '+col[2]+', '+col[3]+')';
 		} else if (col[1] > col[0]) {
 			let blu = col[2];
 			col[2] = col[1];
 			col[1] = blu;
-			pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+			pcol = 'rgba('+col[0]+', '+col[1]+', '+col[2]+', '+col[3]+')';
 		}
 	}
 	return pcol;
 }
 
-function colorblindFg(col, cfg, nbinv, bfilter, n_inv, b_forced) {
+function colorblindFg(col, cfg, nbinv, bfilter, n_inv) {
 	let cmin = Math.min(col[0],col[1],col[2]);
 	let cmax = Math.max(col[0],col[1],col[2]);
 	let pcol = '';
@@ -65,63 +66,80 @@ function colorblindFg(col, cfg, nbinv, bfilter, n_inv, b_forced) {
 			let blu = col[1];
 			col[1] = col[2];
 			col[2] = blu;
-			pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+			pcol = 'rgba('+col[0]+', '+col[1]+', '+col[2]+', '+col[3]+')';
 		} else if (col[2] > col[0]) {
 			let blu = col[1];
 			col[1] = col[0];
 			col[0] = blu;
-			pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+			pcol = 'rgba('+col[0]+', '+col[1]+', '+col[2]+', '+col[3]+')';
 		}
 	} else if (cfg.forcePlhdr && n_inv > 2 && (nbinv || bfilter) && cmax != col[1]) {
 		if (col[2] >= col[0]) {
 			let blu = col[1];
 			col[1] = col[2];
 			col[2] = blu;
-			pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+			pcol = 'rgba('+col[0]+', '+col[1]+', '+col[2]+', '+col[3]+')';
 		} else if (col[0] > col[2]) {
 			let blu = col[1];
 			col[1] = col[0];
 			col[0] = blu;
-			pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+			pcol = 'rgba('+col[0]+', '+col[1]+', '+col[2]+', '+col[3]+')';
 		}
 	} else if (cfg.forcePlhdr && cmin != col[1]) {
 		if (col[2] > col[0]) {
 			let blu = col[1];
 			col[1] = col[0];
 			col[0] = blu;
-			pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+			pcol = 'rgba('+col[0]+', '+col[1]+', '+col[2]+', '+col[3]+')';
 		} else if (col[0] > col[2]) {
 			let blu = col[1];
 			col[1] = col[2];
 			col[2] = blu;
-			pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+			pcol = 'rgba('+col[0]+', '+col[1]+', '+col[2]+', '+col[3]+')';
 		}
-	} else if (!b_forced && !cfg.forcePlhdr && cfg.advDimming && cmin != col[1]) {
+	} else if (!cfg.forcePlhdr && cfg.advDimming && cmax != col[1]) {
 		if (col[2] >= col[0]) {
 			let blu = col[1];
 			col[1] = col[2];
 			col[2] = blu;
-			pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+			pcol = 'rgba('+col[0]+', '+col[1]+', '+col[2]+', '+col[3]+')';
 		} else if (col[0] > col[2]) {
 			let blu = col[1];
 			col[1] = col[0];
 			col[0] = blu;
-			pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+			pcol = 'rgba('+col[0]+', '+col[1]+', '+col[2]+', '+col[3]+')';
 		}
 	} else if (!cfg.forcePlhdr && cmax != col[2]) {
 		if (col[0] > col[1]) {
 			let blu = col[2];
 			col[2] = col[0];
 			col[0] = blu;
-			pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+			pcol = 'rgba('+col[0]+', '+col[1]+', '+col[2]+', '+col[3]+')';
 		} else if (col[1] > col[0]) {
 			let blu = col[2];
 			col[2] = col[1];
 			col[1] = blu;
-			pcol = 'rgba('+col[0]+','+col[1]+','+col[2]+','+col[3]+')';
+			pcol = 'rgba('+col[0]+', '+col[1]+', '+col[2]+', '+col[3]+')';
 		}
 	}
 	return pcol;
+}
+
+function hslToRGB(hsl) {
+	let h = hsl[0];
+	let s = hsl[1];
+	let l = hsl[2];
+	let a = typeof hsl[3] != 'undefined' ? hsl[3] : 1;
+	if (s === 0) {
+		const [r, b, g] = [l, l, l].map((x) => Math.round(x * 255));
+		return {r, g, b, a};
+	}
+	const c = (1 - Math.abs(2 * l - 1)) * s;
+	const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+	const m = l - c / 2;
+	const [r, g, b] = (
+		h < 60 ? [c, x, 0]: h < 120 ? [x, c, 0] : h < 180 ? [0, c, x] : h < 240 ? [0, x, c] : h < 300 ? [x, 0, c] : [c, 0, x] ).map((n) => Math.round((n + m) * 255));
+	return [r, g, b, a];
 }
 
 function hexToRGBA(h) {
@@ -140,7 +158,36 @@ function hexToRGBA(h) {
     a = "0x" + h[7] + h[8];
   }
   a = +(a / 255).toFixed(3);
-  return "rgba(" + +r + "," + +g + "," + +b + "," + a + ")";
+  return [r, g, b, a];
+}
+
+function getHSLarr(hsl_str)
+{
+	let hsl = [];
+		let x = hsl_str.indexOf(')');
+	if (hsl_str.substring(0,4) == 'hsla') {
+		hsl = hsl_str.substring(5, x).replace(/ /g, '').split(',');
+	} else {
+		hsl = hsl_str.substring(4, x).replace(/ /g, '').split(',');
+	}
+	if (typeof hsl[3] == 'undefined') hsl[3] = 1;
+	if (hsl[0].search('deg') > 0) hsl[0] = parseFloat(hsl[0]);
+	if (hsl[1].indexOf('%') > 0) hsl[1] = parseFloat(hsl[1])/100;
+	if (hsl[2].indexOf('%') > 0) hsl[2] = parseFloat(hsl[2])/100;
+	return hsl;
+}
+
+function getRGBarr(rgba_str)
+{
+	let rgb = [];
+		let x = rgba_str.indexOf(')');
+	if (rgba_str.substring(0,4) == 'rgba') {
+		rgb = rgba_str.substring(5, x).replace(/ /g, '').split(',');
+	} else {
+		rgb = rgba_str.substring(4, x).replace(/ /g, '').split(',');
+	}
+	if (typeof rgb[3] == 'undefined') rgb[3] = 1;
+	return rgb;
 }
 
 function createFilterMatrix(config) {
@@ -422,18 +469,6 @@ function invertEmojis(node) {
 	words.length = 0;
 }
 
-function getRGBarr(rgba_str)
-{
-	let rgb = null;
-		let x = rgba_str.indexOf(')');
-	if (rgba_str.substring(0,4) == 'rgba') {
-		rgb = rgba_str.substring(5, x).replace(/ /g, '').split(',');
-	} else {
-		rgb = rgba_str.substring(4, x).replace(/ /g, '').split(',');
-	}
-	return rgb;
-}
-
 function calcBrightness([r, g, b, a = 1])
 {
 	return Math.sqrt( 0.299*(r*r) + 0.587*(g*g) + 0.114*(b*b) )*a;
@@ -500,7 +535,7 @@ function containsText(node, mp)
 	return len;
 }
 
-function waitForImage(im) {
+async function waitForImage(im) {
 return new Promise((res, rej) => {
 if (im.complete) {
 return res();
@@ -510,9 +545,8 @@ im.onerror = () => res();
 });
 }
 
-function isImage(ch, nc, imar) {
+async function isImage(ch, nc, imar, gcs) {
 	if (!(ch instanceof Element)) return false;
-	let gcs = ch.style; //getComputedStyle(ch);
 	if (b_imgforce[nc] != true) b_imgforce[nc] = false;
 	var wi,he;
 	let bgim = gcs.backgroundImage ? gcs.backgroundImage : '';
@@ -520,27 +554,39 @@ function isImage(ch, nc, imar) {
 	let itag = ch.nodeName.toUpperCase();
 	switch (itag) {
 	case 'IMG':
+		wi = parseInt(ch.width);
+		he = parseInt(ch.height);
+		if (wi == 0 && he == 0) {
 		wi = parseInt(ch.getBoundingClientRect().width);
 		he = parseInt(ch.getBoundingClientRect().height);
+		}
 		imar[nc] = wi*he;
 		if (wi > 499 && he > 99) b_imgforce[nc] = true;
-		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 400) return false;
+		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display))) return false;
 		return true;
 	case'SVG':
+		wi = parseInt(ch.width);
+		he = parseInt(ch.height);
+		if (wi == 0 && he == 0) {
 		wi = parseInt(ch.getBoundingClientRect().width);
 		he = parseInt(ch.getBoundingClientRect().height);
+		}
 		imar[nc] = wi*he;
 		if (wi > 499 && he > 99) b_imgforce[nc] = true;
-		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 400) return false;
+		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display))) return false;
 		return true;
 	case 'VIDEO':
 	case 'EMBED':
 	case 'OBJECT':
 	case 'CANVAS':
+		wi = parseInt(ch.width);
+		he = parseInt(ch.height);
+		if (wi == 0 && he == 0) {
 		wi = parseInt(ch.getBoundingClientRect().width);
 		he = parseInt(ch.getBoundingClientRect().height);
+		}
 		imar[nc] = wi*he;
-		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 400) return false;
+		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display))) return false;
 		return true;
 	default:
 	if ( gcs != null && bgim != '' && bgim != 'none' && gcs.getPropertyValue('display') != 'none' && !/(php|htm[l]?|asp[x]?)[\"\'\)]/i.test(bgim) && /(\/|http|url|gradient)/ig.test(bgim)) {
@@ -549,21 +595,15 @@ function isImage(ch, nc, imar) {
                 im = new Image();
                 src = gcs.backgroundImage.replace(/url\((['"])?(.*?)\1\)/gi, '$2');
 		im.src = src;
-		/** im.decode().then(() => {
+		await waitForImage(im);
 		wi = parseInt(im.width);
 		he = parseInt(im.height);
-		imar[nc] = wi*he;
-		});*/
-		waitForImage(im).then((res) => {
-		});;
-		wi = parseInt(im.naturalWidth);
-		he = parseInt(im.naturalHeight);
 		if (wi == 0 && he == 0) {
 		wi = parseInt(ch.getBoundingClientRect().width);
 		he = parseInt(ch.getBoundingClientRect().height);
 		}
 		imar[nc] = wi*he;
-		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 400) return false;
+		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display))) return false;
 		if ((wi > 0 && he > 0) || (wi == 0 && he == 0)) {
 			if (wi > 499 && he > 99) b_imgforce[nc] = true;
 				return true;
@@ -582,25 +622,20 @@ function isImage(ch, nc, imar) {
 			}		
 		}
 	} else if (typeof chsrc != 'undefined' && chsrc != null && chsrc != '' && ch.display != 'none' && ch.type != null && typeof ch.type != 'undefined' && ch.type.toLowerCase() == 'image' && !/(php|htm[l]?|asp[x]?)[\"\'\)]/i.test(chsrc) && !/(php|htm[l]?|asp[x]?)[\"\'\)]/i.test(bgim)  && (/(\/|http|url)/ig.test(chsrc) || /gradient/i.test(bgim))) {
+		var im, src;
                 im = new Image();
                 src = chsrc.replace(/url\((['"])?(.*?)\1\)/gi, '$2');
 		im.src = src;
-		/*im.decode().then(() => {
+		await waitForImage(im);
 		wi = parseInt(im.width);
 		he = parseInt(im.height);
-		imar[nc] = wi*he;
-		});*/
-		waitForImage(im).then((res) => {
-		});;
-		wi = parseInt(im.naturalWidth);
-		he = parseInt(im.naturalHeight);
 		if (wi == 0 && he == 0) {
 		wi = parseInt(ch.getBoundingClientRect().width);
 		he = parseInt(ch.getBoundingClientRect().height);
 		}
 		imar[nc] = wi*he;
 		if (wi > 499 && he > 99) b_imgforce[nc] = true;
-		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && imar[nc] < 400) return false;
+		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display))) return false;
 		return true;
 	} else {
 		return false;
@@ -710,7 +745,7 @@ function getCSS(cfg) {
 	let underline = '';
 	if (cfg.underlineLinks)
 		if (!(cfg.advDimming && cfg.input_border))
-		underline = '[u__]{text-decoration:underline!important}*{font-family:sans-serif,sans!important}';
+		underline = '[u__]{text-decoration:underline!important}';
 
 	if (!cfg.forcePlhdr)
 		color_black = '';
@@ -723,7 +758,7 @@ function getCSS(cfg) {
 	let form_border = '';
 	if (cfg.input_border)
 		if (!(cfg.advDimming && cfg.underlineLinks))
-		form_border = '[b__]{border:1px solid black!important}*{font-family:serif!important}';
+		form_border = '[b__]{border:1px solid black!important}';
 
 	if (cfg.forcePlhdr && cfg.contrast != 0 && cfg.brightness != 50) {
 		g_brightness = 1.0+parseInt(cfg.contrast)/100;
@@ -904,6 +939,7 @@ function start(cfg, url)
 		'VIDEO',
 		'AUDIO',
 		'SVG',
+		'IMG',
 		'EMBED',
 		'OBJECT',
 		'SOURCE',
@@ -951,8 +987,8 @@ function start(cfg, url)
 	let img_area = [];
 	let map = new Map();
 	let mp = new Map();
-	let m_ss = new Map();
-	let m_done = new Map();
+	let m_ss = {};
+	let m_done = {};
 	let nodes_behind_img = [];
 	let nodes_behind_inv = [];
 	let n_imgcount = 0;
@@ -967,8 +1003,6 @@ function start(cfg, url)
 	let rootcolor       =  getRGBarr(getComputedStyle(document.documentElement).backgroundColor);
 	let bodycolor       =  getRGBarr(getComputedStyle(document.body).backgroundColor)
 	if (rootcolor != '' && bodycolor != '') {
-	if (typeof bodycolor[3] == 'undefined') bodycolor[3] = 1;
-	if (typeof rootcolor[3] == 'undefined') rootcolor[3] = 1;
 	let rootLightness   = 1 -  rootcolor[3] + rootcolor[3] * calcBrightness(rootcolor)/255;
 	let finalLightness  = Math.abs((1 - bodycolor[3]) * rootLightness + bodycolor[3] * calcBrightness(bodycolor)/255);
 	finalLightness = Math.sqrt(finalLightness);
@@ -1057,12 +1091,15 @@ function start(cfg, url)
 						tags_to_skip.push(ch.nodeName.toUpperCase());
 				}
 			}
-			if (tags_to_skip.includes(t) || (cfg.skipHeadings && hdr_tags.includes(t))) continue;
+			if (tags_to_skip.includes(t) || (cfg.skipHeadings && hdr_tags.includes(t)))
+				if (!/(VIDEO|EMBED|OBJECT|CANVAS|SVG|IMG)/.test(t))
+					continue;
 			nc++;
 			map.set(n, nc);
 			b_ctext[nc] = containsText(n, mp);
-			if (/(VIDEO|EMBED|OBJECT|CANVAS|SVG|IMG)/.test(t) || n.style.backgroundImage || n.style.src)
-				b_iimg[nc] = isImage(n, nc, img_area);
+			let gcs = getComputedStyle(n);
+			if (/(VIDEO|EMBED|OBJECT|CANVAS|SVG|IMG)/.test(t) || (gcs.backgroundImage && !/none/i.test(gcs.backgroundImage)) || (gcs.src && !/none/i.test(gcs.src)))
+				b_iimg[nc] = isImage(n, nc, img_area, gcs);
 			else
 				b_iimg[nc] = false;
 			if (b_iimg[nc]) images.push(n);
@@ -1075,7 +1112,7 @@ function start(cfg, url)
 			n = images[x];
 			nc = map.get(n);
 			let img_children = Array.from(n.getElementsByTagName("*"));
-			if (img_area[nc] > 400 && img_area[nc] < 90000000) {
+			if (img_area[nc] >= 0 && img_area[nc] < 90000000) {
 				nodes_behind_img.push(...img_children);
 				n_imgcount++;
 			}
@@ -1129,55 +1166,93 @@ function start(cfg, url)
 			let rl = rules.length;
 			let ri = 0;
 			for (ri = 0; ri < rl; ri++) {
+			if (mp.get(rules[ri]) != true)
+				mp.set(rules[ri], true);
+			else
+				continue;
 			b_sec = false;
 			let rule= rules[ri];
 			let fgr = '';
 			let txtrul = '';
 			let txtrul2 = '';
-				if (rule.href) { rules = rule.styleSheet.cssRules; ri = 0; rl = rules.length;continue; }
-				if (rule.selectorText && rule.style) {
-				let key = rule.selectorText;
-				let value = rule.style.cssText;
+			if (rule.href) { rules = rule.styleSheet.cssRules; ri = 0; rl = rules.length;continue; }
+			if (rule.selectorText && rule.style) {
+			let key = rule.selectorText;
+			let value = rule.style.cssText;
 			if ((cfg.forcePlhdr && cfg.normalInc) || cfg.advDimming)
-			if (m_done.get(key) != true && (rule.style.color || rule.style.backgroundColor || rule.style.borderColor)) {
-				m_done.set(key, true);
+			if (m_done[key] != true && (rule.style.color || rule.style.backgroundColor || rule.style.borderColor)) {
+				m_done[key] = true;
 				if (/\:(before|after)/i.test(key)) {
 					if (rule.style.color) {
 						if (/var\(/i.test(rule.style.color)) {
 						let a = rule.style.getPropertyValue('color');
 						let a1 = a.replace(/var\((.*?)\)/i, `$1`).trim();
 						let b = rootsty.getPropertyValue(a1);
-						if (!/rgb/i.test(b))
+						if (!/^rgb/i.test(b))
 						if (b.indexOf('#') >= 0) {
 							let c = b.length == 4 ? b+'f' : b+'ff';
 							b = hexToRGBA(c);
+						} else if (/^hsl/i.test(b)) {
+							let c = getHSLarr(b);
+							b = hslToRGB(c);
 						}
-						let fgarr = getRGBarr(b);
-						if (typeof fgarr[3] == 'undefined') fgarr[3] = 1.0;
+						let fgarr = b;
 						var fgr1;
 						if (cfg.advDimming)
 							fgr1 = applyColorMatrix([parseInt(fgarr[0]), parseInt(fgarr[1]), parseInt(fgarr[2])], g_m);
 						else
 							fgr1 = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
 						fgr1[3] = fgarr[3];
-						if (cfg.normalInc2)
-							fgr = colorblindFg(fgr1, cfg, false, false, 10, b_forced);
-						else
-							fgr = 'rgba('+fgr1[0]+','+fgr1[1]+','+fgr1[2]+','+fgr1[3]+')';
+						if (cfg.normalInc2) {
+							fgr = colorblindFg(fgr1, cfg, false, false, 10);
+							fgr1 = getRGBarr(fgr);
+						}
+						fgr = 'rgba('+fgr1[0]+','+fgr1[1]+','+fgr1[2]+','+fgr1[3]+')';
 						rule.style.setProperty('color',fgr,'important');
 						} else if (/rgba?/i.test(rule.style.color)) {
 						let fgarr = getRGBarr(rule.style.color);
-						if (typeof fgarr[3] == 'undefined') fgarr[3] = 1.0;
 						var fgr1;
 						if (cfg.advDimming)
 							fgr1 = applyColorMatrix([parseInt(fgarr[0]), parseInt(fgarr[1]), parseInt(fgarr[2])], g_m);
 						else
 							fgr1 = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
 						fgr1[3] = fgarr[3];
-						if (cfg.normalInc2)
-							fgr = colorblindFg(fgr1, cfg, false, false, 10, b_forced);
+						if (cfg.normalInc2) {
+							fgr = colorblindFg(fgr1, cfg, false, false, 10);
+							fgr1 = getRGBarr(fgr);
+						}
+						fgr = 'rgba('+fgr1[0]+','+fgr1[1]+','+fgr1[2]+','+fgr1[3]+')';
+						rule.style.setProperty('color',fgr,'important');
+						} else if (/^\#/.test(rule.style.color)) {
+						let a = rule.style.color;
+						let b = a.length == 4 ? a+'f' : a+'ff';
+						let fgarr = hexToRGBA(b);
+						var fgr1;
+						if (cfg.advDimming)
+							fgr1 = applyColorMatrix([parseInt(fgarr[0]), parseInt(fgarr[1]), parseInt(fgarr[2])], g_m);
 						else
-							fgr = 'rgba('+fgr1[0]+','+fgr1[1]+','+fgr1[2]+','+fgr1[3]+')';
+							fgr1 = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
+						fgr1[3] = fgarr[3];
+						if (cfg.normalInc2) {
+							fgr = colorblindFg(fgr1, cfg, false, false, 10);
+							fgr1 = getRGBarr(fgr);
+						}
+						fgr = 'rgba('+fgr1[0]+','+fgr1[1]+','+fgr1[2]+','+fgr1[3]+')';
+						rule.style.setProperty('color',fgr,'important');
+						} else if (/^hsl/i.test(rule.style.color)) {
+						let c = getHSLarr(rule.style.color);
+						let fgarr = hslToRGB(c);
+						var fgr1;
+						if (cfg.advDimming)
+							fgr1 = applyColorMatrix([parseInt(fgarr[0]), parseInt(fgarr[1]), parseInt(fgarr[2])], g_m);
+						else
+							fgr1 = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
+						fgr1[3] = fgarr[3];
+						if (cfg.normalInc2) {
+							fgr = colorblindFg(fgr1, cfg, false, false, 10);
+							fgr1 = getRGBarr(fgr);
+						}
+						fgr = 'rgba('+fgr1[0]+','+fgr1[1]+','+fgr1[2]+','+fgr1[3]+')';
 						rule.style.setProperty('color',fgr,'important');
 						}
 					}
@@ -1186,37 +1261,71 @@ function start(cfg, url)
 						let a = rule.style.getPropertyValue('background-color');
 						let a1 = a.replace(/var\((.*?)\)/i, `$1`).trim();
 						let b = rootsty.getPropertyValue(a1);
-						if (!/rgb/i.test(b))
+						if (!/^rgb/i.test(b))
 						if (b.indexOf('#') >= 0) {
 							let c = b.length == 4 ? b+'f' : b+'ff';
 							b = hexToRGBA(c);
+						} else if (/^hsl/i.test(b)) {
+							let c = getHSLarr(b);
+							b = hslToRGB(c);
 						}
-						let fgarr = getRGBarr(b);
-						if (typeof fgarr[3] == 'undefined') fgarr[3] = 1.0;
+						let fgarr = b;
 						var fgr1;
 						if (cfg.advDimming)
 							fgr1 = applyColorMatrix([parseInt(fgarr[0]), parseInt(fgarr[1]), parseInt(fgarr[2])], g_m);
 						else
 							fgr1 = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
 						fgr1[3] = fgarr[3];
-						if (cfg.normalInc2)
-							fgr = colorblindBg(fgr1, cfg, false, false, 10, b_forced);
-						else
-							fgr = 'rgba('+fgr1[0]+','+fgr1[1]+','+fgr1[2]+','+fgr1[3]+')';
+						if (cfg.normalInc2) {
+							fgr = colorblindBg(fgr1, cfg, false, false, 10);
+							fgr1 = getRGBarr(fgr);
+						}
+						fgr = 'rgba('+fgr1[0]+','+fgr1[1]+','+fgr1[2]+','+fgr1[3]+')';
 						rule.style.setProperty('background-color',fgr,'important');
 						} else if (/rgba?/i.test(rule.style.backgroundColor)) {
 						let fgarr = getRGBarr(rule.style.backgroundColor);
-						if (typeof fgarr[3] == 'undefined') fgarr[3] = 1.0;
 						var fgr1;
 						if (cfg.advDimming)
 							fgr1 = applyColorMatrix([parseInt(fgarr[0]), parseInt(fgarr[1]), parseInt(fgarr[2])], g_m);
 						else
 							fgr1 = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
 						fgr1[3] = fgarr[3];
-						if (cfg.normalInc2)
-							fgr = colorblindBg(fgr1, cfg, false, false, 10, b_forced);
+						if (cfg.normalInc2) {
+							fgr = colorblindBg(fgr1, cfg, false, false, 10);
+							fgr1 = getRGBarr(fgr);
+						}
+						fgr = 'rgba('+fgr1[0]+','+fgr1[1]+','+fgr1[2]+','+fgr1[3]+')';
+						rule.style.setProperty('background-color',fgr,'important');
+						} else if (/^\#/.test(rule.style.backgroundColor)) {
+						let a = rule.style.backgroundColor;
+						let b = a.length == 4 ? a+'f' : a+'ff';
+						let fgarr = hexToRGBA(b);
+						var fgr1;
+						if (cfg.advDimming)
+							fgr1 = applyColorMatrix([parseInt(fgarr[0]), parseInt(fgarr[1]), parseInt(fgarr[2])], g_m);
 						else
-							fgr = 'rgba('+fgr1[0]+','+fgr1[1]+','+fgr1[2]+','+fgr1[3]+')';
+							fgr1 = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
+						fgr1[3] = fgarr[3];
+						if (cfg.normalInc2) {
+							fgr = colorblindBg(fgr1, cfg, false, false, 10);
+							fgr1 = getRGBarr(fgr);
+						}
+						fgr = 'rgba('+fgr1[0]+','+fgr1[1]+','+fgr1[2]+','+fgr1[3]+')';
+						rule.style.setProperty('background-color',fgr,'important');
+						} else if (/^hsl/i.test(rule.style.backgroundColor)) {
+						let c = getHSLarr(rule.style.color);
+						let fgarr = hslToRGB(c);
+						var fgr1;
+						if (cfg.advDimming)
+							fgr1 = applyColorMatrix([parseInt(fgarr[0]), parseInt(fgarr[1]), parseInt(fgarr[2])], g_m);
+						else
+							fgr1 = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
+						fgr1[3] = fgarr[3];
+						if (cfg.normalInc2) {
+							fgr = colorblindBg(fgr1, cfg, false, false, 10);
+							fgr1 = getRGBarr(fgr);
+						}
+						fgr = 'rgba('+fgr1[0]+','+fgr1[1]+','+fgr1[2]+','+fgr1[3]+')';
 						rule.style.setProperty('background-color',fgr,'important');
 						}
 					}
@@ -1225,76 +1334,170 @@ function start(cfg, url)
 						let a = rule.style.getPropertyValue('border-color');
 						let a1 = a.replace(/var\((.*?)\)/i, `$1`).trim();
 						let b = rootsty.getPropertyValue(a1);
-						if (!/rgb/i.test(b))
+						if (!/^rgb/i.test(b))
 						if (b.indexOf('#') >= 0) {
 							let c = b.length == 4 ? b+'f' : b+'ff';
 							b = hexToRGBA(c);
+						} else if (/^hsl/i.test(b)) {
+							let c = getHSLarr(b);
+							b = hslToRGB(c);
 						}
-						let fgarr = getRGBarr(b);
-						if (typeof fgarr[3] == 'undefined') fgarr[3] = 1.0;
+						let fgarr = b;
 						var fgr1;
 						if (cfg.advDimming)
 							fgr1 = applyColorMatrix([parseInt(fgarr[0]), parseInt(fgarr[1]), parseInt(fgarr[2])], g_m);
 						else
 							fgr1 = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
 						fgr1[3] = fgarr[3];
-						if (cfg.normalInc2)
-							fgr = colorblindFg(fgr1, cfg, false, false, 10, b_forced);
-						else
-							fgr = 'rgba('+fgr1[0]+','+fgr1[1]+','+fgr1[2]+','+fgr1[3]+')';
+						if (cfg.normalInc2) {
+							fgr = colorblindFg(fgr1, cfg, false, false, 10);
+							fgr1 = getRGBarr(fgr);
+						}
+						fgr = 'rgba('+fgr1[0]+','+fgr1[1]+','+fgr1[2]+','+fgr1[3]+')';
 						rule.style.setProperty('border-color',fgr,'important');
 						} else if (/rgba?/i.test(rule.style.borderColor)) {
 						let fgarr = getRGBarr(rule.style.borderColor);
-						if (typeof fgarr[3] == 'undefined') fgarr[3] = 1.0;
 						var fgr1;
 						if (cfg.advDimming)
 							fgr1 = applyColorMatrix([parseInt(fgarr[0]), parseInt(fgarr[1]), parseInt(fgarr[2])], g_m);
 						else
 							fgr1 = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
 						fgr1[3] = fgarr[3];
-						if (cfg.normalInc2)
-							fgr = colorblindFg(fgr1, cfg, false, false, 10, b_forced);
+						if (cfg.normalInc2) {
+							fgr = colorblindFg(fgr1, cfg, false, false, 10);
+							fgr1 = getRGBarr(fgr);
+						}
+						fgr = 'rgba('+fgr1[0]+','+fgr1[1]+','+fgr1[2]+','+fgr1[3]+')';
+						rule.style.setProperty('border-color',fgr,'important');
+						} else if (/^\#/.test(rule.style.borderColor)) {
+						let a = rule.style.borderColor;
+						let b = a.length == 4 ? a+'f' : a+'ff';
+						let fgarr = hexToRGBA(b);
+						var fgr1;
+						if (cfg.advDimming)
+							fgr1 = applyColorMatrix([parseInt(fgarr[0]), parseInt(fgarr[1]), parseInt(fgarr[2])], g_m);
 						else
-							fgr = 'rgba('+fgr1[0]+','+fgr1[1]+','+fgr1[2]+','+fgr1[3]+')';
+							fgr1 = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
+						fgr1[3] = fgarr[3];
+						if (cfg.normalInc2) {
+							fgr = colorblindFg(fgr1, cfg, false, false, 10);
+							fgr1 = getRGBarr(fgr);
+						}
+						fgr = 'rgba('+fgr1[0]+','+fgr1[1]+','+fgr1[2]+','+fgr1[3]+')';
+						rule.style.setProperty('border-color',fgr,'important');
+						} else if (/^hsl/i.test(rule.style.borderColor)) {
+						let c = getHSLarr(rule.style.color);
+						let fgarr = hslToRGB(c);
+						var fgr1;
+						if (cfg.advDimming)
+							fgr1 = applyColorMatrix([parseInt(fgarr[0]), parseInt(fgarr[1]), parseInt(fgarr[2])], g_m);
+						else
+							fgr1 = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
+						fgr1[3] = fgarr[3];
+						if (cfg.normalInc2) {
+							fgr = colorblindFg(fgr1, cfg, false, false, 10);
+							fgr1 = getRGBarr(fgr);
+						}
+						fgr = 'rgba('+fgr1[0]+','+fgr1[1]+','+fgr1[2]+','+fgr1[3]+')';
 						rule.style.setProperty('border-color',fgr,'important');
 						}
 					}
 				} else {
-				if (rule.style.color && rule.style.color.substring(0,3) == 'rgb') {
+				if (rule.style.color)
+				if (rule.style.color.substring(0,3) == 'rgb') {
 				let fgarr = getRGBarr(rule.style.color);
-				if (typeof fgarr[3] == 'undefined') fgarr[3] = 1.0;
 				if (typeof m_sty[fgarr] == 'undefined') {
 					fgr = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
-					m_sty[fgarr] = [fgr[0],fgr[1],fgr[2],fgarr[3]];
+					fgr[3] = fgarr[3];
+					m_sty[fgarr] = fgr;
+					m_sty[fgr] = fgr;
+				}
+				} else if (rule.style.color.substring(0,3) == 'hsl') {
+				let c = getHSLarr(rule.style.color);
+				let fgarr = hslToRGB(c);
+				if (typeof m_sty[fgarr] == 'undefined') {
+					fgr = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
+					fgr[3] = fgarr[3];
+					m_sty[fgarr] = fgr;
+					m_sty[fgr] = fgr;
+				}
+				} else if (rule.style.color.substring(0,1) == '#') {
+				let c = rule.style.color.length == 4 ? rule.style.color+'f' : rule.style.color+'ff';
+				let fgarr = hexToRGBA(c);
+				if (typeof m_sty[fgarr] == 'undefined') {
+					fgr = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
+					fgr[3] = fgarr[3];
+					m_sty[fgarr] = fgr;
+					m_sty[fgr] = fgr;
 				}
 				}
-				if (rule.style.backgroundColor && rule.style.backgroundColor.substring(0,3) == 'rgb') {
+				if (rule.style.backgroundColor)
+				if (rule.style.backgroundColor.substring(0,3) == 'rgb') {
 				let fgarr = getRGBarr(rule.style.backgroundColor);
-				if (typeof fgarr[3] == 'undefined') fgarr[3] = 1.0;
 				if (typeof m_sty[fgarr] == 'undefined') {
 					fgr = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
-					m_sty[fgarr] = [fgr[0],fgr[1],fgr[2],fgarr[3]];
+					fgr[3] = fgarr[3];
+					m_sty[fgarr] = fgr;
+					m_sty[fgr] = fgr;
+				}
+				} else if (rule.style.backgroundColor.substring(0,3) == 'hsl') {
+				let c = getHSLarr(rule.style.backgroundColor);
+				let fgarr = hslToRGB(c);
+				if (typeof m_sty[fgarr] == 'undefined') {
+					fgr = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
+					fgr[3] = fgarr[3];
+					m_sty[fgarr] = fgr;
+					m_sty[fgr] = fgr;
+				}
+				} else if (rule.style.backgroundColor.substring(0,1) == '#') {
+				let c = rule.style.backgroundColor.length == 4 ? rule.style.backgroundColor+'f' : rule.style.backgroundColor+'ff';
+				let fgarr = hexToRGBA(c);
+				if (typeof m_sty[fgarr] == 'undefined') {
+					fgr = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
+					fgr[3] = fgarr[3];
+					m_sty[fgarr] = fgr;
+					m_sty[fgr] = fgr;
 				}
 				}
-				if (rule.style.borderColor && rule.style.borderColor.substring(0,3) == 'rgb') {
+				if (rule.style.borderColor)
+				if (rule.style.borderColor.substring(0,3) == 'rgb') {
 				let fgarr = getRGBarr(rule.style.borderColor);
-				if (typeof fgarr[3] == 'undefined') fgarr[3] = 1.0;
 				if (typeof m_sty[fgarr] == 'undefined') {
 					fgr = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
-					m_sty[fgarr] = [fgr[0],fgr[1],fgr[2],fgarr[3]];
+					fgr[3] = fgarr[3];
+					m_sty[fgarr] = fgr;
+					m_sty[fgr] = fgr;
+				}
+				} else if (rule.style.borderColor.substring(0,3) == 'hsl') {
+				let c = getHSLarr(rule.style.borderColor);
+				let fgarr = hslToRGB(c);
+				if (typeof m_sty[fgarr] == 'undefined') {
+					fgr = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
+					fgr[3] = fgarr[3];
+					m_sty[fgarr] = fgr;
+					m_sty[fgr] = fgr;
+				}
+				} else if (rule.style.borderColor.substring(0,1) == '#') {
+				let c = rule.style.borderColor.length == 4 ? rule.style.borderColor+'f' : rule.style.borderColor+'ff';
+				let fgarr = hexToRGBA(c);
+				if (typeof m_sty[fgarr] == 'undefined') {
+					fgr = applyColorMatrix([255-parseInt(fgarr[0]), 255-parseInt(fgarr[1]), 255-parseInt(fgarr[2])], g_m);
+					fgr[3] = fgarr[3];
+					m_sty[fgarr] = fgr;
+					m_sty[fgr] = fgr;
 				}
 				}
 				}
 			}
 			if (/(\bbody|\bhtml|\[s__)/i.test(key)) continue;
-			if (typeof m_ss.get(key) == 'undefined' && cfg.threshold > 0 && cfg.size > 0 && rule.style.fontSize) {
+			if (m_ss[key] != true && cfg.threshold > 0 && cfg.size > 0 && rule.style.fontSize) {
+				m_ss[key] = true;
 				let b_set = false;
 				if (/[\d\.]+.*?px/i.test(rule.style.fontSize)) {
 				const rt = rule.style.fontSize;
 				let nfz = parseInt(rt);
 				if (nfz <= cfg.threshold && nfz > 1) {
 				txtrul = key+' { '+f_sizes[nfz]+' }';
-				m_ss.set(key, f_sizes[nfz]);
 				b_set = true;
 				n_rulecount++;
 				}
@@ -1303,7 +1506,6 @@ function start(cfg, url)
 				let nfz = parseInt(parseFloat(rt)*1.333334);
 				if (nfz <= cfg.threshold && nfz > 1) {
 				txtrul = key+' { '+f_sizes[nfz]+' }';
-				m_ss.set(key, f_sizes[nfz]);
 				b_set = true;
 				n_rulecount++;
 				}
@@ -1312,7 +1514,6 @@ function start(cfg, url)
 				let nfz = parseInt(parseFloat(rt)*body_nfz);
 				if (nfz <= cfg.threshold && nfz > 1) {
 				txtrul = key+' { '+f_sizes[nfz]+' }';
-				m_ss.set(key, f_sizes[nfz]);
 				b_set = true;
 				n_rulecount++;
 				}
@@ -1326,8 +1527,8 @@ function start(cfg, url)
 					}
 				}
 			}
-			if (!txtrul && typeof b_chk[value] == 'undefined' && cfg.threshold > 0 && cfg.size > 0 && rule.style.fontSize) {
-				b_chk[value] = true;
+			if (!txtrul && b_chk[value] != true && cfg.threshold > 0 && cfg.size > 0 && rule.style.fontSize) {
+					b_chk[value] = true;
 					if (/\d+.*?px/i.test(rule.style.fontSize)) {
 					let fsz = parseInt(rule.style.fontSize);
 					if (fsz > 1 && fsz <= cfg.threshold) {
@@ -1335,8 +1536,8 @@ function start(cfg, url)
 						}
 					}
 			}
-			if (cfg.forcePlhdr && cfg.forceIInv)
-			if (rule.style.content && /url\(/i.test(rule.style.content)) {
+			if (cfg.forcePlhdr && cfg.forceIInv) {
+			if (rule.style.content && !/invert/i.test(rule.style.filter) && /url\(/i.test(rule.style.content))
 				rule.style.setProperty('filter','invert(1)','important');
 			}
 			}
@@ -1430,6 +1631,10 @@ function start(cfg, url)
 				img.style.setProperty('filter','unset', 'important');
 				continue;
 			}
+			if (cst.filter != 'unset' && /\b(INPUT|TEXT|TEXTAREA)/i.test(img.nodeName) && /(text|number|email|password|date|time|week|url|tel|search|select|month)/i.test(img.type)) {
+				img.style.setProperty('filter','unset', 'important');
+				continue;
+			}
 			let isty = img.style.getPropertyValue('filter');
 			var pisty = '';
 			if (img.parentNode) pisty = img.parentNode.style.getPropertyValue('filter');
@@ -1440,7 +1645,7 @@ function start(cfg, url)
 			if (!imsrc || imsrc == 'none')
 				imsrc = '';
 			if (!b_imgforce[n_c] || b_ctext[n_c] > 95)
-			if (!/(IMG|SVG|VIDEO|OBJECT|EMBED|CANVAS)/i.test(img.nodeName) && !/(slide|banner|background.*page|page.*background)/ig.test(img.className) && ((typeof imsrc != 'undefined' && imsrc != null && imsrc != '' && !/(\/|http|url)/ig.test(imsrc) && /gradient/i.test(bgim)) || (typeof bgim != 'undefined' && bgim != '' && bgim != 'none' && !/(\/|http|url|gradient)/ig.test(bgim)) || (b_ctext[n_c] > 95 && !b_imgforce[n_c]) && !/gradient/i.test(bgim)) || (((img_area[n_c] > 0 && img_area[n_c] < 250 && !/gradient/i.test(bgim) && !/button/i.test(img.className)) || /nav/i.test(img.className)) && !b_imgforce[n_c] && img_area[n_c] < 250 && img_area[n_c] > 0)) {
+			if (!/(IMG|SVG|VIDEO|OBJECT|EMBED|CANVAS)/i.test(img.nodeName) && !/(slide|banner|background.*page|page.*background)/ig.test(img.className) && ((typeof imsrc != 'undefined' && imsrc != null && imsrc != '' && !/(\/|http|url)/ig.test(imsrc) && /gradient/i.test(bgim)) || (typeof bgim != 'undefined' && bgim != '' && bgim != 'none' && !/(\/|http|url|gradient)/ig.test(bgim)) || (b_ctext[n_c] > 95 && !b_imgforce[n_c]) && !/gradient/i.test(bgim)) || (((img_area[n_c] > 0 && img_area[n_c] < 400 && img.textContent.indexOf(' ') > 0 && !/gradient/i.test(bgim) && !/button/i.test(img.className)) || /nav/i.test(img.className)) && !b_imgforce[n_c] && img_area[n_c] < 400 && img_area[n_c] > 0)) {
 				if (!(hdr && hdr.contains(img))) {
 				img.style.setProperty('filter','unset', 'important');
 				continue;
@@ -1495,10 +1700,10 @@ function start(cfg, url)
 				while (pn && !/\b(BODY|HTML)/i.test(pn.nodeName)) {
 					lastn = pn;
 					let nsty = lastn.getAttribute('style');
-					if (nsty != null && !nn_reg.test(nsty) && ((nsty+nn_style).length > 0))
+					if (!b_iimg[map.get(lastn)] && nsty != null && !nn_reg.test(nsty) && ((nsty+nn_style).length > 0))
 						//lastn.setAttribute('style',nsty+nn_style);
 						lastn.style.setProperty('filter','revert','important');
-					else if (nsty == null && nn_style.length > 0)
+					else if (!b_iimg[map.get(lastn)] && nsty == null && nn_style.length > 0)
 						lastn.style.setProperty('filter','revert','important');
 						//lastn.setAttribute('style',nn_style);
 					let cn = map.get(lastn);
@@ -1511,6 +1716,7 @@ function start(cfg, url)
 				b_dim[node_count] = true;
 			}
 		}
+		b_dim = {};
 		node_count = save_nc;
 		node = nodes[node_count];
 
@@ -1576,7 +1782,7 @@ function start(cfg, url)
 				is_oinput = node.type && /(text|number|email|password|date|time|week|url|tel|search|select|month)/i.test(node.type);
 			}
 
-			if (cfg.input_border && !(cfg.advDimming && cfg.underlineLinks)) {
+			if (cfg.input_border && !node.getAttribute('b__') && !(cfg.advDimming && cfg.underlineLinks)) {
 				if (/(INPUT|TEXTAREA|SELECT)/.test(tag) && is_oinput)
 					node.setAttribute('b__', '');
 			}
@@ -1602,32 +1808,55 @@ function start(cfg, url)
 				} else {
 				if (fg.length > 0) {
 					let fgarr = getRGBarr(fg);
-					if (typeof fgarr[3] == 'undefined') fgarr[3] = 1;
-					if (typeof m_sty[fgarr] != 'undefined') {
-						let fgr = m_sty[fgarr];
+					if (typeof m_sty[fgarr] != 'undefined' || (typeof b_idone[fgarr] != 'undefined' && cfg.normalInc2)) {
+						var fgr;
+						if (cfg.normalInc2 && typeof b_idone[fgarr] != 'undefined')
+							fgr = b_idone[fgarr];
+						else
+							fgr = m_sty[fgarr];
+						if (fgr != fgarr) {
 						node.style.setProperty('color','rgba('+fgr[0]+','+fgr[1]+','+fgr[2]+','+fgarr[3]+')','important');
 						m_fcol.set(node, [fgr[0],fgr[1],fgr[2],fgarr[3]]);
+						m_sty[fgarr] = fgr;
+						m_sty[fgr] = fgr;
+						}
 					} else {
 					let fgr = applyColorMatrix([255-fgarr[0], 255-fgarr[1], 255-fgarr[2]], g_m);
+					fgr[3] = fgarr[3];
 					fgbrt = calcBrightness([fgr[0],fgr[1],fgr[2],fgarr[3]]);
-					if (fgbrt >= 0) {
+					if (fgbrt >= 0 && fgr != fgarr) {
 						m_fcol.set(node, [fgr[0],fgr[1],fgr[2],fgarr[3]]);
 						node.style.setProperty('color','rgba('+fgr[0]+','+fgr[1]+','+fgr[2]+','+fgarr[3]+')','important');
 						m_sty[fgarr] = fgr;
+						m_sty[fgr] = fgr;
 					}
 					}
 				}
 				if (bog.length > 0) {
 					let fgarr = getRGBarr(bog);
-					if (typeof fgarr[3] == 'undefined') fgarr[3] = 1;
 					var fgr;
-					if (typeof m_sty[fgarr] != 'undefined') {
-						fgr = m_sty[fgarr];
+					if (typeof m_sty[fgarr] != 'undefined' || (typeof b_idone[fgarr] != 'undefined' && cfg.normalInc2)) {
+						var fgr;
+						if (cfg.normalInc2 && typeof b_idone[fgarr] != 'undefined')
+							fgr = b_idone[fgarr];
+						else
+							fgr = m_sty[fgarr];
+						if (fgr != fgarr) {
+						m_bocol.set(node, [fgr[0],fgr[1],fgr[2],fgarr[3]]);
+						m_sty[fgarr] = fgr;
+						m_sty[fgr] = fgr;
+						}
 					} else {
 						fgr = applyColorMatrix([255-fgarr[0], 255-fgarr[1], 255-fgarr[2]], g_m);
+						fgr[3] = fgarr[3];
+						if (fgr != fgarr) {
+						m_bocol.set(node, [fgr[0],fgr[1],fgr[2],fgarr[3]]);
+						m_sty[fgarr] = fgr;
+						m_sty[fgr] = fgr;
+						}
 					}
 					bgbrt = calcBrightness([fgr[0],fgr[1],fgr[2],fgarr[3]]);
-					if (bgbrt > 0) {
+					if (bgbrt > 0 && fgr != fgarr) {
 						m_bocol.set(node, [fgr[0],fgr[1],fgr[2],fgarr[3]]);
 						if (bog == cs.borderColor)
 							node.style.setProperty('border-color','rgba('+fgr[0]+','+fgr[1]+','+fgr[2]+','+fgarr[3]+')','important');
@@ -1643,18 +1872,27 @@ function start(cfg, url)
 				}
 				if (bg.length > 0) {
 					let fgarr = getRGBarr(bg);
-					if (typeof fgarr[3] == 'undefined') fgarr[3] = 1;
-					if (typeof m_sty[fgarr] != 'undefined') {
-						let fgr = m_sty[fgarr];
+					if (typeof m_sty[fgarr] != 'undefined' || (typeof b_idone[fgarr] != 'undefined' && cfg.normalInc2)) {
+						var fgr;
+						if (cfg.normalInc2 && typeof b_idone[fgarr] != 'undefined')
+							fgr = b_idone[fgarr];
+						else
+							fgr = m_sty[fgarr];
+						if (fgr != fgarr) {
 						node.style.setProperty('background-color','rgba('+fgr[0]+','+fgr[1]+','+fgr[2]+','+fgarr[3]+')','important');
 						m_bcol.set(node, [fgr[0],fgr[1],fgr[2],fgarr[3]]);
+						m_sty[fgarr] = fgr;
+						m_sty[fgr] = fgr;
+						}
 					} else {
 					let fgr = applyColorMatrix([255-fgarr[0], 255-fgarr[1], 255-fgarr[2]], g_m);
+					fgr[3] = fgarr[3];
 					bgbrt = calcBrightness([fgr[0],fgr[1],fgr[2],fgarr[3]]);
-					if (bgbrt > 0) {
+					if (bgbrt > 0 && fgr != fgarr) {
 						m_bcol.set(node, [fgr[0],fgr[1],fgr[2],fgarr[3]]);
 						node.style.setProperty('background-color','rgba('+fgr[0]+','+fgr[1]+','+fgr[2]+','+fgarr[3]+')','important');
 						m_sty[fgarr] = fgr;
+						m_sty[fgr] = fgr;
 					}
 					}
 				}
@@ -1792,52 +2030,68 @@ function start(cfg, url)
 				}
 			}
 			}
-			if (cfg.threshold > 0 && (!b_iimg[node_count] || b_ctext[node_count] > 0)) {
+			if (cfg.threshold > 0 && (!b_iimg[node_count] || b_ctext[node_count] > 0 || (/\b(INPUT|TEXTAREA|TEXT)/i.test(tag) && is_oinput))) {
 				let nsty = node.getAttribute('style');
 				if (nsty == null) nsty = '';
 				if (cfg.normalInc2)
 				if (style.color || style.backgroundColor || style.borderColor) {
+					var pcol, ocol, cola;
+					if (style.color && !colors_to_skip.includes(style.color)) {
 					let col = getRGBarr(style.color);
-					if (typeof col[3] == 'undefined') col[3] = 1;
 					col = [parseInt(col[0]), parseInt(col[1]), parseInt(col[2]), parseInt(col[3])];
 					let cful = calcColorfulness(col);
-					let pcol = col;
-					if (typeof b_idone[style.color] == 'undefined' && col.length > 0 && cful >= 24) {
-						pcol = colorblindFg(col, cfg, nodes_behind_inv.includes(node), /invert/.test(style.filter), n_inv, b_forced);
-					} else if (typeof b_idone[style.color] != 'undefined') {
-						pcol = b_idone[style.color];
+					ocol = col;
+					pcol = '';
+					if (typeof b_idone[ocol] == 'undefined' && col.length > 0 && cful >= 34) {
+						pcol = colorblindFg(col, cfg, nodes_behind_inv.includes(node), /invert/.test(style.filter), n_inv);
+						cola = getRGBarr(pcol);
+					} else if (typeof b_idone[ocol] != 'undefined' && col.length > 0 && cful >= 34) {
+						cola = b_idone[ocol];
+						pcol = 'rgba('+cola[0]+','+cola[1]+','+cola[2]+','+cola[3]+')';
 					}
 					if (/^rgba/.test(pcol)) {
-						b_idone[style.color] = pcol;
+						b_idone[ocol] = cola;
+						b_idone[cola] = cola;
 						node.style.setProperty('color', pcol,'important');
 					}
-					col = getRGBarr(style.backgroundColor);
-					if (typeof col[3] == 'undefined') col[3] = 1;
-					col = [parseInt(col[0]), parseInt(col[1]), parseInt(col[2]), parseInt(col[3])];
-					cful = calcColorfulness(col);
-					pcol = col;
-					if (typeof b_idone[style.backgroundColor] == 'undefined' && col.length > 0 && cful >= 24) {
-						pcol = colorblindBg(col, cfg, nodes_behind_inv.includes(node), /invert/.test(style.filter), n_inv, b_forced);
-					} else if (typeof b_idone[style.backgroundColor] != 'undefined') {
-						pcol = b_idone[style.backgroundColor];
 					}
-					if (/^rgba/.test(pcol)) { 
-						b_idone[style.backgroundColor] = pcol;
+					if (style.backgroundColor && !colors_to_skip.includes(style.backgroundColor)) {
+					let col = getRGBarr(style.backgroundColor);
+					col = [parseInt(col[0]), parseInt(col[1]), parseInt(col[2]), parseInt(col[3])];
+					let cful = calcColorfulness(col);
+					ocol = col;
+					pcol = '';
+					if (typeof b_idone[ocol] == 'undefined' && col.length > 0 && cful >= 34) {
+						pcol = colorblindBg(col, cfg, nodes_behind_inv.includes(node), /invert/.test(style.filter), n_inv);
+						cola = getRGBarr(pcol);
+					} else if (typeof b_idone[ocol] != 'undefined' && col.length > 0 && cful >= 34) {
+						cola = b_idone[ocol];
+						pcol = 'rgba('+cola[0]+','+cola[1]+','+cola[2]+','+cola[3]+')';
+					}
+					if (/^rgba/.test(pcol) && pcol != style.color) {
+						b_idone[ocol] = cola;
+						b_idone[cola] = cola;
 						node.style.setProperty('background-color', pcol,'important');
 					}
-					col = getRGBarr(style.borderColor);
-					if (typeof col[3] == 'undefined') col[3] = 1;
+					}
+					if (style.borderColor && !colors_to_skip.includes(style.borderColor)) {
+					let col = getRGBarr(style.borderColor);
 					col = [parseInt(col[0]), parseInt(col[1]), parseInt(col[2]), parseInt(col[3])];
-					cful = calcColorfulness(col);
-					pcol = col;
-					if (typeof b_idone[style.borderColor] == 'undefined' && col.length > 0 && cful >= 24) {
-						pcol = colorblindFg(col, cfg, nodes_behind_inv.includes(node), /invert/.test(style.filter), n_inv, b_forced);
-					} else if (typeof b_idone[style.borderColor] != 'undefined') {
-						pcol = b_idone[style.borderColor];
+					let cful = calcColorfulness(col);
+					ocol = col;
+					pcol = '';
+					if (typeof b_idone[ocol] == 'undefined' && col.length > 0 && cful >= 34) {
+						pcol = colorblindFg(col, cfg, nodes_behind_inv.includes(node), /invert/.test(style.filter), n_inv);
+						cola = getRGBarr(pcol);
+					} else if (typeof b_idone[ocol] != 'undefined' && col.length > 0 && cful >= 34) {
+						cola = b_idone[ocol];
+						pcol = 'rgba('+cola[0]+','+cola[1]+','+cola[2]+','+cola[3]+')';
 					}
 					if (/^rgba/.test(pcol)) { 
-						b_idone[style.borderColor] = pcol;
+						b_idone[ocol] = cola;
+						b_idone[cola] = cola;
 						node.style.setProperty('border-color', pcol,'important');
+					}
 					}
 				}
 				if (!cfg.skipHeights && !is_xinput && b_ctext[node_count] > 2 && (node.getElementsByTagName('*').length < 4 || (cfg.start3 && node.hasAttribute(focalAnchors.attrNameContainer) && node.getElementsByTagName('*').length < 50)))
@@ -1868,7 +2122,8 @@ function start(cfg, url)
 					}
 				}
 				}
-				if (/\b(INPUT|TEXTAREA|SELECT|BUTTON)/i.test(tag)) {
+				if (/\b(INPUT|TEXTAREA|SELECT|BUTTON)/i.test(tag) && b_dim[node_count] != true) {
+					b_dim[node_count] = true;
 					if (!is_xinput) {
 					if (node.textContent != null && node.textContent != '' && style.getPropertyValue('width') != null && style.getPropertyValue('width') != '') {
 					let nwidth = ';width: calc( ' + style.getPropertyValue('width') + ' + ' + (cfg.size/2).toFixed(1) + '% )!important;';
@@ -1889,7 +2144,7 @@ function start(cfg, url)
 					else
 						txtcolor = 'black';
 					node.style.setProperty('color',txtcolor,'important');
-					if (cfg.forcePlhdr && cfg.forceIInv && /invert/.test(style.filter))
+					if (cfg.forcePlhdr && cfg.forceIInv)
 						node.style.setProperty('filter','unset','important');
 					}
 					nsty = node.getAttribute('style');
@@ -1913,14 +2168,6 @@ function start(cfg, url)
 			if (cfg.underlineLinks && !(cfg.advDimming && cfg.input_border))
 			if (is_link) {
 				node.setAttribute('u__', '');
-				let txtcolor = style.color;
-				if (txtcolor == null || txtcolor.length < 1) txtcolor = 'rgb(0,0,0)';
-				let txt_brt = calcBrightness(getRGBarr(txtcolor));
-				if (txt_brt <= 160) 
-					txtcolor = 'rgb(0,0,0)';
-				else
-					txtcolor = 'rgb(255,255,255)';
-				node.style.setProperty('color',txtcolor,'important');
 				node.style.setProperty('text-decoration','underline');
 			}
 
