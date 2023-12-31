@@ -54,7 +54,8 @@
 <p>
 <h4>NEW CHANGES</h4>
 <ul>
-<li>Background image size bug since long time fixed. Fixes for "underline link", "input border" and "strength" value more than 200 for high contrast.</li>
+<li>Removed changing of font style in "Underline links" and "Input border". The fonts can be changed by adding custom CSS rule like below<br><code>body * { font-family: sans !important; }</code><br>Replace "sans" with "serif" for serif font.</li>
+<li>Bugfix of "Dark mode" some images colors' getting reversed. Fixes for "underline link", "input border" and "strength" value more than 200 for high contrast.</li>
 <li>Option "Skip nodes with stylesheets rules" now also does color changes for pseudo elements 'before/after'. Skipping nodes has non-skipping stylesheet code for font size change. Speeds are roughly same if enabled or disabled, but keeping enabled is recommended.</li>
 <li>"Colorblind adjusted colors" which changes colors of text to suit colorblind condition. In dark mode or reverse colors, the text hue is changed toward green color while in normal light theme, the text is changed for blue color.</li>
 <li>In Dark mode, if both "Underline links" and "Input border" are enabled, brightness and contrast apply to more elements and images (but distort colors of some images).</li>
@@ -65,7 +66,6 @@
 <li>"Skip text height changes" avoids changing font heights of text and INPUT elements like text boxes and select boxes.</li>
 <li>New option to add custom CSS rules to the site</li>
 <li>If either of "Dark mode" or "Reverse Colors" is enabled in global options, all websites colors are changed to "dark theme" colors. If the theme calculates "Lightness" wrong, then enable both "Reverse colors" and "Dark mode" to override the wrongly computed theme.</li>
-<li>"Underline black links / Sans Font" & "Input border / Serif Font" change all fonts to Sans-Serif & Serif independantly.</li>
 <li>"Reverse Colors" & "Invert Image colors" correctly displays most emojis, but speed is slow.</li>
 <li>Starting 3 letters bold and ALL CAPITAL TEXT work with NON-ENGLISH languages also.</li>
 <li><b>IMPORTANT</b>: When the settings of "Font increase %" and "Font Threshold" are VERY HIGH, to make text appear MUCH BIGGER, the browser's "Text Size" Setting SHOULD ALSO BE CHANGED TO "LARGE/VERY LARGE" or "16 px to 24 px". Otherwise on some pages OVERLAPPING/CUTTING of text MAY occur.</li>
@@ -85,7 +85,6 @@
 <li>"Strength" slider greater than 200 makes most text all black / white on light / black background, while large negative values keeps original colors.</li>
 <li>Font Weight slider changes thin/bold-ness of ALL text, and bold and normal letters weight when "Start 3 letters bold" is enabled.</li>
 <li>ALL CAPITAL TEXT & Starting 3 letters made bold options.</li>
-<li>Change Font style of ALL Fonts of page to Sans-serif or Serif, by enabling "Underline black links / Sans Font" or  "Input border / Serif font".</li>
 <li>Dark mode changes Contrast and Brightness of "black" themed sites. Pictures are kept normal but if "Underline links" and "Input border" are enabled, the brightness / contrast effect is greater and images get distorted colors.</li>
 <li>"Force Reverse Colors" is a color inverter, making white background black, and black bg. white, while images are normal (unless "Invert Image colors" is disabled, which will also reverse image colors).</li>
 <li>In Reverse colors the text brightness and contrast can be changed by their sliders.</li>
@@ -113,7 +112,7 @@
 <li>Reverse color hue correction changes colors to match original website in reverse colors..</li>
 <li>The text brightness and contrast can be changed by the sliders when "Reverse colors" is enabled. To revert to original brightness and contrast, set Strength to 0 and Contrast to 50.</li>
 <li>The popup options box show the "Lightness" value of current site. If less than 0.5, then it is considered "Dark themed", if more than 0.5, it is "Light themed". Dark themed site colors can be changed by "Dark mode" while "Light themed" site colors can be changed through "Reverse Colors". Some few sites may detect theme wrong, then enable BOTH Dark mode and Reverse colors to force site color changes.</li>
-<li>If "Underline black links / Sans Font" or "Input border / Serif Font" is enabled, ALL Fonts styles are changed to Sans-serif or Serif. If BOTH are enabled in Dark mode, then brightness and contrast are applied to more elements and images (which can distort colors of some images).</li>
+<li>If "Underline links" and "Input border" BOTH are enabled in Dark mode, then brightness and contrast are applied to more elements and images (which can distort colors of some images).</li>
 <li>The menu and large sections of webpage are increased in size according to the Font Increase % and Input elements increased by Font Threshold. If there are problems in display of menus / header imaages or large tables overlap, enable "Skip NAV & SECTION" checkbox. The "Skip NAV & SECTION" also skips applying Reverse Color to images inside NAV and HEADER elements, which are (usually) on top menu of webpage, when "Force Reverse colors" is enabled.</li>
 <li>"Skip text height changes" will not change heights of text, and INPUT elements like text and select boxes.</li>
 <li>'Colorblind adjust colors' when enabled changes text colors and background to suit colorblind condition. In dark mode or reverse colors, the text hue is changed toward green color while in normal light theme, the text is changed for blue color.</li>
@@ -142,11 +141,11 @@
 		<li><strong>Whitelist:</strong> Adds the website to the whitelist. This site will have custom settings different from preset settings.<br>Default value: disabled</li>
 		<li><strong>Dark mode:</strong> Should be enabled on "Black theme" or black background/light text websites. The Brightness and Contrast % can then be adjusted with the Contrast slider and Strenth slider which works as Brightness setting.<br>Default value: disabled</li>
 		<li><strong>Avoid colorful text:</strong>  Attempts to avoid colorful text and links, if they are considered readable.<br>Default value: enabled</li>
-		<li><strong>Underline black links / Sans Font:</strong> Adds an underline to black colored links, to distinguish them from other text. Also changes all Fonts style to Sans-Serif.<br>Default value: disabled</li>
+		<li><strong>Underline links:</strong> Adds an underline to links, to distinguish them from other text.<br>Default value: disabled</li>
 		<li><strong>Force Reverse Color:</strong> Reverses colors of a site, so a light background site becomes black and black background site becomes bright, Text colors are also reversed. Images are unchanged as much as possible.<br>Default value: disabled</li>
 		<li><strong>Invert Image colors:</strong> Does not apply reverse colors to images, causing images to appear in reverse colors.<br>Default value: enabled</li>
 		<li><strong>Reverse colors hue correction:</strong> Changes text colors to match those of website.<br> It is enabled when Reverse colors gets enabled. Default value: enabled</li>
-		<li><strong>Input border / Serif Font:</strong> Attempts to add a black outline around text areas. Also changes all Font Styles to Serif font.<br>Default value: disabled</li>
+		<li><strong>Input border:</strong> Attempts to add a black outline around text areas.<br>Default value: disabled</li>
 		<li><strong>Force max opacity:</strong> Forces full opacity on all fonts.<strong> Also changes background color if "Force Reverse Colors" is applied.</strong><br>Default value: disabled</li>
 		<li><strong>Skip headings:</strong> Avoids applying on head tags H1 to H4.<br>Default value: disabled</li>
 		<li><strong>Skip NAV & SECTION:</strong> Avoids changing size of NAV and SECTION elements (usually menus and large tables) and height change of INPUT elements.<br>Also skips applying reverse colors to title menu images of a page.<br>Default value: disabled</li>
