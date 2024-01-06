@@ -81,15 +81,6 @@
 							<span class="checkmark"></span>
 						</label>
 					</div>  
-					<div class="option" id="adv-mode">
-						<label for="advDimming">For Dark mode</label>
-						<label class="container">
-							<input type="checkbox" id="advDimming">
-							<span class="checkmark"></span>
-						</label>
-					</div>
-				</div>
-				<div class ="separator" id ="sep">
 					<div class ="option">
 						<label for ="skipColoreds">Avoid colorful text</label>
 						<label class="container">
@@ -97,34 +88,43 @@
 							<span class="checkmark"></span>
 						</label>
 					</div>
-					<div class ="option">
-						<label for ="skipWhites">Skip white text</label>
+					<div class ="option" id="iinv-div">
+						<label for="forceIInv">Invert Image Colors</label>
 						<label class="container">
-							<input type="checkbox" id="skipWhites">
+							<input type="checkbox" id="forceIInv">
+							<span class="checkmark"></span>
+						</label>
+					</div>
+				</div>
+				<div class ="separator" id ="sep">
+					<div class="option" id="adv-mode">
+						<label for="advDimming">Dark mode</label>
+						<label class="container">
+							<input type="checkbox" id="advDimming">
+							<span class="checkmark"></span>
+						</label>
+					</div>
+					<div class ="option" id="forceRev">
+						<label for="forcePlhdr">Reverse Colors mode</label>
+						<label class="container">
+							<input type="checkbox" id="forcePlhdr">
+							<span class="checkmark"></span>
+						</label>
+					</div>
+					<div class ="option" id="norm-div">
+						<label for="normalInc">Reverse colors hue correction</label>
+						<label class="container">
+							<input type="checkbox" id="normalInc">
 							<span class="checkmark"></span>
 						</label>
 					</div>
 				</div>
 				<div class ="separator">
 					<div class ="forces">
-						<div class ="option" id="forceRev">
-							<label for="forcePlhdr">Force Reverse Colors</label>
+						<div class ="option">
+							<label for ="skipWhites">Skip white text</label>
 							<label class="container">
-								<input type="checkbox" id="forcePlhdr">
-								<span class="checkmark"></span>
-							</label>
-						</div>
-						<div class ="option" id="iinv-div">
-							<label for="forceIInv">Invert Image Colors</label>
-							<label class="container">
-								<input type="checkbox" id="forceIInv">
-								<span class="checkmark"></span>
-							</label>
-						</div>
-						<div class ="option" id="norm-div">
-							<label for="normalInc">Reverse colors hue correction</label>
-							<label class="container">
-								<input type="checkbox" id="normalInc">
+								<input type="checkbox" id="skipWhites">
 								<span class="checkmark"></span>
 							</label>
 						</div>
@@ -132,6 +132,13 @@
 							<label for="outline">Input border</label>
 							<label class="container">
 								<input type="checkbox" id="outline">
+								<span class="checkmark"></span>
+							</label>
+						</div>
+						<div class ="option">
+							<label for ="skipNavSection">Skip NAV SECTION</label>
+							<label class="container">
+								<input type="checkbox" id="skipNavSection">
 								<span class="checkmark"></span>
 							</label>
 						</div>
@@ -174,13 +181,6 @@
 						</label>
 					</div>
 					<div class ="option">
-						<label for ="skipNavSection">Skip NAV SECTION</label>
-						<label class="container">
-							<input type="checkbox" id="skipNavSection">
-							<span class="checkmark"></span>
-						</label>
-					</div>
-					<div class ="option">
 						<label for ="skipHeights">Skip text height change</label>
 						<label class="container">
 							<input type="checkbox" id="skipHeights">
@@ -188,7 +188,7 @@
 						</label>
 					</div>
 					<div class ="option">
-						<label for ="ssrules">Skip nodes with stylesheets rules</label>
+						<label for ="ssrules">Process before/after colors</label>
 						<label class="container">
 							<input type="checkbox" id="ssrules">
 							<span class="checkmark"></span>
@@ -221,7 +221,7 @@
 				</div>
 			</div><!--checks-->
 		<a href="Welcome.html" style="width:32px;" target="_blank"><img src="assets/icons/halo.png" style="width:32px;position:relative;margin-left:0px;margin-bottom:-36px;"></a>
-		<label id="LightDark" style="margin:auto;"></label>
+		<label id="LightDark" style="margin-left:48px;"></label>
 		<button style="margin-top:-26px;" id="optionsBtn">All Settings</button>
 		</div> <!--wrapper-->
 		<script src="src/pageAction_options.js"></script>

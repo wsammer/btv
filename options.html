@@ -154,7 +154,7 @@
 
 			<div class="help-tip">
 				<p>
-				Skips applying setting to HTML headings. (&lth1&gt, &lth2&gt, &lth3&gt)
+				Skips applying setting to HTML headings. (&lth1&gt, &lth2&gt, &lth3&gt, &lth4&gt)
 				</p>
 			</div>
 
@@ -211,13 +211,13 @@
 				</label>
 			</div>
 			<div class ="settings">
-				<span>Skip nodes with stylesheets rules</span>
+				<span>Process before/after colors</span>
 
 				<div class="help-tip">
 				<p>
-					Applies font and color changes of stylesheets of the webpage<br>
-					Nodes which are done by stylesheet are skipped in processing.<br>
-					Enable to increase processing speed.
+					Applies color changes of "before/after" pseudo elements of stylesheets.<br>
+					Colors with CSS variables are also processed, but speed is slower.<br>
+					Disable to increase processing speed.
 				</p>
 				</div>
 
@@ -350,7 +350,7 @@
 			<div class="help-tip">
 				<p>
 				Change text colors to make them readable for colorblind condition.<br>
-				Adjusts red and green values of color to exchange with blue value.
+				Adjusts red / green / blue values of color to exchange with blue or green value, depending on reverse colors or dark mode is enabled or disabled.
 				</p>
 			</div>
 
