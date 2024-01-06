@@ -57,10 +57,11 @@ function init(tabs)
 	let hostname = '';
 
 	browser.storage.local.get(["lightness"]).then((result) => {
-		if (result.lightness > 0.5)
-			LightDark.textContent = 'Light theme : lightness = '+result.lightness.toFixed(2);
-		else
-			LightDark.textContent = 'Dark theme : lightness = '+result.lightness.toFixed(2);
+			LightDark.textContent = 'Site lightness = '+result.lightness.toFixed(2);
+	});
+	browser.storage.local.get(["default_size"]).then((result) => {
+		if (result.default_size)
+			LightDark.textContent += '  Browser font size = '+result.default_size;
 	});
 
 	if (url.startsWith('file://')) {
@@ -77,8 +78,8 @@ function init(tabs)
 	strSlider.oninput = () => { strLabel.innerText = strSlider.value; if (!WLcheck.checked) { WLcheck.click(); } else { WLcheck.click();WLcheck.click(); } }
 	sizeSlider.oninput = () => { sizeLabel.innerText = sizeSlider.value; if (!WLcheck.checked) { WLcheck.click(); } else { WLcheck.click();WLcheck.click(); } }
 	thresholdSlider.oninput = () => { thresholdLabel.innerText = thresholdSlider.value; if (!WLcheck.checked) { WLcheck.click(); } else { WLcheck.click();WLcheck.click(); } }
-	brt_slider.oninput = () => { brt_label.innerText = brt_slider.value; if (!WLcheck.checked) { WLcheck.click(); } else { WLcheck.click();WLcheck.click(); } }
-	con_slider.oninput = () => { con_label.innerText = con_slider.value; if (!WLcheck.checked) { WLcheck.click(); } else { WLcheck.click();WLcheck.click(); } }
+	brt_slider.oninput = () => { brt_label.innerText = (parseInt(brt_slider.value)+50); if (!WLcheck.checked) { WLcheck.click(); } else { WLcheck.click();WLcheck.click(); } }
+	con_slider.oninput = () => { con_label.innerText = (parseInt(con_slider.value)+100); if (!WLcheck.checked) { WLcheck.click(); } else { WLcheck.click();WLcheck.click(); } }
 	weight_slider.oninput = () => { weight_label.innerText = weight_slider.value; if (!WLcheck.checked) { WLcheck.click(); } else { WLcheck.click();WLcheck.click(); } }
  	customCssText.oninput = () => { if (!WLcheck.checked) { WLcheck.click(); } else { WLcheck.click();WLcheck.click(); } }
 
@@ -149,9 +150,9 @@ function init(tabs)
 		weightSlider.value       = item.weight;
 		weightLabel.innerText    = item.weight;
 		brt_slider.value         = item.brightness || 50;
-		brt_label.innerText      = item.brightness || 50;
+		brt_label.innerText      = (parseInt(item.brightness)+50) || 100;
 		con_slider.value         = item.contrast || 0;
-		con_label.innerText      = item.contrast || 0;
+		con_label.innerText      = (parseInt(item.contrast)+100) || 100;
 
 		skipHeadings.checked     = item.skipHeadings;
 		skipColoreds.checked     = item.skipColoreds;

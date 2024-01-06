@@ -24,7 +24,7 @@ browser.runtime.onInstalled.addListener(details => {
 			'forceIInv': true,
 			'normalInc': true,
 			'normalInc2': false,
-			'ssrules': true,
+			'ssrules': false,
 			'enableEverywhere': true
 		};
 
