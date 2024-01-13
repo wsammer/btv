@@ -78,8 +78,16 @@ function init(tabs)
 	strSlider.oninput = () => { strLabel.innerText = strSlider.value; if (!WLcheck.checked) { WLcheck.click(); } else { WLcheck.click();WLcheck.click(); } }
 	sizeSlider.oninput = () => { sizeLabel.innerText = sizeSlider.value; if (!WLcheck.checked) { WLcheck.click(); } else { WLcheck.click();WLcheck.click(); } }
 	thresholdSlider.oninput = () => { thresholdLabel.innerText = thresholdSlider.value; if (!WLcheck.checked) { WLcheck.click(); } else { WLcheck.click();WLcheck.click(); } }
-	brt_slider.oninput = () => { brt_label.innerText = (parseInt(brt_slider.value)+50); if (!WLcheck.checked) { WLcheck.click(); } else { WLcheck.click();WLcheck.click(); } }
-	con_slider.oninput = () => { con_label.innerText = (parseInt(con_slider.value)+100); if (!WLcheck.checked) { WLcheck.click(); } else { WLcheck.click();WLcheck.click(); } }
+	brt_slider.oninput = () => {
+		brt_label.innerText = (parseInt(brt_slider.value)+50);
+		browser.storage.local.set( { abrightness:  (parseInt(con_slider.value)+100)+'%', acontrast:  (parseInt(brt_slider.value)+50)+'%' } );
+		if (!WLcheck.checked) { WLcheck.click(); } else { WLcheck.click();WLcheck.click(); }
+	}
+	con_slider.oninput = () => {
+		con_label.innerText = (parseInt(con_slider.value)+100);
+		browser.storage.local.set( { abrightness:  (parseInt(con_slider.value)+100)+'%', acontrast:  (parseInt(brt_slider.value)+50)+'%' } );
+		if (!WLcheck.checked) { WLcheck.click(); } else { WLcheck.click();WLcheck.click(); }
+	}
 	weight_slider.oninput = () => { weight_label.innerText = weight_slider.value; if (!WLcheck.checked) { WLcheck.click(); } else { WLcheck.click();WLcheck.click(); } }
  	customCssText.oninput = () => { if (!WLcheck.checked) { WLcheck.click(); } else { WLcheck.click();WLcheck.click(); } }
 
@@ -320,6 +328,9 @@ function init(tabs)
 				if (checkbox.id === 'adv-mode') {
 					const brt_div = document.querySelector('#brt-div');
 					const con_div = document.querySelector('#con-div');
+
+					if (!advDimming.checked)
+						ssrules.checked = false;
 
 					if (advDimming.checked || forcePlhdr.checked) {
 						brt_div.style.display = 'flex';
