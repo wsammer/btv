@@ -55,7 +55,7 @@
 					<span class ="sliderDesc">Contrast (%)</span>
 					<div>
 						<span class = "val" id = "brt-label"></span>
-						<input style="background-image:url(assets/icons/slider3.png);background-size:106% 100%;background-position:-1px 0;" type = "range" class = "option slider" id = "brt-slider" min = "0" max = "300" step = "1" value="50">
+						<input style="background-image:url(assets/icons/slider4.png);background-size:100% 100%;" type = "range" class = "option slider" id = "brt-slider" min = "-100" max = "200" step = "1" value="50">
 					</div>
 				</div>
 				<div class = "sliderDiv" id="con-div">
@@ -81,10 +81,10 @@
 							<span class="checkmark"></span>
 						</label>
 					</div>  
-					<div class ="option">
-						<label for ="skipColoreds">Avoid colorful text</label>
+					<div class="option" id="adv-mode">
+						<label for="advDimming">Dark mode</label>
 						<label class="container">
-							<input type="checkbox" id="skipColoreds">
+							<input type="checkbox" id="advDimming">
 							<span class="checkmark"></span>
 						</label>
 					</div>
@@ -97,10 +97,10 @@
 					</div>
 				</div>
 				<div class ="separator" id ="sep">
-					<div class="option" id="adv-mode">
-						<label for="advDimming">Dark mode</label>
+					<div class ="option">
+						<label for ="ssrules">High contrast Dark mode</label>
 						<label class="container">
-							<input type="checkbox" id="advDimming">
+							<input type="checkbox" id="ssrules">
 							<span class="checkmark"></span>
 						</label>
 					</div>
@@ -167,9 +167,9 @@
 				</div>
 				<div class ="separator" id ="sep">
 					<div class ="option">
-						<label for ="skipHeadings">Skip headings</label>
+						<label for ="skipColoreds">Avoid colorful text</label>
 						<label class="container">
-							<input type="checkbox" id="skipHeadings">
+							<input type="checkbox" id="skipColoreds">
 							<span class="checkmark"></span>
 						</label>
 					</div>
@@ -181,16 +181,16 @@
 						</label>
 					</div>
 					<div class ="option">
-						<label for ="skipHeights">Skip text height change</label>
+						<label for ="skipHeadings">Skip headings</label>
 						<label class="container">
-							<input type="checkbox" id="skipHeights">
+							<input type="checkbox" id="skipHeadings">
 							<span class="checkmark"></span>
 						</label>
 					</div>
 					<div class ="option">
-						<label for ="ssrules">Process before/after colors</label>
+						<label for ="skipHeights">Skip text height change</label>
 						<label class="container">
-							<input type="checkbox" id="ssrules">
+							<input type="checkbox" id="skipHeights">
 							<span class="checkmark"></span>
 						</label>
 					</div>

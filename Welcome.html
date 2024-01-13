@@ -54,13 +54,15 @@
 <p>
 <h4>NEW CHANGES</h4>
 <ul>
+<li>In Dark mode, the Brightness and Contrast sliders now <b>update the colors while changing</b> instead of requiring a refesh of webpage. Note that this is only for "Dark mode" and not for "Reverse colors" (even though if set to "Dark mode" some bright themed sites give dark theme, because "Reverse colors" is being applied internally). Usually, but not always, a dark theme has "lightness" value less than 0.5 so use on such sites only is recommended, else <b>Image colors can get distorted</b>.</li>
+<li>Strength slider controls the "brightness" threshold below which text contrast is increased to black / white. As before, negative settings preserve colors and high positive settings create greater contrast (only if colors of text are "contrast-friendly", grey on dark background will not become white, or light color on white background become black).</li>
+<li>Option "High contrast dark mode" to give greater contrast when brighness / contrast settings are changed in Dark mode.</li>
 <li>Fixed color reverse on some page elements in reverse colors with hue correction enabled.</li>
 <li>Brightness and Contrast values are now displayed as actual percentage, and not as previous 'offset'. This does not affect saved settings. Browser default font size is shown next to lightness of site in popup settings.</li>
-<li>Change of "Skip nodes" rule to "Process before/after colors" which changes colors of stylesheet pseudo elements ":before/:after" and causes load on CPU.</li>
 <li>Removed changing of font style in "Underline links" and "Input border". The fonts can be changed by adding custom CSS rule like below<br><code>body * { font-family: sans !important; }</code><br>Replace "sans" with "serif" for serif font.</li>
 <li>Bugfix of "Dark mode" some images colors' getting reversed. Fixes for "underline link", "input border" and "strength" value more than 200 for high contrast.</li>
 <li>"Colorblind adjusted colors" which changes colors of text to suit colorblind condition. In dark mode or reverse colors, the text hue is changed toward green color while in normal light theme, the text is changed for blue color.</li>
-<li>In Dark mode, if both "Underline links" and "Input border" are enabled, brightness and contrast apply to more elements and images (but distort colors of some images).</li>
+<li>If "High contrast Dark mode" is enabled in Dark mode, brightness and contrast apply to more elements and images (but distort colors of some images).</li>
 <li>Lightness value shown in popup settings.</li>
 <li>If strength is an ODD number, input textbox color is changed to black/white depending on its color.</li>
 <li>In Reverse colors the brightness and contrast sliders control brightness and contrast of text and background color.</li>
@@ -83,11 +85,11 @@
 <b>TL;DR</b><br>
 <ul>
 <li>Font size within threshold is enlarged inversely with font size. That means small text made bigger than large text.</li>
-<li><b><em>SPEED of page processing is SLOW. There are some options to increase speed of font changes / colors and enabling / disabling any or all of - "Skip text height change" / "Skip NAV SECTION" / "Avoid colorful text" / "Process before/after colors" -  can run little faster.</em></b></li>
+<li><b><em>SPEED of page processing is SLOW. There are some options to increase speed of font changes / colors and enabling / disabling any or all of - "Skip text height change" / "Skip NAV SECTION" / "Avoid colorful text" / "Reverse colors hue correction" -  can run little faster.</em></b></li>
 <li>"Strength" slider greater than 200 makes most text all black / white on light / black background, while large negative values keeps original colors.</li>
 <li>Font Weight slider changes thin/bold-ness of ALL text, and bold and normal letters weight when "Start 3 letters bold" is enabled.</li>
 <li>ALL CAPITAL TEXT & Starting 3 letters made bold options.</li>
-<li>Dark mode changes Contrast and Brightness of "black" themed sites. Pictures are kept normal but if "Underline links" and "Input border" are enabled, the brightness / contrast effect is greater and images get distorted colors.</li>
+<li>Dark mode changes Contrast and Brightness of "black" themed sites. Pictures are kept normal but if "High contrast dark mode" is enabled, the brightness / contrast effect is greater and images get distorted colors.</li>
 <li>"Force Reverse Colors" is a color inverter, making white background black, and black bg. white, while images are normal (unless "Invert Image colors" is disabled, which will also reverse image colors).</li>
 <li>In Reverse colors the text brightness and contrast can be changed by their sliders.</li>
 <li>The popup options show the "Lightness" value of current site. If less than 0.5, then it is "Dark themed", if more than 0.5, it is "Light themed". Dark themed sites can be changed by "Dark mode" while "Light themed" sites can be changed by "Reverse Colors".</li>
@@ -114,7 +116,7 @@
 <li>Reverse color hue correction changes colors to match original website in reverse colors..</li>
 <li>The text brightness and contrast can be changed by the sliders when "Reverse colors" is enabled. To revert to original brightness and contrast, set Strength to 0 and Contrast to 50.</li>
 <li>The popup options box show the "Lightness" value of current site. If less than 0.5, then it is considered "Dark themed", if more than 0.5, it is "Light themed". Dark themed site colors can be changed by "Dark mode" while "Light themed" site colors can be changed through "Reverse Colors". Some few sites may detect theme wrong, then enable BOTH Dark mode and Reverse colors to force site color changes.</li>
-<li>If "Underline links" and "Input border" BOTH are enabled in Dark mode, then brightness and contrast are applied to more elements and images (which can distort colors of some images).</li>
+<li>If "High contrast Dark mode" is enabled in Dark mode, then brightness and contrast are applied to more elements and images (which can distort colors of some images).</li>
 <li>The menu and large sections of webpage are increased in size according to the Font Increase % and Input elements increased by Font Threshold. If there are problems in display of menus / header imaages or large tables overlap, enable "Skip NAV & SECTION" checkbox. The "Skip NAV & SECTION" also skips applying Reverse Color to images inside NAV and HEADER elements, which are (usually) on top menu of webpage, when "Force Reverse colors" is enabled.</li>
 <li>"Skip text height changes" will not change heights of text, and INPUT elements like text and select boxes.</li>
 <li>'Colorblind adjust colors' when enabled changes text colors and background to suit colorblind condition. In dark mode or reverse colors, the text hue is changed toward green color while in normal light theme, the text is changed for blue color.</li>
@@ -152,7 +154,7 @@
 		<li><strong>Skip NAV & SECTION:</strong> Avoids changing size of NAV and SECTION elements (usually menus and large tables) and height change of INPUT elements.<br>Also skips applying reverse colors to title menu images of a page.<br>Default value: disabled</li>
 		<li><strong>Skip text height changes:</strong> Avoids changing size text whose height is less than font size and INPUT elements like text and select boxes<br>Default value: disabled.</li>
 		<li><strong>Skip white text:</strong> Avoids applying on white text.<br>Default value: enabled</li>
-		<li><strong>Process before/after colors:</strong>Applies colors of "before/after" pseudo elements of stylesheets in a page. Variables, hsl and hex values are also considered. Speed is affected.<br>Default value: disabled</li>
+		<li><strong>High contrast Dark mode:</strong>Skips preserving image colors in Dark mode with different brightness / contrast settings. Some parts of page get a 'high contrast' effect depending on brightness / contrast values.<br>Default value: disabled</li>
 		<li><strong>ALL CAPITALS TEXT:</strong> Makes all text in CAPITALS.<br>Default value: disabled</li>
 		<li><strong>Starting 3 letters bold:</strong> Starting 3 letters of words are made bold.<br>Default value: disabled</li>
 		<li><strong>Skip links in 3 letters bold:</strong> Avoids changing links when start 3 letters bold is enabled.<br>Default value: disabled</li>
