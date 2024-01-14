@@ -54,7 +54,8 @@
 <p>
 <h4>NEW CHANGES</h4>
 <ul>
-<li>In Dark mode, the Brightness and Contrast sliders now <b>update the colors while changing</b> instead of requiring a refesh of webpage. Note that this is only for "Dark mode" and not for "Reverse colors" (even though if set to "Dark mode" some bright themed sites give dark theme, because "Reverse colors" is being applied internally). Usually, but not always, a dark theme has "lightness" value less than 0.5 so use on such sites only is recommended, else <b>Image colors can get distorted</b>.</li>
+<li>In Dark mode and Reverse colors mode, the Brightness and Contrast sliders now <b>update the colors while changing</b> instead of requiring a refesh of webpage. This works in "Dark mode" and "Reverse colors" mode, but for normal pages there is no brightness / contrast change.</li>
+<li>The "High contrast dark mode" option, when enabled even though Dark mode is disabled, does processing of text colors by newer method (which is still work in progress). Disabling it reverts the text color contrast logic to older method.</li>
 <li>Strength slider controls the "brightness" threshold below which text contrast is increased to black / white. As before, negative settings preserve colors and high positive settings create greater contrast (only if colors of text are "contrast-friendly", grey on dark background will not become white, or light color on white background become black).</li>
 <li>Option "High contrast dark mode" to give greater contrast when brighness / contrast settings are changed in Dark mode.</li>
 <li>Fixed color reverse on some page elements in reverse colors with hue correction enabled.</li>
