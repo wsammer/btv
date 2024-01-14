@@ -196,11 +196,11 @@ function createFilterMatrix(config) {
 function clamp(x, min, max) {
 	return Math.min(max, Math.max(min, x));
 }
-let gcol_cache = {};
+let gcol_cache = new Map();
 function applyColorMatrix([r, g, b]) {
 	let col = [r,g,b];
-	if (typeof gcol_cache[col] != 'undefined')
-		return gcol_cache[col];
+	if (typeof gcol_cache.get(col) != 'undefined')
+		return gcol_cache.get(col);
 //	const rgb = [[r / 255], [g / 255], [b / 255], [1], [1]];
 	const rgb = [r / 255, g / 255, b / 255, 1, 1];
 	const result = [  rgb[0]*g_m[0][0]+rgb[1]*g_m[0][1]+rgb[2]*g_m[0][2]+rgb[3]*g_m[0][3]+rgb[4]*g_m[0][4]  ,  rgb[0]*g_m[1][0]+rgb[1]*g_m[1][1]+rgb[2]*g_m[1][2]+rgb[3]*g_m[1][3]+rgb[4]*g_m[1][4]  ,  rgb[0]*g_m[2][0]+rgb[1]*g_m[2][1]+rgb[2]*g_m[2][2]+rgb[3]*g_m[2][3]+rgb[4]*g_m[2][4]  ];
@@ -208,8 +208,8 @@ function applyColorMatrix([r, g, b]) {
 	const x = [0, 1, 2].map((i) =>
 	clamp(Math.round(result[i] * 255), 0, 255));
 //	const x = [ Math.round(result[0]*255), Math.round(result[1]*255), Math.round(result[2]*255) ];
-	if (typeof gcol_cache[col]== 'undefined')
-		gcol_cache[col] = x;
+	if (typeof gcol_cache.get(col) == 'undefined')
+		gcol_cache.set(col, x);
 	return x;
 }
 
@@ -292,6 +292,9 @@ var t_start, t_end;
 var root_style;
 let g_nokinput = /(checkbox|color|hidden|submit|image|radio|range)/i;
 let g_okinput = /(text|number|email|password|date|time|week|month|url|tel|search|select)/i;
+let m_fcol = new Map();
+let m_bcol = new Map();
+let m_bocol = new Map();
 
 const focalAnchors = {};
 focalAnchors.attrNameContainer = 'f-a-h';
@@ -797,6 +800,8 @@ function getCSS(cfg) {
 	if (cfg.forcePlhdr && cfg.contrast != 0 && cfg.brightness != 50) {
 		g_brightness = 1.0+parseInt(cfg.contrast)/100;
 		g_contrast = 1.0 + (parseInt(cfg.brightness)-50)/100;
+		document.documentElement.style.setProperty('--g_brightness',parseInt(100*g_brightness)+'%');
+		document.documentElement.style.setProperty('--g_contrast', parseInt(100*g_contrast)+'%');
 		g_m2 = Matrix.identity();
 		g_m = multiplyMatrices(g_m2, Matrix.brightness(g_brightness));
 		g_m2 = multiplyMatrices(g_m, Matrix.contrast(g_contrast));
@@ -804,6 +809,8 @@ function getCSS(cfg) {
 	} else if (cfg.forcePlhdr && cfg.contrast == 0 && cfg.brightness == 50) {
 		g_brightness = 1.00;
 		g_contrast = 1.00;
+		document.documentElement.style.setProperty('--g_brightness',parseInt(100*g_brightness)+'%');
+		document.documentElement.style.setProperty('--g_contrast', parseInt(100*g_contrast)+'%');
 		g_m2 = Matrix.identity();
 		g_m = multiplyMatrices(g_m2, Matrix.brightness(g_brightness));
 		g_m2 = multiplyMatrices(g_m, Matrix.contrast(g_contrast));
@@ -838,7 +845,7 @@ function getCSS(cfg) {
 				size_inc += `[s__='${c}']{line-height: ${height_inc}em!important;${sCaps}${dim}${opacity}}\n`;
 			else
 				size_inc += `[s__='${c}']{${sCaps}${dim}${opacity}}\n`;
-			size_inc += `[h__='${c}']{line-height:1.55rem!important;min-height: ${height_inc}em!important}`;
+			size_inc += `[h__='${c}']{line-height:1.297!important;min-height: ${height_inc}em!important}`;
 			if (!cfg.skipHeights)
 //				f_sizes[c] = "font-size: calc(" + cc + "px + " + pcent + "%)!important;"+sCaps+"line-height: " + height_inc + "em!important;" + dim + opacity;
 				f_sizes[c] = "font-size: " + cc2 + "px!important;"+sCaps+"line-height: " + height_inc + "em!important;" + dim + opacity;
@@ -1004,9 +1011,6 @@ async function start(cfg, url)
 	let b_iimg = {};
 	let b_fnt = {};
 	let b_dim = {};
-	let m_fcol = new Map();
-	let m_bcol = new Map();
-	let m_bocol = new Map();
 	let m_sty = {};
 	let b_emo = {};
 	let b_noemo = true;
@@ -1940,7 +1944,7 @@ async function start(cfg, url)
 							fgr = m_sty[fgarr];
 						if (fgr != fgarr) {
 						node.style.setProperty('color','rgba('+fgr[0]+','+fgr[1]+','+fgr[2]+','+fgarr[3]+')','important');
-						m_fcol.set(node, [fgr[0],fgr[1],fgr[2],fgarr[3]]);
+						m_fcol.set(node, [fgarr[0],fgarr[1],fgarr[2],fgarr[3]]);
 						m_sty[fgarr] = fgr;
 						m_sty[fgr] = fgr;
 						}
@@ -1950,7 +1954,7 @@ async function start(cfg, url)
 					if (fgr != fgarr) {
 					fgbrt = calcBrightness([fgr[0],fgr[1],fgr[2],fgarr[3]]);
 					if (fgbrt >= 0) {
-						m_fcol.set(node, [fgr[0],fgr[1],fgr[2],fgarr[3]]);
+						m_fcol.set(node, [fgarr[0],fgarr[1],fgarr[2],fgarr[3]]);
 						node.style.setProperty('color','rgba('+fgr[0]+','+fgr[1]+','+fgr[2]+','+fgarr[3]+')','important');
 						m_sty[fgarr] = fgr;
 						m_sty[fgr] = fgr;
@@ -1968,7 +1972,7 @@ async function start(cfg, url)
 						else
 							fgr = m_sty[fgarr];
 						if (fgr != fgarr) {
-						m_bocol.set(node, [fgr[0],fgr[1],fgr[2],fgarr[3]]);
+						m_bocol.set(node, [fgarr[0],fgarr[1],fgarr[2],fgarr[3]]);
 						m_sty[fgarr] = fgr;
 						m_sty[fgr] = fgr;
 						}
@@ -1976,7 +1980,7 @@ async function start(cfg, url)
 						fgr = applyColorMatrix([255-fgarr[0], 255-fgarr[1], 255-fgarr[2]]);
 						fgr[3] = fgarr[3];
 						if (fgr != fgarr) {
-						m_bocol.set(node, [fgr[0],fgr[1],fgr[2],fgarr[3]]);
+						m_bocol.set(node, [fgarr[0],fgarr[1],fgarr[2],fgarr[3]]);
 						m_sty[fgarr] = fgr;
 						m_sty[fgr] = fgr;
 						}
@@ -1984,7 +1988,7 @@ async function start(cfg, url)
 					if (fgr != fgarr) {
 					bgbrt = calcBrightness([fgr[0],fgr[1],fgr[2],fgarr[3]]);
 					if (bgbrt > 0 && fgr != fgarr) {
-						m_bocol.set(node, [fgr[0],fgr[1],fgr[2],fgarr[3]]);
+						m_bocol.set(node, [fgarr[0],fgarr[1],fgarr[2],fgarr[3]]);
 						if (bog == cs.borderColor)
 							node.style.setProperty('border-color','rgba('+fgr[0]+','+fgr[1]+','+fgr[2]+','+fgarr[3]+')','important');
 						else if (bog == cs.borderTopColor)
@@ -2008,7 +2012,7 @@ async function start(cfg, url)
 							fgr = m_sty[fgarr];
 						if (fgr != fgarr) {
 						node.style.setProperty('background-color','rgba('+fgr[0]+','+fgr[1]+','+fgr[2]+','+fgarr[3]+')','important');
-						m_bcol.set(node, [fgr[0],fgr[1],fgr[2],fgarr[3]]);
+						m_bcol.set(node, [fgarr[0],fgarr[1],fgarr[2],fgarr[3]]);
 						m_sty[fgarr] = fgr;
 						m_sty[fgr] = fgr;
 						}
@@ -2018,7 +2022,7 @@ async function start(cfg, url)
 					if (fgr != fgarr) {
 					bgbrt = calcBrightness([fgr[0],fgr[1],fgr[2],fgarr[3]]);
 					if (bgbrt > 0) {
-						m_bcol.set(node, [fgr[0],fgr[1],fgr[2],fgarr[3]]);
+						m_bcol.set(node, [fgarr[0],fgarr[1],fgarr[2],fgarr[3]]);
 						node.style.setProperty('background-color','rgba('+fgr[0]+','+fgr[1]+','+fgr[2]+','+fgarr[3]+')','important');
 						m_sty[fgarr] = fgr;
 						m_sty[fgr] = fgr;
@@ -2324,6 +2328,8 @@ async function start(cfg, url)
 			let bg_brt          = getBgBrightness(pnode, bg_color);
 
 			let bg_threshold    = 160 - cfg.strength; // + img_offset;
+			if (cfg.ssrules)
+			bg_threshold        = 190 - cfg.strength;
 
 			if (cfg.skipColoreds) {
 				let contrast          = Math.abs(bg_brt - fg_brt);
@@ -2339,6 +2345,7 @@ async function start(cfg, url)
 					return;
 			}
 
+			if (!cfg.ssrules) {
 			if (bg_brt > bg_threshold)
 			if (!cfg.forcePlhdr) {
 				let bstl = '';
@@ -2384,7 +2391,57 @@ async function start(cfg, url)
 				if (bstl.length > 0) {
 				node.style.setProperty('color',bstl,'important'); }
 			}
-
+			} else if (cfg.ssrules) {
+			if (bg_brt > bg_threshold)
+			if (!cfg.forcePlhdr) {
+				let bstl = '';
+				if (Math.abs(bg_brt-fg_brt) < 225) {
+					if (fg_brt > cfg.strength)
+						bstl = '#fff';
+					else
+						bstl = '#000';
+				if (bstl == '#000')
+					fg_brt = 0;
+				else if (bstl == '#fff')
+					fg_brt = 255;
+				if (Math.abs(fg_brt - bg_brt) < 27 && !bstl) {
+					if (fg_brt > bg_brt && fg_brt > cfg.strength)
+						bstl = '#fff';
+					else if (fg_brt < bg_brt)
+						bstl = '#000';
+				}
+				if (bstl)
+					node.style.setProperty('color',bstl,'important');
+				}
+			} else if (cfg.forcePlhdr) {
+				let bstl = '';
+				if (Math.abs(bg_brt-fg_brt) < 225) {
+					if (!nodes_behind_inv.includes(node)) {
+						if (fg_brt > cfg.strength)
+							bstl = '#000';
+						else
+							bstl = '#fff';
+					} else {
+						if (fg_brt > cfg.strength)
+							bstl = '#fff';
+						else
+							bstl = '#000';
+					}
+				if (bstl == '#000')
+					fg_brt = 0;
+				else if (bstl == '#fff')
+					fg_brt = 255;
+				if (Math.abs(fg_brt - bg_brt) < 27 && !bstl) {
+					if (fg_brt > bg_brt && fg_brt > cfg.strength)
+						bstl = '#000';
+					else if (fg_brt < bg_brt)
+						bstl = '#fff';
+				}
+				if (bstl)
+					node.style.setProperty('color',bstl,'important');
+				}
+			}
+			}
 		};
 
 		const iterateBigArr = (arr) => {
@@ -2456,13 +2513,54 @@ function changeBrightnessContrast() {
 	let brt = document.documentElement.style.getPropertyValue("--g_brightness");
 	let ctr = document.documentElement.style.getPropertyValue("--g_contrast");
 
-	if (brt != res.abrightness || ctr != res.acontrast) {
+	if (brt != res.abrightness || ctr != res.acontrast)
+	if (!isNaN(parseInt(res.abrightness)) && !isNaN(parseInt(res.acontrast))) {
 
 	g_brt = res.abrightness;
 	g_ctr = res.acontrast;
 
 	document.documentElement.style.setProperty('--g_brightness',g_brt);
 	document.documentElement.style.setProperty('--g_contrast', g_ctr);
+
+	browser.storage.local.remove(["abrightness","acontrast"]);
+
+	let f_brt = parseInt(g_brt)/100;
+	let f_ctr = parseInt(g_ctr)/100;
+
+	g_m2 = Matrix.identity();
+	g_m = multiplyMatrices(g_m2, Matrix.brightness(f_brt));
+	g_m2 = multiplyMatrices(g_m, Matrix.contrast(f_ctr));
+	g_m = multiplyMatrices(g_m2, Matrix.invertNHue());
+
+	for (let [n, col] of m_fcol.entries()) {
+		let fgcol = [ 255-col[0], 255-col[1], 255-col[2] ];
+		let fgr = applyColorMatrix(fgcol);
+		fgr[3] = col[3];
+		let nsty = n.getAttribute('style');
+		if (nsty == null) nsty = '';
+		let rsty = nsty.replace(/color[^\;]*/ig, 'color:rgba('+fgr[0]+','+fgr[1]+','+fgr[2]+','+fgr[3]+')!important;');
+		n.setAttribute('style',rsty);
+	}
+
+	for (let [n, col] of m_bcol.entries()) {
+		let fgcol = [ 255-col[0], 255-col[1], 255-col[2] ];
+		let fgr = applyColorMatrix(fgcol);
+		fgr[3] = col[3];
+		let nsty = n.getAttribute('style');
+		if (nsty == null) nsty = '';
+		let rsty = nsty.replace(/background-color[^\;]*/ig, 'background-color:rgba('+fgr[0]+','+fgr[1]+','+fgr[2]+','+fgr[3]+')!important;');
+		n.setAttribute('style',rsty);
+	}
+
+	for (let [n, col] of m_bocol.entries()) {
+		let fgcol = [ 255-col[0], 255-col[1], 255-col[2] ];
+		let fgr = applyColorMatrix(fgcol);
+		fgr[3] = col[3];
+		let nsty = n.getAttribute('style');
+		if (nsty == null) nsty = '';
+		let rsty = nsty.replace(/border-color[^\;]*/ig, 'border-color:rgba('+fgr[0]+','+fgr[1]+','+fgr[2]+','+fgr[3]+')!important;');
+		n.setAttribute('style',rsty);
+	}
 
 	}
 
