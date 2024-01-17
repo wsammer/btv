@@ -51,17 +51,17 @@ function init(tabs)
 
 	const optionsBtn      = $("#optionsBtn");
 	const LightDark       = $("#LightDark");
+	let presetSel         = $("#presetSelect");
+	let presetSave        = $("#presetSave");
+	let presetLoad        = $("#presetLoad");
 
 	let url = tabs[0].url;
 
 	let hostname = '';
 
-	browser.storage.local.get(["lightness"]).then((result) => {
-			LightDark.textContent = 'Site lightness = '+result.lightness.toFixed(2);
-	});
-	browser.storage.local.get(["default_size"]).then((result) => {
-		if (result.default_size)
-			LightDark.textContent += '  Browser font size = '+result.default_size;
+	browser.storage.local.get(["lightness","default_size"]).then((result) => {
+			LightDark.innerText = 'Site lightness = '+result.lightness.toFixed(2);
+			LightDark.innerText += '\nBrowser font size = '+result.default_size;
 	});
 
 	if (url.startsWith('file://')) {
@@ -126,7 +126,8 @@ function init(tabs)
 		"underlineLinks",
 		"input_border",
 		"customCss",
-		"customCssText"
+		"customCssText",
+		"presetNumber"
 	];
 
 	const start = settings =>
@@ -139,7 +140,11 @@ function init(tabs)
 		if (blacklist.findIndex(o => o.url === hostname) > -1) {
 			BLcheck.checked = true;
 		} else {
-			const idx = whitelist.findIndex(o => o.url === hostname);
+			let idx = -1 ;
+			idx = whitelist.findIndex(o => o.url === '#preset'+ item.presetNumber);
+
+			if (idx <= 0)
+				idx = whitelist.findIndex(o => o.url === hostname);
 
 			if (idx > -1) {
 				item = whitelist[idx];
@@ -161,6 +166,7 @@ function init(tabs)
 		brt_label.innerText      = (parseInt(item.brightness)+50) || 100;
 		con_slider.value         = item.contrast || 0;
 		con_label.innerText      = (parseInt(item.contrast)+100) || 100;
+		presetSel.value          = parseInt(item.presetNumber) || 0;
 
 		skipHeadings.checked     = item.skipHeadings;
 		skipColoreds.checked     = item.skipColoreds;
@@ -228,11 +234,65 @@ function init(tabs)
 				underlineLinks: underlineLinks.checked,
 				input_border:   input_border.checked,
 				customCss:      customCss.checked,
-				customCssText:  customCssText.value
+				customCssText:  customCssText.value,
+				presetNumber:   presetSel.value
 			}
 
 			return wl_item;
 		}
+
+		presetSave.onclick = () => {
+			hostname = '#preset'+ presetSel.value;
+			whitelist = updateList(getOptions(),true, true, presetSel.value);
+			showRefreshBtn();
+		};
+
+		presetLoad.onclick = () => {
+			let idx = whitelist.findIndex(o => o.url === '#preset'+presetSel.value);
+			if (idx > -1) {
+			item = whitelist[idx];
+
+			strSlider.value          = item.strength || item.globalStr;
+			strLabel.innerText       = item.strength || item.globalStr;
+			sizeSlider.value         = item.size || 0;
+			sizeLabel.innerText      = item.size || 0;
+			thresholdSlider.value    = item.threshold || item.sizeThreshold || 0;
+			thresholdLabel.innerText = item.threshold || item.sizeThreshold || 0;
+			weightSlider.value       = item.weight;
+			weightLabel.innerText    = item.weight;
+			brt_slider.value         = item.brightness || 50;
+			brt_label.innerText      = (parseInt(item.brightness)+50) || 100;
+			con_slider.value         = item.contrast || 0;
+			con_label.innerText      = (parseInt(item.contrast)+100) || 100;
+			presetSel.value          = parseInt(item.presetNumber);
+
+			skipHeadings.checked     = item.skipHeadings;
+			skipColoreds.checked     = item.skipColoreds;
+			advDimming.checked       = item.advDimming;
+			input_border.checked     = item.input_border;
+			forcePlhdr.checked       = item.forcePlhdr;
+			forceIInv.checked        = item.forceIInv;
+			forceOpacity.checked     = item.forceOpacity;
+			skipWhites.checked       = item.skipWhites;
+			makeCaps.checked         = item.makeCaps;
+			start3.checked           = item.start3;
+			skipLinks.checked        = item.skipLinks;
+			normalInc.checked        = item.normalInc;
+			normalInc2.checked       = item.normalInc2;
+			ssrules.checked          = item.ssrules;
+			skipNavSection.checked   = item.skipNavSection;
+			skipHeights.checked      = item.skipHeights;
+			underlineLinks.checked   = item.underlineLinks;
+			customCss.checked        = item.customCss;
+			customCssText.value      = item.customCssText || '';
+
+			WLcheck.checked = true;	
+			WLcheck.click();
+
+			showRefreshBtn();
+			return;
+			}
+		};
 
 		WLcheck.onclick = () => {
 			const is_checked = WLcheck.checked;
@@ -347,7 +407,7 @@ function init(tabs)
 			}
 		});
 
-		const updateList = (item, is_wl, add) => {
+		const updateList = (item, is_wl, add, pno = 0) => {
 			let list;
 			let list_name;
 			let check;
@@ -362,7 +422,10 @@ function init(tabs)
 				check = BLcheck;
 			}
 
-			let idx = list.findIndex(o => o.url === item.url);
+			let idx = -1;
+			idx = list.findIndex(o => o.url === '#preset'+ pno);
+			if (idx <= 0)
+				idx = list.findIndex(o => o.url === item.url);
 
 			if (add) {
 				if (idx > -1)

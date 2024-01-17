@@ -1663,7 +1663,7 @@ async function start(cfg, url)
 			nc = map.get(n);
 			containsText(n, mp, nc, map, b_ctext);
 			let gcs = getComputedStyle(n);
-			if (/(VIDEO|EMBED|OBJECT|CANVAS|SVG|IMG|PICTURE)/.test(t) || (gcs.backgroundImage && !/none/i.test(gcs.backgroundImage)) || (gcs.src && !/none/i.test(gcs.src)))
+			if (/(VIDEO|EMBED|OBJECT|CANVAS|SVG|IMG|PICTURE)/.test(t) || (gcs.backgroundImage && /(url|http|\/)/i.test(gcs.backgroundImage)) || (gcs.src && /(url|http|\/)/i.test(gcs.src)))
 				b_iimg[nc] = await isImage(n, nc, img_area, gcs, b_imgforce);
 			else
 				b_iimg[nc] = false;
@@ -1734,6 +1734,9 @@ async function start(cfg, url)
 			n_c = map.get(img);
 			let p_s = parentStyle(img,/invert/,nodes_behind_inv);
 			let cst = getComputedStyle(img);
+			let sects = Array.from(img.getElementsByTagName('SECTION'));
+			let arts =  Array.from(img.getElementsByTagName('ARTICLE'));
+			if (sects.length > 2 || arts.length > 2) continue;
 			if (nodes_behind_inv.includes(img)) {
 				img.style.setProperty('filter','unset', 'important');
 				continue;
@@ -2329,7 +2332,7 @@ async function start(cfg, url)
 
 			let bg_threshold    = 160 - cfg.strength; // + img_offset;
 			if (cfg.ssrules)
-			bg_threshold        = 190 - cfg.strength;
+			bg_threshold        = 250 - cfg.strength;
 
 			if (cfg.skipColoreds) {
 				let contrast          = Math.abs(bg_brt - fg_brt);
@@ -2392,11 +2395,14 @@ async function start(cfg, url)
 				node.style.setProperty('color',bstl,'important'); }
 			}
 			} else if (cfg.ssrules) {
+			let bg_brt2 = bg_brt;
+			if (bg_brt == 256) bg_brt = 0;
+			let fg_thresh = Math.abs(bg_brt - cfg.strength);
 			if (bg_brt > bg_threshold)
 			if (!cfg.forcePlhdr) {
 				let bstl = '';
 				if (Math.abs(bg_brt-fg_brt) < 225) {
-					if (fg_brt > cfg.strength)
+					if (fg_brt > bg_brt)
 						bstl = '#fff';
 					else
 						bstl = '#000';
@@ -2404,38 +2410,46 @@ async function start(cfg, url)
 					fg_brt = 0;
 				else if (bstl == '#fff')
 					fg_brt = 255;
-				if (Math.abs(fg_brt - bg_brt) < 27 && !bstl) {
-					if (fg_brt > bg_brt && fg_brt > cfg.strength)
-						bstl = '#fff';
-					else if (fg_brt < bg_brt)
+				if (Math.abs(fg_brt - bg_brt) < 27) {
+					if (fg_brt > bg_brt)
 						bstl = '#000';
+					else
+						bstl = '#fff';
 				}
 				if (bstl)
 					node.style.setProperty('color',bstl,'important');
 				}
 			} else if (cfg.forcePlhdr) {
 				let bstl = '';
-				if (Math.abs(bg_brt-fg_brt) < 225) {
+			fg_thresh = Math.abs(bg_brt2 - cfg.strength);
+				if (Math.abs(bg_brt2-fg_brt) < 225) {
 					if (!nodes_behind_inv.includes(node)) {
-						if (fg_brt > cfg.strength)
-							bstl = '#000';
-						else
+						if (fg_brt > fg_thresh)
 							bstl = '#fff';
+						else
+							bstl = '#000';
 					} else {
-						if (fg_brt > cfg.strength)
-							bstl = '#fff';
-						else
+						if (fg_brt > fg_thresh)
 							bstl = '#000';
+						else
+							bstl = '#fff';
 					}
 				if (bstl == '#000')
 					fg_brt = 0;
 				else if (bstl == '#fff')
 					fg_brt = 255;
-				if (Math.abs(fg_brt - bg_brt) < 27 && !bstl) {
-					if (fg_brt > bg_brt && fg_brt > cfg.strength)
-						bstl = '#000';
-					else if (fg_brt < bg_brt)
-						bstl = '#fff';
+				if (Math.abs(fg_brt - bg_brt2) < 27) {
+					if (!nodes_behind_inv.includes(node)) {
+						if (fg_brt > fg_thresh)
+							bstl = '#000';
+						else
+							bstl = '#fff';
+					} else {
+						if (fg_brt > fg_thresh)
+							bstl = '#fff';
+						else
+							bstl = '#000';
+					}
 				}
 				if (bstl)
 					node.style.setProperty('color',bstl,'important');
