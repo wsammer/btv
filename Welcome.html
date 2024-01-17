@@ -54,10 +54,11 @@
 <p>
 <h4>NEW CHANGES</h4>
 <ul>
+<li>31 Presets can be defined with custom settings of sliders and options. These presets can be loaded to quickly change the settings to particular configuration for a site.</li>
 <li>In Dark mode and Reverse colors mode, the Brightness and Contrast sliders now <b>update the colors while changing</b> instead of requiring a refesh of webpage. This works in "Dark mode" and "Reverse colors" mode, but for normal pages there is no brightness / contrast change.</li>
 <li>The "High contrast dark mode" option, when enabled even though Dark mode is disabled, does processing of text colors by newer method (which is still work in progress). Disabling it reverts the text color contrast logic to older method.</li>
 <li>Strength slider controls the "brightness" threshold below which text contrast is increased to black / white. As before, negative settings preserve colors and high positive settings create greater contrast (only if colors of text are "contrast-friendly", grey on dark background will not become white, or light color on white background become black).</li>
-<li>Option "High contrast dark mode" to give greater contrast when brighness / contrast settings are changed in Dark mode.</li>
+<li>Option "High contrast dark mode" makes greater contrast when brighness / contrast settings are changed in Dark mode. If enabled with/without dark mode, a newer text contrast method is used. If text contrast is not working as expected, try disabling this option to revert to old method of text contrast.</li>
 <li>Fixed color reverse on some page elements in reverse colors with hue correction enabled.</li>
 <li>Brightness and Contrast values are now displayed as actual percentage, and not as previous 'offset'. This does not affect saved settings. Browser default font size is shown next to lightness of site in popup settings.</li>
 <li>Removed changing of font style in "Underline links" and "Input border". The fonts can be changed by adding custom CSS rule like below<br><code>body * { font-family: sans !important; }</code><br>Replace "sans" with "serif" for serif font.</li>
@@ -87,7 +88,6 @@
 <ul>
 <li>Font size within threshold is enlarged inversely with font size. That means small text made bigger than large text.</li>
 <li><b><em>SPEED of page processing is SLOW. There are some options to increase speed of font changes / colors and enabling / disabling any or all of - "Skip text height change" / "Skip NAV SECTION" / "Avoid colorful text" / "Reverse colors hue correction" -  can run little faster.</em></b></li>
-<li>"Strength" slider greater than 200 makes most text all black / white on light / black background, while large negative values keeps original colors.</li>
 <li>Font Weight slider changes thin/bold-ness of ALL text, and bold and normal letters weight when "Start 3 letters bold" is enabled.</li>
 <li>ALL CAPITAL TEXT & Starting 3 letters made bold options.</li>
 <li>Dark mode changes Contrast and Brightness of "black" themed sites. Pictures are kept normal but if "High contrast dark mode" is enabled, the brightness / contrast effect is greater and images get distorted colors.</li>
@@ -109,6 +109,7 @@
 <li>Decreasing "Strength" setting to negative values like -120 or -250 can restore the original text colors of website instead of high contrast black / white text.</li>
 <li>If Strength is ODD value, and there are INPUT text boxes on site, the input text will be made black / white depending on color.</li>
 <li>The "Font Weight" slider can be changed to lowest 100 (very thin) upto 900 (very thick/bold) text. This is useful for adjusting sites having very thin text or very bold and thick text. When "Start 3 letters bold" is enabled, (slider value + 400) is taken as weight of bold letters and noramal text has weight of (slider value) if slider is less than 500. For slider above 400, the slider value is taken as weight of 3 letters and all other text is normal.</li>
+<li>Before a preset is made, select the preset number at the very start. Then make the customizations and finally click "Save" to save to a number between 1 to 31. This saved preset can be loaded by clicking "Load" after selecting the number of preset. Clicking "Refresh" button after all steps is recommended of knowing preset has been saved / loaded. Presets are stored in the "whitelist" list so exporting whitelist to a file will also save presets. <b>Settings with a selected preset do not get automatically updated if a preset is changed. One has to "Load" the preset again.</b></li>
 <li>ALL CAPITAL TEXT option makes all webpage text in capitals. It ALSO works on NON-ENGLISH languages.</li>
 <li>Starting 3 letters bold option makes all words first 3 letters <b>bold</b> and also works for NON-ENGLISH languages. If there are problems with some links or menus not working, enable "Skip links in 3 letters bold" option to avoid making links bold.</li>
 <li>The "Dark Mode" option is for black themes and, when enabled, allows increasing of Brightness (by the "Brightness" slider, range 0 to 300) and Contrast (by the "Contrast" slider, range 0 to 300) of text and background colors.</li>
