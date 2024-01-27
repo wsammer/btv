@@ -54,6 +54,8 @@
 <p>
 <h4>NEW CHANGES</h4>
 <ul>
+<li>Holding Shift key down and moving mouse over any text area will "ZOOM" the text in that area by 175% (or by Strength % if slider is greater than zero). Sometimes the "zoom" will occur repeatedly and fast, in which case try moving mouse to different place.</li>
+<li>"Force max opacity" now changes background color of BODY element only if "Force Reverse colors" is enabled AND "High contrast dark mode" is disabled. Other effect of making text totally opaque does not depend on any other options.</li>
 <li>31 Presets can be defined with custom settings of sliders and options. These presets can be loaded to quickly change the settings to particular configuration for a site.</li>
 <li>In Dark mode and Reverse colors mode, the Brightness and Contrast sliders now <b>update the colors while changing</b> instead of requiring a refesh of webpage. This works in "Dark mode" and "Reverse colors" mode, but for normal pages there is no brightness / contrast change.</li>
 <li>The "High contrast dark mode" option, when enabled even though Dark mode is disabled, does processing of text colors by newer method (which is still work in progress). Disabling it reverts the text color contrast logic to older method.</li>
@@ -62,9 +64,7 @@
 <li>Fixed color reverse on some page elements in reverse colors with hue correction enabled.</li>
 <li>Brightness and Contrast values are now displayed as actual percentage, and not as previous 'offset'. This does not affect saved settings. Browser default font size is shown next to lightness of site in popup settings.</li>
 <li>Removed changing of font style in "Underline links" and "Input border". The fonts can be changed by adding custom CSS rule like below<br><code>body * { font-family: sans !important; }</code><br>Replace "sans" with "serif" for serif font.</li>
-<li>Bugfix of "Dark mode" some images colors' getting reversed. Fixes for "underline link", "input border" and "strength" value more than 200 for high contrast.</li>
 <li>"Colorblind adjusted colors" which changes colors of text to suit colorblind condition. In dark mode or reverse colors, the text hue is changed toward green color while in normal light theme, the text is changed for blue color.</li>
-<li>If "High contrast Dark mode" is enabled in Dark mode, brightness and contrast apply to more elements and images (but distort colors of some images).</li>
 <li>Lightness value shown in popup settings.</li>
 <li>If strength is an ODD number, input textbox color is changed to black/white depending on its color.</li>
 <li>In Reverse colors the brightness and contrast sliders control brightness and contrast of text and background color.</li>
@@ -113,12 +113,12 @@
 <li>ALL CAPITAL TEXT option makes all webpage text in capitals. It ALSO works on NON-ENGLISH languages.</li>
 <li>Starting 3 letters bold option makes all words first 3 letters <b>bold</b> and also works for NON-ENGLISH languages. If there are problems with some links or menus not working, enable "Skip links in 3 letters bold" option to avoid making links bold.</li>
 <li>The "Dark Mode" option is for black themes and, when enabled, allows increasing of Brightness (by the "Brightness" slider, range 0 to 300) and Contrast (by the "Contrast" slider, range 0 to 300) of text and background colors.</li>
-<li>A "Force Reverse Colors" option allows site to "Reverse" colors, so that a light site becomes black. It is useful for changing colors of sites to "Dark Theme" or "Dark Reader" view while preserving (most of) images' colors. In case a webpage does not have its background color reversed, enabling "Force max opacity" will force a reversal of the background color.</li>
+<li>A "Force Reverse Colors" option allows site to "Reverse" colors, so that a light site becomes black. It is useful for changing colors of sites to "Dark Theme" or "Dark Reader" view while preserving (most of) images' colors. In case a webpage does not have its background color reversed, enabling "Force max opacity" will force a reversal of the background color (but only if "High contrast dark mode" is disabled).</li>
 <li>The "Invert Image Colors" option, which appears when "Force Reverse Colors" is enabled, causes images and videos colors to be inverted, so due to double inversion images and videos become normal. If it is disabled, the images and videos are not doubly inverted in color, causing them to look "reverse color".</li>
 <li>Reverse color hue correction changes colors to match original website in reverse colors..</li>
 <li>The text brightness and contrast can be changed by the sliders when "Reverse colors" is enabled. To revert to original brightness and contrast, set Strength to 0 and Contrast to 50.</li>
 <li>The popup options box show the "Lightness" value of current site. If less than 0.5, then it is considered "Dark themed", if more than 0.5, it is "Light themed". Dark themed site colors can be changed by "Dark mode" while "Light themed" site colors can be changed through "Reverse Colors". Some few sites may detect theme wrong, then enable BOTH Dark mode and Reverse colors to force site color changes.</li>
-<li>If "High contrast Dark mode" is enabled in Dark mode, then brightness and contrast are applied to more elements and images (which can distort colors of some images).</li>
+<li>If "High contrast Dark mode" is enabled in Dark mode, then brightness and contrast are applied to more elements and images (which can distort colors of some images). Newer method of calculating black / white / high contrast text color is used. With "Force max opacity" background color of HTML BODY is reversed.</li>
 <li>The menu and large sections of webpage are increased in size according to the Font Increase % and Input elements increased by Font Threshold. If there are problems in display of menus / header imaages or large tables overlap, enable "Skip NAV & SECTION" checkbox. The "Skip NAV & SECTION" also skips applying Reverse Color to images inside NAV and HEADER elements, which are (usually) on top menu of webpage, when "Force Reverse colors" is enabled.</li>
 <li>"Skip text height changes" will not change heights of text, and INPUT elements like text and select boxes.</li>
 <li>'Colorblind adjust colors' when enabled changes text colors and background to suit colorblind condition. In dark mode or reverse colors, the text hue is changed toward green color while in normal light theme, the text is changed for blue color.</li>
@@ -151,7 +151,7 @@
 		<li><strong>Invert Image colors:</strong> Does not apply reverse colors to images, causing images to appear in reverse colors.<br>Default value: enabled</li>
 		<li><strong>Reverse colors hue correction:</strong> Changes text colors to match those of website.<br> It is enabled when Reverse colors gets enabled. Default value: enabled</li>
 		<li><strong>Input border:</strong> Attempts to add a black outline around text areas.<br>Default value: disabled</li>
-		<li><strong>Force max opacity:</strong> Forces full opacity on all fonts.<strong> Also changes background color if "Force Reverse Colors" is applied.</strong><br>Default value: disabled</li>
+		<li><strong>Force max opacity:</strong> Forces full opacity on all fonts.<strong> Also changes background color if "Force Reverse Colors" is enabled and "High contrast dark mode" is disabled.</strong><br>Default value: disabled</li>
 		<li><strong>Skip headings:</strong> Avoids applying on head tags H1 to H4.<br>Default value: disabled</li>
 		<li><strong>Skip NAV & SECTION:</strong> Avoids changing size of NAV and SECTION elements (usually menus and large tables) and height change of INPUT elements.<br>Also skips applying reverse colors to title menu images of a page.<br>Default value: disabled</li>
 		<li><strong>Skip text height changes:</strong> Avoids changing size text whose height is less than font size and INPUT elements like text and select boxes<br>Default value: disabled.</li>
