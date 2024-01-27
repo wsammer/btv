@@ -491,7 +491,7 @@ function calcColorfulness([r, g, b, a = 1])
 	return a*cful;
 }
 
-function containsText(node, mp, nc, map, b_ctext)
+function containsText(node, mp, nc, map, b_ctext, nodes)
 {
 	let len = 0;
 	var r, tot;
@@ -523,9 +523,11 @@ function containsText(node, mp, nc, map, b_ctext)
 	for (let x=0; x < childn.length; x++) {
 		ch = childn[x];
 		len = 0;
+		if (typeof map.get(ch) == 'undefined')
+			map.set(ch, map.get(nodes[0])+nodes.indexOf(ch));
 		if (mp.get(ch) == true) return b_ctext[map.get(ch)];
 		if (ch.children.length > 0)
-			len = containsText(ch, mp, map.get(ch), map, b_ctext);
+			len = containsText(ch, mp, map.get(ch), map, b_ctext, nodes);
 		if (ch instanceof Element && ch.outerHTML.indexOf('<SCRIPT>') < 0 && ch.outerHTML.indexOf('<STYLE>') < 0) {
 			if (typeof ch.innerText != 'undefined' && ch.innerText != null && ch.innerText.length > 0) {
 				r = ch.innerText.replace(/[^\S]+/g,"");
@@ -582,22 +584,22 @@ async function isImage(ch, nc, imar, gcs, b_imgforce) {
 	let itag = ch.nodeName.toUpperCase();
 	switch (itag) {
 	case 'IMG':
-		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)))
+		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && ch.getAttribute('loading') != 'lazy')
 			return false;
 		wi = parseInt(ch.width);
 		he = parseInt(ch.height);
 		if (!wi && !he) {
-		wi = parseInt(ch.getBoundingClientRect().width);
-		he = parseInt(ch.getBoundingClientRect().height);
+		wi = parseInt(parseInt(ch.getBoundingClientRect().width)/10);
+		he = parseInt(parseInt(ch.getBoundingClientRect().height)/10);
 		}
 		imar[nc] = wi*he;
 		if (wi > 499 && he > 99) b_imgforce[nc] = true;
 		return true;
 	case'SVG':
-		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)))
+		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && ch.getAttribute('loading') != 'lazy')
 			return false;
-		wi = parseInt(ch.getBoundingClientRect().width);
-		he = parseInt(ch.getBoundingClientRect().height);
+		wi = parseInt(parseInt(ch.getBoundingClientRect().width)/10);
+		he = parseInt(parseInt(ch.getBoundingClientRect().height)/10);
 		imar[nc] = wi*he;
 		if (wi > 499 && he > 99) b_imgforce[nc] = true;
 		return true;
@@ -606,19 +608,19 @@ async function isImage(ch, nc, imar, gcs, b_imgforce) {
 	case 'OBJECT':
 	case 'CANVAS':
 	case 'PICTURE':
-		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)))
+		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && ch.getAttribute('loading') != 'lazy')
 			return false;
 		wi = parseInt(ch.width);
 		he = parseInt(ch.height);
 		if (!wi && !he) {
-		wi = parseInt(ch.getBoundingClientRect().width);
-		he = parseInt(ch.getBoundingClientRect().height);
+		wi = parseInt(parseInt(ch.getBoundingClientRect().width)/10);
+		he = parseInt(parseInt(ch.getBoundingClientRect().height)/10);
 		}
 		imar[nc] = wi*he;
 		return true;
 	default:
 	if ( gcs != null && bgim != '' && bgim != 'none' && gcs.getPropertyValue('display') != 'none' && !/(php|htm[l]?|asp[x]?)[\"\'\)]/i.test(bgim) && /(\/|http|url)/ig.test(bgim)) {
-		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)))
+		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && ch.getAttribute('loading') != 'lazy')
 			return false;
 		var im, src, src1;
 		if (/var\(/i.test(bgim))
@@ -632,8 +634,8 @@ async function isImage(ch, nc, imar, gcs, b_imgforce) {
 		wi = parseInt(im.width);
 		he = parseInt(im.height);
 		if (!wi && !he) {
-		wi = parseInt(ch.getBoundingClientRect().width);
-		he = parseInt(ch.getBoundingClientRect().height);
+		wi = parseInt(parseInt(ch.getBoundingClientRect().width)/10);
+		he = parseInt(parseInt(ch.getBoundingClientRect().height)/10);
 		}
 		imar[nc] = wi*he;
 		if (wi > 499 && he > 99) b_imgforce[nc] = true;
@@ -643,7 +645,7 @@ async function isImage(ch, nc, imar, gcs, b_imgforce) {
 			return false;
 		}
 	} else if (typeof chsrc != 'undefined' && chsrc != null && chsrc != '' && ch.display != 'none' && ch.type != null && typeof ch.type != 'undefined' && ch.type.toLowerCase() == 'image' && !/(php|htm[l]?|asp[x]?)[\"\'\)]/i.test(chsrc) && !/(php|htm[l]?|asp[x]?)[\"\'\)]/i.test(bgim)  && (/(\/|http|url)/ig.test(chsrc))) {
-		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)))
+		if ((/(hidden|none)/i.test(gcs.visibility) || /(hidden|none)/i.test(gcs.display)) && ch.getAttribute('loading') != 'lazy')
 			return false;
 		var im, src, src1;
                 im = new Image();
@@ -657,8 +659,8 @@ async function isImage(ch, nc, imar, gcs, b_imgforce) {
 		wi = parseInt(im.width);
 		he = parseInt(im.height);
 		if (!wi && !he) {
-		wi = parseInt(ch.getBoundingClientRect().width);
-		he = parseInt(ch.getBoundingClientRect().height);
+		wi = parseInt(parseInt(ch.getBoundingClientRect().width)/10);
+		he = parseInt(parseInt(ch.getBoundingClientRect().height)/10);
 		}
 		imar[nc] = wi*he;
 		if (wi > 499 && he > 99) b_imgforce[nc] = true;
@@ -963,8 +965,6 @@ async function start(cfg, url)
 		css_node.nodeValue += s.innerHTML;
 	}*/
 
-	style_node.appendChild(css_node);
-
 	let nodes = [];
 
 	if (document.body)
@@ -1083,6 +1083,19 @@ async function start(cfg, url)
 		}
 	}
 	}
+
+	let style_rule = "";
+	if (cfg.forcePlhdr && cfg.forceIInv) {
+	style_rule += "IMG,SVG,CANVAS,OBJECT,VIDEO,EMBED,INPUT[type='image'] { filter:invert(1); }";
+	style_rule += "[style*='background-image:url'],[style*='background-image:var'],[style*='background-image: url'],[style*='background-image: var']  { filter:invert(1); }";
+	style_rule += "body[style*='background-image:url'],body[style*='background-image:var'],body[style*='background-image: url'],body[style*='background-image: var'] { filter:unset!important; }";
+	style_rule += "[style*='background-image:none'],[style*='background-image: none'] { filter:unset!important; }";
+	style_rule += "frame,iframe { filter:invert(1); }";
+	}
+
+	css_node.nodeValue += style_rule;
+
+	style_node.appendChild(css_node);
 
 	var doc = document;
 /**		if (!cfg.ssrules) {
@@ -1589,13 +1602,6 @@ async function start(cfg, url)
 	if (n_rulecount < 3) { console.log('Rule count cleared'); n_rulecount = 0; }
 
 		if (cfg.forcePlhdr && cfg.forceIInv) {
-		if (style_node.sheet != null) {
-			style_node.sheet.insertRule("[style*='background-image:url'],[style*='background-image:var'] { filter:invert(1)!important; }", rn++);
-			style_node.sheet.insertRule("IMG,SVG,CANVAS,OBJECT,VIDEO,EMBED,INPUT[type='image'],[style*='background-image: url'],[style*='background-image: var'] { filter:invert(1)!important; }", rn++);
-			style_node.sheet.insertRule("body[style*='background-image:url'],body[style*='background-image:var'],body[style*='background-image: url'],body[style*='background-image: var'] { filter:unset!important; }", rn++);
-			style_node.sheet.insertRule("frame,iframe { filter:invert(1)!important; }", rn++);
-			b_html = false;
-		}
 		let ms = null;
 		let cmap = [];
 		b_noemo = false;
@@ -1647,8 +1653,6 @@ async function start(cfg, url)
 			for (n of nodes) {
 			nc++;
 			map.set(n, nc);
-			}
-			for (n of nodes) {
 			let t = n.nodeName.toUpperCase();
 			if (tags_to_skip.includes(t)) {
 				let chln = n.getElementsByTagName('*');
@@ -1660,8 +1664,7 @@ async function start(cfg, url)
 			if (tags_to_skip.includes(t) || (cfg.skipHeadings && hdr_tags.includes(t)))
 				if (!/(VIDEO|EMBED|OBJECT|CANVAS|SVG|IMG)/.test(t))
 					continue;
-			nc = map.get(n);
-			containsText(n, mp, nc, map, b_ctext);
+			containsText(n, mp, nc, map, b_ctext, nodes);
 			let gcs = getComputedStyle(n);
 			if (/(VIDEO|EMBED|OBJECT|CANVAS|SVG|IMG|PICTURE)/.test(t) || (gcs.backgroundImage && /(url|http|\/)/i.test(gcs.backgroundImage)) || (gcs.src && /(url|http|\/)/i.test(gcs.src)))
 				b_iimg[nc] = await isImage(n, nc, img_area, gcs, b_imgforce);
@@ -1674,8 +1677,11 @@ async function start(cfg, url)
 					nodes_behind_img.push(...img_children);
 					n_imgcount++;
 				}
-				if (n.parentNode && b_iimg[map.get(n.parentNode)])
+				if (n.parentNode && b_iimg[map.get(n.parentNode)]) {
+					if (typeof map.get(n.parentNode) == 'undefined')
+						map.set(n.parentNode, map.get(nodes[0])+nodes.indexOf(n.parentNode));
 					b_chimg[map.get(n.parentNode)] = true;
+				}
 			}
 			if (cfg.forcePlhdr && cfg.normalInc && mutation) {
 				let ps = parentStyle(n,/invert/,nodes_behind_inv);
@@ -1843,6 +1849,7 @@ async function start(cfg, url)
 			let pnode = node.parentNode;
 			let sk = false;
 			var style, is_oinput, is_xinput;
+			var zoom_mode = false, orig_val = [], t_zoom = 0, t_zc = 0, l_z = [];
 
 			if (tags_to_skip.includes(tag) || (cfg.skipHeadings && hdr_tags.includes(tag))) return;
 
@@ -1863,7 +1870,71 @@ async function start(cfg, url)
 				}
 			}
 
-			if (cfg.forceOpacity && !b_body && cfg.forcePlhdr && pnode != null && pnode.nodeName == 'BODY') {
+			document.onkeyup = function(e){
+				if (e.keyCode == 16) {
+					zoom_mode = false;
+					t_zc = Date.now();
+				}
+			}
+
+			document.onkeydown = function(e){
+				if (e.keyCode == 16) {
+					zoom_mode = true;
+					t_zc = Date.now();
+				}
+			}
+
+			document.onmouseover = function(e){
+				if (!zoom_mode) return;
+				if (zoom_mode && Date.now() - t_zc > 10000) { zoom_mode = false;return; }
+				let targ = getTarget(e);
+				if (l_z.includes(targ)) return;
+				let val = [];
+				val[0] = targ.style.transform;
+				val[1] = targ.style.transition;
+				val[2] = targ.style.zIndex;
+				val[3] = targ.style.margin;
+				val[4] = targ.style.padding;
+				val[5] = targ.style.textShadow;
+				orig_val.push(val);
+				l_z.push(targ);
+				let n_z = 1.75;
+				if (cfg.strength > 0)
+					n_z = parseFloat(cfg.strength / 100).toFixed(2);
+				targ.style.transform = 'scale('+n_z+')';
+				targ.style.transition = 'all .25s ease-in-out';
+				targ.style.zIndex = '999999';
+				targ.style.padding = '4% 4% 4% 4%';
+				targ.style.margin = '0% 12% 0% 18%';
+				let co = getRGBarr(style.color);
+				co[3] = 0.9;
+				targ.style.textShadow = '0 0 7px rgba('+(255-co[0])+','+(255-co[1])+','+(255-co[2])+','+co[3]+')';
+				t_zoom = Date.now();
+			};
+
+			document.onmouseout = function(e){
+				let val = [];
+				if (orig_val.length > 0) {
+					val = orig_val.pop();
+				let targ = getTarget(e);
+				targ.style.transform = val[0];
+				targ.style.transition = val[1];
+				targ.style.zIndex = val[2];
+				targ.style.margin = val[3];
+				targ.style.padding = val[4];
+				targ.style.textShadow = val[5];
+				let p = l_z.indexOf(getTarget(e));
+				if (p >= 0) l_z.splice(p,1);
+				}
+				if (zoom_mode && Date.now() - t_zc > 10000) zoom_mode = false;
+			};
+
+			function getTarget(e){
+				if (e.target) return e.target;
+				else if (e.srcElement) return e.srcElement;
+			}
+
+			if (cfg.forceOpacity && !cfg.ssrules && !b_body && cfg.forcePlhdr && pnode != null && pnode.nodeName == 'BODY') {
 				let fsty = getComputedStyle(pnode).getPropertyValue('background-color');
 				if (fsty == null || fsty == '' || fsty == 'none') fsty = 'rgb(0,0,0)';
 				let bcol = getRGBarr(fsty);
