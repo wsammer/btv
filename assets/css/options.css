@@ -61,7 +61,7 @@ body {
     position:absolute;
     right:35vw;
     font-size:1.7em;
-    font-family: Basic, serif;
+    font-family: Basic, sans-serif;
 }
 button 
 {
@@ -87,7 +87,7 @@ button.remove
 textarea {
     width: 100%;
     resize: none; 
-    font-family: Basic, serif; 
+    font-family: Basic, sans-serif; 
     font-style: italic; 
     font-size: 1.7em;
     border: 0.32vw solid black;
@@ -118,7 +118,7 @@ table th:nth-child(2) { /*Strength label*/
     text-align: center;
 }
 #whitelist td:nth-child(2) { /*Strength value*/
-    font-family: Basic, sans;
+    font-family: Basic, sans-serif;
     text-align: center;
     position:relative;
     font-size:1.7em;
@@ -163,58 +163,44 @@ tr:hover {
     opacity: 1;
     font-size:0.9em
 }
+
 input[type='checkbox'] {
-    float: right;
-    position: absolute;
-    opacity: 0;
-    height: 0;
-    width: 0;
+	height: 0;
+	width: 0;
+	visibility: hidden;
 }
 .container {
-    float:right;
-    position: relative;
-    padding-left: 2.7em;
-    cursor: pointer;
-    user-select: none;
-    top: 2px;
+	cursor: pointer;
+	width: 36px;
+	height: 20px;
+	background: #000;
+	display: block;
+	border-radius: 20px;
+	position: relative;
+	margin-top: 4px;
+	float: right;
 }
-.checkmark {
-    position: absolute;
-    top: -1.7vw;
-    left: 0;
-    height: 1.1em;
-    width: 1.1em;
-    background-color: #eee;
-    border: 0.15em solid black;
-    border-radius: 3em;
-    transition: color ease-out 0.1s;
-    transition: background-color ease-out 0.1s;
-}
-.container:hover input ~ .checkmark {
-    background-color: #ccc;
-}
-.container input:checked ~ .checkmark {
-    background-color: black;
+input:checked ~ .checkmark:after {
+	margin-left: 16px;
 }
 .checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
+	content: '';
+	position: absolute;
+	top: 4px;
+	left: 4px;
+	width: 12px;
+	height: 12px;
+	background: #fff;
+	border-radius: 12px;
 }
-.container input:checked ~ .checkmark:after {
-    display: block;
+input:checked ~ .checkmark:after {
+	background-color: #0f0;
 }
-.container .checkmark:after 
-{
-    left: 0.41em;
-    top: 0.3em;
-    width: 0.17em;
-    height: 0.35em;
+ 
+.container .checkmark:active:after {
+ 	width:  30px;
+}
 
-    border: solid white;
-    border-width: 0 0.15em 0.15em 0;
-    transform: rotate(45deg);
-}
 .settings
 {
     display:flex;
@@ -225,6 +211,7 @@ input[type='checkbox'] {
 {
     position:absolute;
     left: 13em;
+    margin-top: 4px;
     text-align: center;
     background-color: black;
     border-radius: 50%;
@@ -269,6 +256,9 @@ input[type='checkbox'] {
 .help-tip:before{
     content:'?';
     color:#fff;
+    position:absolute;
+    top: -6px;
+    left: 7px;
 }
 .help-tip:hover p{
     display:block;
@@ -280,7 +270,7 @@ input[type='checkbox'] {
     text-align: left;
     background-color: rgb(0, 0,0);
     padding: 17px;
-    width: 200px;
+    width: 280px;
     position: absolute;
     border-radius: 3px;
     box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
