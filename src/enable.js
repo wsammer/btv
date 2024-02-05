@@ -295,6 +295,7 @@ let g_okinput = /(text|number|email|password|date|time|week|month|url|tel|search
 let m_fcol = new Map();
 let m_bcol = new Map();
 let m_bocol = new Map();
+let g_mag = '';
 
 const focalAnchors = {};
 focalAnchors.attrNameContainer = 'f-a-h';
@@ -633,7 +634,10 @@ async function isImage(ch, nc, imar, gcs, b_imgforce) {
 		await waitForImage(im);
 		wi = parseInt(im.width);
 		he = parseInt(im.height);
-		if (!wi && !he) {
+		if (/\.svg/i.test(src) && !wi && !he) {
+		wi = parseInt(parseInt(ch.getBoundingClientRect().width));
+		he = parseInt(parseInt(ch.getBoundingClientRect().height));
+		} else if (!wi && !he) {
 		wi = parseInt(parseInt(ch.getBoundingClientRect().width)/10);
 		he = parseInt(parseInt(ch.getBoundingClientRect().height)/10);
 		}
@@ -832,6 +836,12 @@ function getCSS(cfg) {
 	let height_inc = 1;
 	var pcent;
 
+	let n_zoo = Math.abs(parseFloat(cfg.strength)/100).toFixed(2);
+	if (cfg.strength == 0) n_zoo = 1.75;
+	document.documentElement.style.setProperty('--g_zoom',n_zoo);
+
+	g_mag = ".enlarge:hover { position: relative; overflow: visible;-webkit-transform: scale(var(--g_zoom));-moz-transform: scale(var(--g_zoom));-o-transform: scale(var(--g_zoom));-ms-transform: scale(var(--g_zoom));transform: scale(var(--g_zoom));max-width: 100%!important;-webkit-transition: all .2s ease-in-out;-moz-transition: all .2s ease-in-out;-o-transition: all .2s ease-in-out;-ms-transition: all .2s ease-in-out;z-index: 19999;} .enlarge {position: relative; overflow: hidden;z-index: 1000; }";
+
 	if (cfg.size > 0 && cfg.threshold > 0) {
 		while (c < cfg.threshold) {
 			++c;
@@ -862,7 +872,7 @@ function getCSS(cfg) {
 	str_style = `brightness(${brght}) contrast(${ctrst})`;
 	str_style2 = '1';
 
-	return `${bold}${size_inc}${form_border}${underline}${cust}`;
+	return `${bold}${size_inc}${g_mag}${form_border}${underline}${cust}`;
 }
 
 function createElem()
@@ -1600,6 +1610,7 @@ async function start(cfg, url)
 		}
 	}
 	if (n_rulecount < 3) { console.log('Rule count cleared'); n_rulecount = 0; }
+			var zoom_mode = false, orig_val = [], t_zoom = 0, t_zc = 0, l_z = [];
 
 		if (cfg.forcePlhdr && cfg.forceIInv) {
 		let ms = null;
@@ -1615,6 +1626,115 @@ async function start(cfg, url)
 			b_noemo = true;
 		}
 		}
+
+			window.addEventListener("mousemove", mousemove);
+			window.addEventListener("mouseover", mousemove);
+			window.addEventListener("mouseenter", mousemove);
+			window.addEventListener("mouseleave", mouseout);
+			window.addEventListener("mouseout", mouseout);
+			window.addEventListener("keyup", keyup);
+			window.addEventListener("keydown", keydown);
+
+			function keyup(e) {
+				if (e.keyCode == 16 && e.getModifierState("NumLock")) {
+					zoom_mode = false;
+					t_zc = Date.now();
+				}
+			}
+
+			function keydown(e) {
+				if (e.keyCode == 16 && e.getModifierState("NumLock")) {
+					zoom_mode = true;
+					t_zc = Date.now();
+				}
+			}
+
+			function mousemove(e) {
+				if (e.buttons == 0) {
+				if (!zoom_mode) return;
+				if (zoom_mode && Date.now() - t_zc > 10000) {
+					zoom_mode = false;
+					return;
+				}
+				let targ = getTarget(e);
+				if (l_z.includes(targ)) return;
+				let val = [];
+				if (Date.now()-t_zoom > 260) {
+				t_zoom = Date.now();
+				val[0] = targ.className;
+				val[2] = targ.style.textShadow;
+				val[3] = targ.style.position;
+				val[4] = targ.style.zIndex;
+				val[1] = targ.style.transformOrigin;
+				val[10] = targ.style.padding;
+				val[5] = ''; val[6] = ''; val[7] = '';
+				if (targ.parentNode && targ.parentNode.style) {
+					val[5] = targ.parentNode.style.zIndex;
+					if (targ.parentNode.getBoundingClientRect().width == targ.getBoundingClientRect().width) {
+						targ.parentNode.style.zIndex = '9999999';
+						if (targ.parentNode.parentNode && targ.parentNode.parentNode.style) {
+							val[6] = targ.parentNode.parentNode.style.zIndex;
+							if (targ.parentNode.parentNode.getBoundingClientRect().width == targ.getBoundingClientRect().width) { 
+								targ.parentNode.parentNode.style.zIndex = '9999999';
+								if (targ.parentNode.parentNode.parentNode && targ.parentNode.parentNode.parentNode.style) {
+									val[7] = targ.parentNode.parentNode.parentNode.style.zIndex;
+									if (targ.parentNode.parentNode.parentNode.getBoundingClientRect().width == targ.getBoundingClientRect().width) {
+										targ.parentNode.parentNode.parentNode.style.zIndex = '9999999';
+									}
+								}
+							}
+						}
+					}
+				}
+				orig_val.push(val);
+				targ.style.zIndex = '9999999';
+				targ.style.position = 'relative';
+				targ.style.padding = '0% 16% 6% 16%';
+				targ.style.transformOrigin = e.offsetX+'px '+e.offsetY+'px';
+				let co = getRGBarr(getComputedStyle(targ).color) || [127,127,127,1.0];
+				co = [ parseInt(co[0]), parseInt(co[1]), parseInt(co[2]), parseFloat(co[0]) ];
+				co[3] = 0.95;
+				targ.style.textShadow = '0 0 4px rgba('+(255-co[0])+','+(255-co[1])+','+(255-co[2])+','+co[3]+')';//, 0 0 7px rgba('+(co[0])+','+(co[1])+','+(co[2])+','+co[3]+')';
+				targ.setAttribute('class', targ.className+ ' enlarge ');
+				l_z.push(targ);
+				}
+				}
+			}
+
+			function mouseout(e) {
+				if (e.buttons == 0)
+				if (Date.now() - t_zoom > 260) {
+				let val = [];
+				if (orig_val.length > 0 && l_z.length > 0) {
+					for (let x = 0; x < l_z.length; x++) {
+						let targ = l_z.pop();
+						let val = orig_val.pop();
+						targ.setAttribute('class', val[0]);
+						targ.style.textShadow = val[2];
+						targ.style.position = val[3];
+						targ.style.padding = val[10];
+						targ.style.transformOrigin = val[1];
+						targ.style.zIndex = val[4];
+						if (targ.parentNode && targ.parentNode.style) {
+							targ.parentNode.style.zIndex = val[5];
+							if (targ.parentNode.parentNode && targ.parentNode.parentNode.style) {
+								targ.parentNode.parentNode.style.zIndex = val[6];
+								if (targ.parentNode.parentNode.parentNode && targ.parentNode.parentNode.parentNode.style) {
+									targ.parentNode.parentNode.parentNode.style.zIndex = val[7];
+								}
+							}
+						}
+					}
+				}
+				if (zoom_mode && Date.now() - t_zc > 10000) zoom_mode = false;
+				}
+			}
+
+			function getTarget(e){
+				if (e.target) return e.target;
+				else if (e.srcElement) return e.srcElement;
+			}
+
 
 	const process = async (nodes, mutation = false) =>
 	{
@@ -1849,7 +1969,6 @@ async function start(cfg, url)
 			let pnode = node.parentNode;
 			let sk = false;
 			var style, is_oinput, is_xinput;
-			var zoom_mode = false, orig_val = [], t_zoom = 0, t_zc = 0, l_z = [];
 
 			if (tags_to_skip.includes(tag) || (cfg.skipHeadings && hdr_tags.includes(tag))) return;
 
@@ -1868,70 +1987,6 @@ async function start(cfg, url)
 						console.log('Frame security');
 					}
 				}
-			}
-
-			document.onkeyup = function(e){
-				if (e.keyCode == 16) {
-					zoom_mode = false;
-					t_zc = Date.now();
-				}
-			}
-
-			document.onkeydown = function(e){
-				if (e.keyCode == 16) {
-					zoom_mode = true;
-					t_zc = Date.now();
-				}
-			}
-
-			document.onmouseover = function(e){
-				if (!zoom_mode) return;
-				if (zoom_mode && Date.now() - t_zc > 10000) { zoom_mode = false;return; }
-				let targ = getTarget(e);
-				if (l_z.includes(targ)) return;
-				let val = [];
-				val[0] = targ.style.transform;
-				val[1] = targ.style.transition;
-				val[2] = targ.style.zIndex;
-				val[3] = targ.style.margin;
-				val[4] = targ.style.padding;
-				val[5] = targ.style.textShadow;
-				orig_val.push(val);
-				l_z.push(targ);
-				let n_z = 1.75;
-				if (cfg.strength > 0)
-					n_z = parseFloat(cfg.strength / 100).toFixed(2);
-				targ.style.transform = 'scale('+n_z+')';
-				targ.style.transition = 'all .25s ease-in-out';
-				targ.style.zIndex = '999999';
-				targ.style.padding = '4% 4% 4% 4%';
-				targ.style.margin = '0% 12% 0% 18%';
-				let co = getRGBarr(style.color);
-				co[3] = 0.9;
-				targ.style.textShadow = '0 0 7px rgba('+(255-co[0])+','+(255-co[1])+','+(255-co[2])+','+co[3]+')';
-				t_zoom = Date.now();
-			};
-
-			document.onmouseout = function(e){
-				let val = [];
-				if (orig_val.length > 0) {
-					val = orig_val.pop();
-				let targ = getTarget(e);
-				targ.style.transform = val[0];
-				targ.style.transition = val[1];
-				targ.style.zIndex = val[2];
-				targ.style.margin = val[3];
-				targ.style.padding = val[4];
-				targ.style.textShadow = val[5];
-				let p = l_z.indexOf(getTarget(e));
-				if (p >= 0) l_z.splice(p,1);
-				}
-				if (zoom_mode && Date.now() - t_zc > 10000) zoom_mode = false;
-			};
-
-			function getTarget(e){
-				if (e.target) return e.target;
-				else if (e.srcElement) return e.srcElement;
 			}
 
 			if (cfg.forceOpacity && !cfg.ssrules && !b_body && cfg.forcePlhdr && pnode != null && pnode.nodeName == 'BODY') {
@@ -2165,7 +2220,7 @@ async function start(cfg, url)
 				if (nsty == null) nsty = '';
 				let sfz = style.fontSize;
 				let nfz = parseInt(sfz);
-				if (parseFloat(sfz) <= cfg.threshold) {
+				if ((is_oinput || b_ctext[node_count] > 0) && parseFloat(sfz) <= cfg.threshold) {
 					if (/font-size[^;]*important/i.test(nsty)) {
 						let rsty = nsty.replace(/font-size[^\;]*important/ig,'');
 						node.setAttribute('style',rsty);
@@ -2207,7 +2262,7 @@ async function start(cfg, url)
 				b_fnt[node_count] = true;
 				let sfz = style.fontSize;
 				let nfz = parseInt(sfz);
-				if (parseFloat(sfz) <= cfg.threshold) {
+				if ((is_oinput || b_ctext[node_count] > 0) && parseFloat(sfz) <= cfg.threshold) {
 					node.setAttribute('s__', nfz);
 					if (style.fontSize == sfz) {
 						node.style.setProperty('font-size',f2_sizes[nfz],'important');
