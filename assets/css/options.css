@@ -171,7 +171,7 @@ input[type='checkbox'] {
 }
 .container {
 	cursor: pointer;
-	width: 36px;
+	width: 30px;
 	height: 20px;
 	background: #000;
 	display: block;
@@ -181,7 +181,7 @@ input[type='checkbox'] {
 	float: right;
 }
 input:checked ~ .checkmark:after {
-	margin-left: 16px;
+	margin-left: 10px;
 }
 .checkmark:after {
 	content: '';
@@ -194,9 +194,17 @@ input:checked ~ .checkmark:after {
 	border-radius: 12px;
 }
 input:checked ~ .checkmark:after {
+	position: absolute;
+	background-image:url('../../assets/icons/circle.svg');
+	background-repeat: no-repeat;
+	background-size: 12px 12px;
+	background-position: 11px 0px;
 	background-color: #0f0;
-}
- 
+	color: #fff;
+	width: 22px;
+	left: -6px;
+	top: 4px;
+} 
 .container .checkmark:active:after {
  	width:  30px;
 }
