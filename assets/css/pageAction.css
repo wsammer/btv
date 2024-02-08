@@ -144,19 +144,23 @@ body
 
 /*Buttons/checkmarks*/
 
-button {
+button,
+input[type='button'],
+select {
     font-size: 15px;
-    padding: 0.35em 1em;
+    max-height: 32px;
     cursor: pointer;
+    text-align: center;
     font-family:"Basic";
     font-weight:normal;
-    border-radius: 5px;
+    border-radius: 4px;
     transition: background-color 0.1s ease-out;
     color:black;
     background-color: #eee;
     border: 0.15em solid black;
 }
-button:hover {
+button:hover,
+input[type='button']:hover {
     color: white;
     background-color: black;
 }
@@ -169,7 +173,7 @@ button:hover {
 }
 #optionsBtn
 {
-    width:125px;
+    width:104px;
     align-self:flex-end;
     margin-top: -32px;
 }
@@ -181,12 +185,12 @@ input[type='checkbox'] {
 .container {
 	cursor: pointer;
 	width: 30px;
-	height: 20px;
+	height: 18px;
 	background: #000;
 	display: block;
 	border-radius: 20px;
 	position: relative;
-	margin-top: -20px;
+	margin-top: -19px;
 	float: right;
 }
 input:checked ~ .checkmark:after {
@@ -195,12 +199,16 @@ input:checked ~ .checkmark:after {
 .checkmark:after {
 	content: '';
 	position: absolute;
-	top: 4px;
+	top: 3px;
 	left: 4px;
 	width: 12px;
 	height: 12px;
 	background: #fff;
 	border-radius: 12px;
+	background-image:url('../../assets/icons/circle.svg');
+	background-repeat: no-repeat;
+	background-size: 12px 12px;
+	background-position: 0px 0px;
 }
 input:checked ~ .checkmark:after {
 	position: absolute;
@@ -212,11 +220,7 @@ input:checked ~ .checkmark:after {
 	color: #fff;
 	width: 22px;
 	left: -6px;
-	top: 4px;
-}
- 
-.container .checkmark:active:after {
- 	width:  30px;
+	top: 3px;
 }
 
 .option label:first-child {
