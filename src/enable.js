@@ -2220,7 +2220,7 @@ async function start(cfg, url)
 				if (nsty == null) nsty = '';
 				let sfz = style.fontSize;
 				let nfz = parseInt(sfz);
-				if ((is_oinput || b_ctext[node_count] > 0) && parseFloat(sfz) <= cfg.threshold) {
+				if (parseFloat(sfz) <= cfg.threshold) {
 					if (/font-size[^;]*important/i.test(nsty)) {
 						let rsty = nsty.replace(/font-size[^\;]*important/ig,'');
 						node.setAttribute('style',rsty);
@@ -2262,7 +2262,7 @@ async function start(cfg, url)
 				b_fnt[node_count] = true;
 				let sfz = style.fontSize;
 				let nfz = parseInt(sfz);
-				if ((is_oinput || b_ctext[node_count] > 0) && parseFloat(sfz) <= cfg.threshold) {
+				if (parseFloat(sfz) <= cfg.threshold) {
 					node.setAttribute('s__', nfz);
 					if (style.fontSize == sfz) {
 						node.style.setProperty('font-size',f2_sizes[nfz],'important');
